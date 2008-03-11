@@ -1,4 +1,4 @@
-set :application, "asb"
+set :application, "application"
 
 # create a pseudo terminal for every command, otherwise SSH/SVN breaks
 #default_run_options[:pty] = true 
