@@ -1,7 +1,4 @@
-require 'rake'
-require 'spec/rake/spectask'
+require 'config/requirements'
+require 'config/hoe' # setup Hoe + all gem configuration
 
-desc 'Run RSpec Suite'
-Spec::Rake::SpecTask.new('spec') do |t|
-  t.spec_files = FileList['spec/**/*_spec.rb']
-end
+Dir['tasks/**/*.rake'].each { |rake| load rake }

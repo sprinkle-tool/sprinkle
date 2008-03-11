@@ -1,5 +1,7 @@
-$:.unshift(File.dirname(__FILE__) + '/../lib')
-
-require 'rubygems'
-require 'sprinkle'
-require 'spec'
+begin
+  require 'spec'
+rescue LoadError
+  require 'rubygems'
+  gem 'rspec'
+  require 'spec'
+end
