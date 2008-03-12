@@ -13,25 +13,21 @@ require 'optparse'
 
 # NOTE: the option -p/--path= is given as an example, and should probably be replaced in your application.
 
-OPTIONS = {
-  :path     => '~'
-}
-MANDATORY_OPTIONS = %w(  )
+OPTIONS = {}
+MANDATORY_OPTIONS = %w( path )
 
 parser = OptionParser.new do |opts|
   opts.banner = <<BANNER
-Sprinkle is a software provisioning tool you can use to build remote servers with after the base operating 
-system has been installed. For example, to install a Rails or Merb stack on a brand new slice directly after
-its been created.
+Sprinkle is a DSL based software provisioning tool you can use to build remote servers with. For example, to 
+install a Rails or Merb stack on a brand new slice directly after its been created.
 
 Usage: #{File.basename($0)} [options]
 
 Options are:
 BANNER
   opts.separator ""
-  opts.on("-p", "--path=PATH", String,
-          "The root path for selecting files",
-          "Default: ~") { |OPTIONS[:path]| }
+  opts.on("-s", "--script=PATH", String,
+          "Path to the sprinkle script to run") { |OPTIONS[:path]| }
   opts.on("-h", "--help",
           "Show this help message.") { puts opts; exit }
   opts.parse!(ARGV)
@@ -41,6 +37,10 @@ BANNER
   end
 end
 
+require 'sprinkle'
+
 path = OPTIONS[:path]
 
-# do stuff
+raise "Script does not exist: #{path}" unless File.exists?(path)
+
+Sprinkle::Script.process(File.read(path)
