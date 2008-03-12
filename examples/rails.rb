@@ -1,13 +1,3 @@
-#$:.unshift(File.dirname(__FILE__) + '/../lib')
-$: << File.expand_path(File.dirname(__FILE__) + '/../lib')
-
-
-## REVISIT: idea i'm toying with is that you have separate files for platforms, that way deploy doesn't have to know about 
-# platform specifics, but perhaps thats something we want... needs further thought
-
-require 'rubygems'
-require 'sprinkle'
-
 ## Special package, anything that defines a 'source' package means build-essential should be installed for Ubuntu
 
 package :build_essential do
