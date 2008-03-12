@@ -56,8 +56,6 @@ conceivably use vlad, etc, or be used to simply issue installation commands on t
 
 An full example Sprinkle deployment script for deploying Rails (via gems), MySQL (via APT), and Apache (via source):
 
-    require 'sprinkle'
-
     ## Special package, anything that defines a 'source' package will have an automatic dependency to build-essential under Ubuntu
 
     package :build_essential do
