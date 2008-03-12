@@ -154,8 +154,8 @@ An full example Sprinkle deployment script for deploying Rails (via gems), MySQL
   
     end
 
-Sprinkle is a work in progress and I'm excited to hear if anyone finds it useful - please feel free to ask any questions,
-or send in any ideas, patches, bugs. All most welcome.
+Sprinkle is a work in progress and I'm excited to hear if anyone finds it useful - please feel free to 
+comment, ask any questions, or send in any ideas, patches, bugs. All most welcome.
 
 Marcus Crafter <crafterm@redartisan.com>
 
