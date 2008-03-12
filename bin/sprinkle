@@ -20,7 +20,9 @@ MANDATORY_OPTIONS = %w(  )
 
 parser = OptionParser.new do |opts|
   opts.banner = <<BANNER
-This application is wonderful because...
+Sprinkle is a software provisioning tool you can use to build remote servers with after the base operating 
+system has been installed. For example, to install a Rails or Merb stack on a brand new slice directly after
+its been created.
 
 Usage: #{File.basename($0)} [options]
 
