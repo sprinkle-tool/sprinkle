@@ -1,35 +1,31 @@
 module Sprinkle
-  
-  def deployment(&block)
-    Deployment.new(&block)
-  end
-
-  # REVISIT: deployment context - better name?
-  class Deployment
-    attr_accessor :style, :defaults
-    
-    def initialize(&block)
-      @defaults = {}
-      self.instance_eval(&block)
-      process
+  module Deployment
+    def deployment(&block)
+      @deployment = Deployment.new(&block)
     end
     
-    def delivery(type)
-      @style = Actors.const_get(type.to_s.titleize).new
-    end
+    # REVISIT: deployment context - better name?
+    class Deployment
+      attr_accessor :style, :defaults
     
-    def source(&block)
-      @defaults[:source] = block
-    end
+      def initialize(&block)
+        @defaults = {}
+        self.instance_eval(&block)
+      end
     
-    private
+      def delivery(type)
+        @style = Actors.const_get(type.to_s.titleize).new
+      end
     
+      def source(&block)
+        @defaults[:source] = block
+      end
+      
       def process
-        @@policies.each do |policy|
+        POLICIES.each do |policy|
           policy.process(self)
         end
       end
+    end
   end
-
 end
-
