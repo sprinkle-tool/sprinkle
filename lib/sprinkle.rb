@@ -1,25 +1,19 @@
+require 'rubygems'
+require 'logger'
 require 'active_support'
-require 'sprinkle/extensions/string'
-require 'sprinkle/extensions/array'
-require 'sprinkle/extensions/symbol'
-require 'sprinkle/package'
-require 'sprinkle/policy'
-require 'sprinkle/deployment'
-require 'sprinkle/installers/installer'
-require 'sprinkle/installers/source'
-require 'sprinkle/installers/apt'
-require 'sprinkle/installers/gem'
 
+Dependencies.load_paths << File.dirname(__FILE__)
+
+# Configure active support to log auto-loading of dependencies
+#Dependencies::RAILS_DEFAULT_LOGGER = Logger.new($stdout)
+#Dependencies.log_activity = true
+
+# Define a global logger thats available everywhere
 class Object
-  include Sprinkle
+  def log
+    @@__log__ ||= Logger.new($stdout)
+  end
 end
 
-actor = ENV['DACTOR']
-
-if actor
-  # some other target?
-else
-  require 'sprinkle/actors/capistrano'
-  
-  # more work here
+module Sprinkle
 end
