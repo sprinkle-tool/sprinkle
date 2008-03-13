@@ -17,6 +17,8 @@ module Sprinkle
       attr_accessor :name, :options, :provides, :description
     
       def initialize(name, options = {}, &block)
+        raise 'No package name supplied' unless name
+
         @name = name
         @options = options
         @provides = options[:provides]

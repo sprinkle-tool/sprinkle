@@ -1,10 +1,13 @@
 require File.dirname(__FILE__) + '/../spec_helper'
 
-describe Sprinkle::Package, 'when created' do
+describe Sprinkle::Package, 'during construction' do
 
-  it 'should be invalid without a name'
+  it 'should be invalid without a name' do
+    lambda { Sprinkle::Package::Package.new nil, {} do; end }.should raise_error
+  end
+
   it 'should be invalid without a description'
-  it 'should be invalid without an installer'
+  it 'should optionally accept an installer'
   it 'should optionally accept a version'
   it 'should optionally accept dependencies'
   it 'should optionally define a virtual package implementation'
