@@ -26,7 +26,7 @@ end
 
 describe Sprinkle::Package, 'with a source installer' do
   
-  it 'should optinally accept a block containing customisations'
+  it 'should optionally accept a block containing customisations'
   it 'should automatically add a build essential dependency'
   
 end
