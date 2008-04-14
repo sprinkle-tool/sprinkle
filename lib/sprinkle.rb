@@ -10,7 +10,7 @@ Dependencies.load_paths << File.dirname(__FILE__)
 #Dependencies.log_activity = true
 
 # Load up extensions to existing classes
-Dir[File.dirname(__FILE__) + 'sprinkle/extensions/*.rb'].each { |e| require e }
+Dir[File.dirname(__FILE__) + '/sprinkle/extensions/*.rb'].each { |e| require e }
 
 # Define a global logger thats available everywhere
 class Object
