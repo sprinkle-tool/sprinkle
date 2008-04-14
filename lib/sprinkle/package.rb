@@ -31,7 +31,7 @@ module Sprinkle
       end
     
       def gem(name)
-        @dependencies << :rubygems # implicit rubygems dependency
+        @dependencies << :rubygems
         @installer = Sprinkle::Installers::Gem.new(self, name)
       end
     
@@ -41,7 +41,7 @@ module Sprinkle
       end
     
       def process(deployment, roles)
-        return unless @installer # meta-packages don't define any installer
+        return if meta_package?
 
         @installer.defaults(deployment)
         @installer.process(roles)
@@ -65,6 +65,12 @@ module Sprinkle
       end
     
       def to_s; @name; end
+      
+      private
+      
+        def meta_package?
+          @installer == nil
+        end
     end
   end
 end

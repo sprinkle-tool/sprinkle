@@ -76,29 +76,98 @@ describe Sprinkle::Package do
 
   describe Sprinkle::Package, 'installer configuration' do
     
-    it 'should optionally accept an apt installer'
-    it 'should optionally accept a gem installer'
-    it 'should optionally accept a source installer'
+    it 'should optionally accept an apt installer' do 
+      pkg = package @name do
+        apt %w( deb1 deb2 )
+      end
+      pkg.should respond_to(:apt)
+      pkg.installer.class.should == Sprinkle::Installers::Apt
+    end
+    
+    it 'should optionally accept a gem installer' do 
+      pkg = package @name do
+        gem 'gem'
+      end
+      pkg.should respond_to(:gem)
+      pkg.installer.class.should == Sprinkle::Installers::Gem
+    end
+    
+    it 'should optionally accept a source installer' do 
+      pkg = package @name do
+        source 'archive'
+      end
+      pkg.should respond_to(:source)
+      pkg.installer.class.should == Sprinkle::Installers::Source
+    end
     
   end
 
   describe Sprinkle::Package, 'with a source installer' do
     
-    it 'should optionally accept a block containing customisations'
-    it 'should automatically add a build essential dependency'
+    it 'should optionally accept a block containing customisations' do 
+      pkg = package @name do
+        source 'archive' do; end
+      end
+      pkg.should respond_to(:source)
+      pkg.installer.class.should == Sprinkle::Installers::Source
+    end
+    
+    it 'should automatically add a build essential dependency' do 
+      pkg = package @name do
+        source 'archive'
+      end
+      pkg.dependencies.should include(:build_essential)
+    end
     
   end
 
   describe Sprinkle::Package, 'with an gem installer' do
     
-    it 'should automatically add a rubygems dependency'
+    it 'should automatically add a rubygems dependency' do 
+      pkg = package @name do
+        gem 'gem'
+      end
+      pkg.dependencies.should include(:rubygems)
+    end
     
   end
 
   describe Sprinkle::Package, 'when processing' do
     
-    it 'should configure itself against the deployment context'
-    it 'should request the installer to process itself'
+    before do 
+      @deployment = mock(Sprinkle::Deployment)
+      @roles = [ :app, :db ]
+      @installer = mock(Sprinkle::Installers::Installer, :defaults => true, :process => true)
+      @package = package @name do; end
+    end
+    
+    describe Sprinkle::Package, 'with an installer' do 
+      
+      before do 
+        @package.installer = @installer
+      end
+
+      it 'should configure itself against the deployment context' do 
+        @installer.should_receive(:defaults).with(@deployment).and_return
+      end
+      
+      it 'should request the installer to process itself' do 
+        @installer.should_receive(:process).with(@roles).and_return
+      end
+      
+      after do 
+        @package.process(@deployment, @roles)
+      end
+    end
+    
+    describe Sprinkle::Package, 'without an installer' do 
+      
+      it 'should not request the installer to process if the package is a metapackage' do 
+        @installer.should_not_receive(:process)
+        @package.process(@deployment, @roles)
+      end
+      
+    end
     
   end
 
