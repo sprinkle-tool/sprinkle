@@ -12,6 +12,7 @@ describe Sprinkle::Script, 'when given a script' do
   
   before do
     @script = 'script'
+    @filename = 'filename'
     
     @sprinkle = Sprinkle::Script.new
     Sprinkle::Script.stub!(:new).and_return(@sprinkle)
@@ -24,6 +25,16 @@ describe Sprinkle::Script, 'when given a script' do
   
   it 'should evaulate the sprinkle script against the instance' do
     @sprinkle.should_receive(:instance_eval).and_return
+    Sprinkle::Script.sprinkle @script
+  end
+  
+  it 'should specify the filename if given for line number errors' do 
+    @sprinkle.should_receive(:instance_eval).with(@script, @filename).and_return
+    Sprinkle::Script.sprinkle @script, @filename
+  end
+  
+  it 'should specify a filename of __SCRIPT__ by default if none is provided' do 
+    @sprinkle.should_receive(:instance_eval).with(@script, '__SCRIPT__').and_return
     Sprinkle::Script.sprinkle @script
   end
   

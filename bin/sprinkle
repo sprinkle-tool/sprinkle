@@ -43,4 +43,4 @@ path = OPTIONS[:path]
 
 raise "Script does not exist: #{path}" unless File.exists?(path)
 
-Sprinkle::Script.process(File.read(path)
+Sprinkle::Script.process File.read(path), path
