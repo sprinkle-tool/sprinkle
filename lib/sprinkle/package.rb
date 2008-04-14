@@ -49,7 +49,8 @@ module Sprinkle
       end
     
       def process(deployment, roles)
-        #raise "No installer defined for package: #{@name}" unless @installer # support meta-packages
+        return unless @installer # support meta-packages that don't define any installer
+
         @installer.defaults(deployment)
         @installer.process(roles)
       end
