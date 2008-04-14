@@ -1,37 +1,29 @@
 module Sprinkle
   module Package
-    # class accessor on Package, or define a Packages scope?
     PACKAGES = {}
   
-    def package(name, options = {}, &block)
-      package = Package.new(name, options, &block)
+    def package(name, metadata = {}, &block)
+      package = Package.new(name, metadata, &block)
       PACKAGES[name] = package
     
       if package.provides
-        PACKAGES[package.provides] ||= []
-        PACKAGES[package.provides] << package
+        (PACKAGES[package.provides] ||= []) << package
       end
+      
+      package
     end
-  
-    class Package
-      attr_accessor :name, :options, :provides, :description
     
-      def initialize(name, options = {}, &block)
+    class Package
+      include ArbitraryOptions
+      attr_accessor :name, :provides, :installer, :dependencies
+    
+      def initialize(name, metadata = {}, &block)
         raise 'No package name supplied' unless name
 
         @name = name
-        @options = options
-        @provides = options[:provides]
+        @provides = metadata[:provides]
         @dependencies = []
         self.instance_eval &block
-      end
-    
-      def method_missing(sym, *args, &block)
-        args.empty? ? @options[sym] : (@options[sym] = *args)
-      end
-    
-      def description(text)
-        @description = text
       end
     
       def apt(*names)
@@ -39,7 +31,7 @@ module Sprinkle
       end
     
       def gem(name)
-        @dependencies << :rubygems # include an implicit rubygems dependency
+        @dependencies << :rubygems # implicit rubygems dependency
         @installer = Sprinkle::Installers::Gem.new(self, name)
       end
     
@@ -49,7 +41,7 @@ module Sprinkle
       end
     
       def process(deployment, roles)
-        return unless @installer # support meta-packages that don't define any installer
+        return unless @installer # meta-packages don't define any installer
 
         @installer.defaults(deployment)
         @installer.process(roles)
