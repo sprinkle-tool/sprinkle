@@ -173,9 +173,30 @@ describe Sprinkle::Package do
 
   describe Sprinkle::Package, 'hierarchies' do
     
-    it 'should be able to return a dependency hierarchy tree'
-    it 'should optionally accept a block to call upon item in the tree during hierarchy traversal'
-    it 'should maintain a depth count of how deep the hierarchy is'
+    before do 
+      @a = package :a do; requires :b; end
+      @b = package :b do; requires :c; end
+      @c = package :c do; end
+    end
+    
+    it 'should be able to return a dependency hierarchy tree' do 
+      @a.tree.flatten.should == [ @c, @b, @a ]
+      @b.tree.flatten.should == [ @c, @b ]
+      @c.tree.flatten.should == [ @c ]
+    end
+    
+    it 'should optionally accept a block to call upon item in the tree during hierarchy traversal' do 
+      @count = 0
+      @a.tree do
+        @count += 1
+      end
+      @count.should == 2
+    end
+    
+    it 'should maintain a depth count of how deep the hierarchy is' do 
+      @b.should_receive(:tree).with(2).and_return([@b])
+      @a.tree do; end
+    end
     
   end
 
