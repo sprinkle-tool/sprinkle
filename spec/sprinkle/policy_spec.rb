@@ -40,27 +40,63 @@ describe Sprinkle::Policy do
     end
     
   end
+  
+  describe Sprinkle::Policy, 'with packages' do
+    include Sprinkle::Package
+    
+    before do 
+      @deployment = mock(Sprinkle::Deployment)
 
-  describe Sprinkle::Policy, 'when applying' do
-    
-    it 'should determine the packages to install via the hierarchy dependency tree of each package in the policy'
-    it 'should normalize (ie remove duplicates from) the installation order of all packages including dependencies'
-    it 'should process each normalized package in reverse dependency order'
-    
-  end
+      @a = package :a do; requires :b; requires :c; end
+      @b = package :b do; end
+      @c = package :c do; end
+      @d = package :d do; end
+      
+      @policy = policy :test, :roles => :app do; requires :a; end
+    end
 
-  describe Sprinkle::Policy, 'containing package dependencies with versions' do
-    
-    it 'should be invalid if the specified package does not exist'
-    it 'should ignore any packages of the same name that have other versions'
-    it 'should select the correct package version when applying'
-    
-  end
+    describe Sprinkle::Policy, 'when applying' do
+      include Sprinkle::Package
+      
+      it 'should determine the packages to install via the hierarchy dependency tree of each package in the policy' do 
+        @a.should_receive(:process).and_return
+        @b.should_receive(:process).and_return
+        @c.should_receive(:process).and_return
+        @d.should_not_receive(:process)
+      end
+      
+      it 'should normalize (ie remove duplicates from) the installation order of all packages including dependencies' do 
+        @e = package :e do; requires :b; end
+        @policy.requires :e
+        
+        @a.should_receive(:process).once.and_return
+        @b.should_receive(:process).once.and_return
+        @c.should_receive(:process).once.and_return
+        @d.should_not_receive(:process)
+        @e.should_receive(:process).once.and_return
+      end
+      
+      it 'should process each normalized package in reverse dependency order'
+      
+      after do 
+        @policy.process(@deployment)
+      end
+    end
 
-  describe Sprinkle::Policy, 'containing virtual packages' do
-    
-    it 'should automatically select a concrete package implementation for a virtual one when there exists only one possible selection'
-    it 'should ask the user for the concrete package implementation to use for a virtual one when more than one possible choice exists'
+    describe Sprinkle::Policy, 'containing package dependencies with versions' do
+      
+      it 'should be invalid if the specified package does not exist'
+      it 'should ignore any packages of the same name that have other versions'
+      it 'should select the correct package version when applying'
+      
+    end
+
+    describe Sprinkle::Policy, 'containing virtual packages' do
+      
+      it 'should automatically select a concrete package implementation for a virtual one when there exists only one possible selection'
+      it 'should ask the user for the concrete package implementation to use for a virtual one when more than one possible choice exists' 
+      
+    end
     
   end
   

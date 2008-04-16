@@ -37,7 +37,7 @@ module Sprinkle
         @packages.each do |p|
           puts "Policy #{@name} requires package #{p}"
         
-          package = PACKAGES[p]
+          package = Sprinkle::Package::PACKAGES[p]
           package = select_package(p, package) if package.is_a? Array # handle virtual package selection
         
           tree = package.tree do |parent, child, depth|
@@ -68,7 +68,7 @@ module Sprinkle
             menu.prompt = "Multiple choices exist for virtual package #{name}"
             menu.choices *packages.collect(&:to_s)
           end
-          package = PACKAGES[package]
+          package = Sprinkle::Packages::PACKAGES[package]
         end
       
         puts "Selecting #{package.to_s} for virtual package #{name}"
