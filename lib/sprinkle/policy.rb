@@ -5,15 +5,20 @@ module Sprinkle
     POLICIES = []
   
     def policy(name, options = {}, &block)
-      POLICIES << Policy.new(name, options, &block)
+      p = Policy.new(name, options, &block)
+      POLICIES << p
+      p
     end
   
     class Policy
-      attr_reader :name
+      attr_reader :name, :packages
     
-      def initialize(name, options = {}, &block)
+      def initialize(name, metadata = {}, &block)
+        raise 'No name provided' unless name
+        raise 'No roles provided' unless metadata[:roles]
+        
         @name = name
-        @roles = options[:roles]
+        @roles = metadata[:roles]
         @packages = []
         self.instance_eval(&block)
       end
