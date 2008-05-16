@@ -4,7 +4,6 @@ module Sprinkle
       @deployment = Deployment.new(&block)
     end
     
-    # REVISIT: deployment context - better name?
     class Deployment
       attr_accessor :style, :defaults
     

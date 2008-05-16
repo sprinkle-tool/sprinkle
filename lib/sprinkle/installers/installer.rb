@@ -1,6 +1,8 @@
 module Sprinkle
   module Installers
     class Installer
+      attr_accessor :delivery
+
       def initialize(package, &block)
         @package = package
         @options = {}
@@ -9,17 +11,18 @@ module Sprinkle
       
       def defaults(deployment)
         defaults = deployment.defaults[self.class.name.split(/::/).last.downcase.to_sym]
-
-        if defaults
-          self.instance_eval(&defaults)
-        end
-        
+        self.instance_eval(&defaults) if defaults
         @delivery = deployment.style
       end
       
       def process(roles)
         raise 'Unknown command delivery target' unless @delivery
-        @delivery.process(@package.name, install_sequence, roles)
+        
+        if Sprinkle::OPTIONS[:testing]
+          puts "TESTING: #{@package.name} install sequence: #{install_sequence} for roles: #{roles}"
+        else
+          @delivery.process(@package.name, install_sequence, roles)
+        end
       end
       
       def method_missing(sym, *args, &block)

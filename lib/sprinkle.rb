@@ -20,4 +20,5 @@ class Object
 end
 
 module Sprinkle
+  OPTIONS = { :testing => false }
 end

@@ -18,7 +18,7 @@ describe Sprinkle::Script, 'when given a script' do
     Sprinkle::Script.stub!(:new).and_return(@sprinkle)
   end
 
-  it 'should create a new Sprinkle instance' do
+  it 'should create a new sprinkle instance' do
     Sprinkle::Script.should_receive(:new).and_return(@sprinkle)
     Sprinkle::Script.sprinkle @script
   end
@@ -34,6 +34,11 @@ describe Sprinkle::Script, 'when given a script' do
   end
   
   it 'should specify a filename of __SCRIPT__ by default if none is provided' do 
+    @sprinkle.should_receive(:instance_eval).with(@script, '__SCRIPT__').and_return
+    Sprinkle::Script.sprinkle @script
+  end
+  
+  it 'should automatically run in production mode by default' do
     @sprinkle.should_receive(:instance_eval).with(@script, '__SCRIPT__').and_return
     Sprinkle::Script.sprinkle @script
   end
