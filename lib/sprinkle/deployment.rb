@@ -3,23 +3,24 @@ module Sprinkle
     def deployment(&block)
       @deployment = Deployment.new(&block)
     end
-    
+
     class Deployment
       attr_accessor :style, :defaults
-    
+
       def initialize(&block)
         @defaults = {}
         self.instance_eval(&block)
+        raise 'No delivery mechanism defined' unless @style
       end
-    
-      def delivery(type)
-        @style = Actors.const_get(type.to_s.titleize).new
+
+      def delivery(type, &block)
+        @style = Actors.const_get(type.to_s.titleize).new &block
       end
-    
+
       def source(&block)
         @defaults[:source] = block
       end
-      
+
       def process
         POLICIES.each do |policy|
           policy.process(self)

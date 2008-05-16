@@ -23,9 +23,6 @@ Sprinkle
 
 http://github.com/crafterm/sprinkle
 
-Description
-===========
-
 Sprinkle is a software provisioning tool you can use to build remote servers with. eg. to 
 install a Rails or Merb stack on a brand new slice directly after its been created. It uses
 a Ruby based domain specific language to describe packages and policies to determine what
