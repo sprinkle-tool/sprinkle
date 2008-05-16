@@ -23,6 +23,9 @@ Sprinkle
 
 http://github.com/crafterm/sprinkle
 
+Description
+===========
+
 Sprinkle is a software provisioning tool you can use to build remote servers with. eg. to 
 install a Rails or Merb stack on a brand new slice directly after its been created. It uses
 a Ruby based domain specific language to describe packages and policies to determine what
@@ -30,13 +33,18 @@ should be installed on particular systems.
 
 Please see http://github.com/crafterm/sprinkle/tree/master/README.txt for more information.
 
-Usage: #{File.basename($0)} [options]
+Usage
+=====
+
+$> #{File.basename($0)} [options]
 
 Options are:
 BANNER
   opts.separator ""
   opts.on("-s", "--script=PATH", String,
           "Path to a sprinkle script to run") { |OPTIONS[:path]| }
+  opts.on("-t", "--test",
+          "Process but don't perform any actions") { |OPTIONS[:test]| }
   opts.on("-h", "--help",
           "Show this help message.") { puts opts; exit }
   opts.parse!(ARGV)
@@ -49,7 +57,8 @@ end
 require 'sprinkle'
 
 path = OPTIONS[:path]
+raise "Script is not readable: #{path}" unless File.readable?(path)
 
-raise "Script does not exist: #{path}" unless File.exists?(path)
+Sprinkle::OPTIONS[:testing] = OPTIONS[:test] || false
 
-Sprinkle::Script.process File.read(path), path
+Sprinkle::Script.sprinkle File.read(path), path
