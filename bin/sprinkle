@@ -28,6 +28,8 @@ install a Rails or Merb stack on a brand new slice directly after its been creat
 a Ruby based domain specific language to describe packages and policies to determine what
 should be installed on particular systems.
 
+Please see http://github.com/crafterm/sprinkle/tree/master/README.txt for more information.
+
 Usage: #{File.basename($0)} [options]
 
 Options are:
