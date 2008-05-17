@@ -11,8 +11,7 @@ module Sprinkle
       end
 
       def recipes(script)
-        @recipes = script
-        @config.load @recipes # normally config/deploy in rails
+        @config.load script # normally config/deploy in rails
       end
 
       # better name
