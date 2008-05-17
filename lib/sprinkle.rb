@@ -12,13 +12,15 @@ Dependencies.load_paths << File.dirname(__FILE__)
 # Load up extensions to existing classes
 Dir[File.dirname(__FILE__) + '/sprinkle/extensions/*.rb'].each { |e| require e }
 
+module Sprinkle
+  OPTIONS = { :testing => false }
+end
+
 # Define a global logger thats available everywhere
 class Object
+  include Sprinkle::Package, Sprinkle::Policy, Sprinkle::Deployment  # understand packages, policies and deployment DSL
+
   def log
     @@__log__ ||= Logger.new($stdout)
   end
-end
-
-module Sprinkle
-  OPTIONS = { :testing => false }
 end
