@@ -1,11 +1,34 @@
-## Special package, anything that defines a 'source' package means build-essential should be installed for Ubuntu
+# Sprinkle Rails deployment script
+#
+# This is an example Sprinkle script, configured to install Rails from gems, Apache and Ruby from source,
+# and mysql from apt on an Ubuntu system. Installation is configured to run via capistrano (and
+# an accompanying deploy.rb recipe script). Source based packages are downloaded and built into
+# /usr/local on the remote system.
+#
+# A sprinkle script is separated into 3 different sections. Packages, policies and deployment.
+#
+# Packages
+#
+#  Defines the world of packages as we know it. Each package has a name and
+#  set of metadata including its installer type (eg. apt, source, gem, etc). Packages can have
+#  relationships to each other via dependencies
+#
+# Policies
+#
+#  Names a group of packages (optionally with versions) that apply to a particular set of roles.
+#
+# Deployment
+#
+#  Defines script wide settings such as a delivery mechanism for executing commands on the target
+#  system (eg. capistrano), and installer defaults (eg. build locations, etc).
 
-package :build_essential do
+
+# Packages
+
+package :build_essential do # special package, anything that uses a 'source' installer will have build-essential installed for Ubuntu
   description 'Build tools'
   apt 'build-essential'
 end
-
-## Defines available packages
 
 package :ruby do
   description 'Ruby Virtual Machine'
@@ -52,16 +75,16 @@ end
 package :rails do
   description 'Ruby on Rails'
   gem 'rails'
-  version '2.0.2'  
+  version '2.0.2'
 end
 
-package :mongrel, :provides => :appserver do
+package :mongrel do
   description 'Mongrel Application Server'
   gem 'mongrel'
   version '1.1.3'
 end
 
-package :mongrel_cluster do
+package :mongrel_cluster, :provides => :appserver do
   description 'Cluster Management for Mongrel'
   gem 'mongrel_cluster'
   version '1.0.5'
@@ -69,7 +92,12 @@ package :mongrel_cluster do
 end
 
 
-## Define a policy that applies to what roles of machines
+# Policies
+
+# Associates the rails policy to the application servers. Contains rails, and surrounding
+# packages. Note, appserver, database and webserver are all virtual packages defined above. If
+# there's only one implementation of a virtual package, it's selected automatically, otherwise
+# the user is requested to select which one to use.
 
 policy :rails, :roles => :app do
   requires :rails, :version => '2.0.2'
@@ -78,17 +106,24 @@ policy :rails, :roles => :app do
   requires :webserver
 end
 
+# Deployment
+
+# Configures spinkle to use capistrano for delivery of commands to the remote machines (via
+# the named 'deploy' recipe). Also configures 'source' installer defaults to put package gear
+# in /usr/local
+
 deployment do
-  
-  # better name
-  delivery :capistrano
-  
-  # installer defaults
+
+  # mechanism for deplyoment
+  delivery :capistrano do
+    recipes 'deploy'
+  end
+
+  # source based package installer defaults
   source do
     prefix   '/usr/local'
     archives '/usr/local/sources'
     builds   '/usr/local/build'
   end
-  
-end
 
+end
