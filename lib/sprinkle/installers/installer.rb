@@ -19,7 +19,8 @@ module Sprinkle
         raise 'Unknown command delivery target' unless @delivery
 
         if Sprinkle::OPTIONS[:testing]
-          puts "TESTING: #{@package.name} install sequence: #{install_sequence} for roles: #{roles}"
+          sequence = install_sequence; sequence = sequence.join('; ') if sequence.is_a? Array
+          puts "TESTING: #{@package.name} install sequence: #{sequence} for roles: #{roles}"
         else
           @delivery.process(@package.name, install_sequence, roles)
         end
