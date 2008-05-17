@@ -4,12 +4,12 @@ http://github.com/crafterm/sprinkle
 
 == DESCRIPTION:
 
-Sprinkle is a software provisioning tool you can use to build remote servers with, after the base operating 
+Sprinkle is a software provisioning tool you can use to build remote servers with, after the base operating
 system has been installed. For example, to install a Rails or Merb stack on a brand new slice directly after
 its been created.
 
-Properties of packages such as their name, type, dependencies, etc, and what packages apply to what machines 
-is described via a domain specific language that Sprinkle executes (in fact one of the aims of Sprinkle is to 
+Properties of packages such as their name, type, dependencies, etc, and what packages apply to what machines
+is described via a domain specific language that Sprinkle executes (in fact one of the aims of Sprinkle is to
 define as concisely as possible a language for installing software).
 
 An example package description follows:
@@ -21,7 +21,7 @@ An example package description follows:
       requires :ruby_dependencies
     end
 
-This defines a package called 'ruby', that uses the source based installer to build Ruby 1.8.6 from source, 
+This defines a package called 'ruby', that uses the source based installer to build Ruby 1.8.6 from source,
 installing the package 'ruby_dependencies' beforehand.
 
 Reasonable defaults are set by sprinkle, such as the install prefix, download area, etc, but can be customized
@@ -33,7 +33,7 @@ New installer types can be added into the system easily.
 
 For example, you could install Rails via gems, nginx via source, and mysql via APT.
 
-Sprinkle also supports dependencies between packages, allowing you specify pre-requisites that need to be 
+Sprinkle also supports dependencies between packages, allowing you specify pre-requisites that need to be
 installed in order.
 
 Packages can be grouped into polices to define several packages that should be installed together.
@@ -47,7 +47,7 @@ An example policy:
       requires :webserver
     end
 
-This defines a policy called Rails, that applies to machines of role :app. The policy includes the packages 
+This defines a policy called Rails, that applies to machines of role :app. The policy includes the packages
 rails (version 2.0.2), appserver, database and webserver.
 
 appserver, database and webserver can be virtual packages, where the user will be prompted for selection if
@@ -113,7 +113,7 @@ An full example Sprinkle deployment script for deploying Rails (via gems), MySQL
     package :rails do
       description 'Ruby on Rails'
       gem 'rails'
-      version '2.0.2'  
+      version '2.0.2'
     end
 
     package :mongrel, :provides => :appserver do
@@ -142,20 +142,22 @@ An full example Sprinkle deployment script for deploying Rails (via gems), MySQL
     ## Deployment defaults
 
     deployment do
-  
+
       # how commands are run on the remote systems
-      delivery :capistrano
-  
+      delivery :capistrano do
+        recipes 'deploy'
+      end
+
       # installer defaults
       source do
         prefix   '/usr/local'           # where all source packages will be configured to install
         archives '/usr/local/sources'   # where all source packages will be downloaded to
         builds   '/usr/local/build'     # where all source packages will be built
       end
-  
+
     end
 
-Sprinkle is a work in progress and I'm excited to hear if anyone finds it useful - please feel free to 
+Sprinkle is a work in progress and I'm excited to hear if anyone finds it useful - please feel free to
 comment, ask any questions, or send in any ideas, patches, bugs. All most welcome.
 
 Marcus Crafter <crafterm@redartisan.com>
@@ -184,4 +186,3 @@ IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY
 CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT,
 TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
 SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
-

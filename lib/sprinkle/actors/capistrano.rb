@@ -14,8 +14,6 @@ module Sprinkle
         @config.load script # normally config/deploy in rails
       end
 
-      # better name
-
       def process(name, commands, roles)
         define_task(name, roles) do
           via = fetch(:run_method, :sudo)
