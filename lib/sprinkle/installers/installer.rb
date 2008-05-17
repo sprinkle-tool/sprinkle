@@ -1,7 +1,7 @@
 module Sprinkle
   module Installers
     class Installer
-      attr_accessor :delivery
+      attr_accessor :delivery, :package
 
       def initialize(package, &block)
         @package = package
