@@ -81,7 +81,7 @@ end
 package :mongrel do
   description 'Mongrel Application Server'
   gem 'mongrel'
-  version '1.1.3'
+  version '1.1.4'
 end
 
 package :mongrel_cluster, :provides => :appserver do
@@ -114,7 +114,7 @@ end
 
 deployment do
 
-  # mechanism for deplyoment
+  # mechanism for deployment
   delivery :capistrano do
     recipes 'deploy'
   end
