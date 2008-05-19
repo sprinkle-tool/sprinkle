@@ -8,7 +8,13 @@ bin/sprinkle
 config/hoe.rb
 config/requirements.rb
 examples/merb/deploy.rb
+examples/rails/README
 examples/rails/deploy.rb
+examples/rails/packages/database.rb
+examples/rails/packages/essential.rb
+examples/rails/packages/rails.rb
+examples/rails/packages/search.rb
+examples/rails/packages/server.rb
 examples/rails/rails.rb
 lib/sprinkle.rb
 lib/sprinkle/actors/capistrano.rb
@@ -34,7 +40,6 @@ script/txt2html
 spec/spec.opts
 spec/spec_helper.rb
 spec/sprinkle/actors/capistrano_spec.rb
-spec/sprinkle/deploy_spec.rb
 spec/sprinkle/deployment_spec.rb
 spec/sprinkle/extensions/array_spec.rb
 spec/sprinkle/extensions/string_spec.rb
@@ -45,6 +50,7 @@ spec/sprinkle/installers/source_spec.rb
 spec/sprinkle/package_spec.rb
 spec/sprinkle/policy_spec.rb
 spec/sprinkle/script_spec.rb
+spec/sprinkle/sprinkle_spec.rb
 tasks/deployment.rake
 tasks/environment.rake
 tasks/rspec.rake
