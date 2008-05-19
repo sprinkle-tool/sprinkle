@@ -3,15 +3,23 @@ require 'capistrano/cli'
 module Sprinkle
   module Actors
     class Capistrano
+      attr_accessor :config, :loaded_recipes
+
       def initialize(&block)
         @config = ::Capistrano::Configuration.new
         @config.logger.level = ::Capistrano::Logger::TRACE
         @config.set(:password) { ::Capistrano::CLI.password_prompt }
-        self.instance_eval &block
+        if block
+          self.instance_eval &block
+        else
+          @config.load 'deploy' # normall config/deploy for rails
+        end
       end
 
       def recipes(script)
-        @config.load script # normally config/deploy in rails
+        @loaded_recipes ||= []
+        @config.load script
+        @loaded_recipes << script
       end
 
       def process(name, commands, roles)
