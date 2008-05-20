@@ -17,9 +17,11 @@ module Sprinkle
         @style = Actors.const_get(type.to_s.titleize).new &block
       end
 
-      def source(&block)
-        @defaults[:source] = block
+      def method_missing(sym, *args, &block)
+        @defaults[sym] = block
       end
+
+      def respond_to?(sym); !!@defaults[sym]; end
 
       def process
         POLICIES.each do |policy|
