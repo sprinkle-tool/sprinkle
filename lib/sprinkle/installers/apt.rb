@@ -12,7 +12,7 @@ module Sprinkle
       protected
 
         def install_sequence
-          "apt-get -y install #{@packages.join(' ')}"
+          "DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive apt-get -qyu install #{@packages.join(' ')}"
         end
 
     end

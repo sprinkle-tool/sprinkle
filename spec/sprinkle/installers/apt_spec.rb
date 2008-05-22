@@ -26,9 +26,17 @@ describe Sprinkle::Installers::Apt do
 
   describe 'during installation' do
 
-    it 'should invoke the apt installer for all specified packages' do
+    before do
       @installer = create_apt 'ruby'
-      @installer.send(:install_sequence).should == "apt-get -y install ruby"
+      @install_sequence = @installer.send :install_sequence
+    end
+
+    it 'should invoke the apt installer for all specified packages' do
+      @install_sequence.should =~ /apt-get -qyu install ruby/
+    end
+
+    it 'should specify a non interactive mode to the apt installer' do
+      @install_sequence.should =~ /DEBIAN_FRONTEND=noninteractive/
     end
 
     it 'should install a specific version if defined'
