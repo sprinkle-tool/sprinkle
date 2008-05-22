@@ -41,7 +41,7 @@ module Sprinkle
           package = select_package(p, package) if package.is_a? Array # handle virtual package selection
 
           tree = package.tree do |parent, child, depth|
-            indent = '\t' * depth
+            indent = "\t" * depth
             logger.debug "#{indent}Package #{parent.name} requires #{child.name}"
           end
 
