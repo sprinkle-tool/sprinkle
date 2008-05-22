@@ -77,8 +77,6 @@ describe Sprinkle::Policy do
         @d.should_not_receive(:process)
         @e.should_receive(:process).once.and_return
       end
-
-      it 'should process each normalized package in reverse dependency order'
     end
 
     describe Sprinkle::Policy, 'containing package dependencies with versions' do

@@ -50,31 +50,34 @@ module Sprinkle
           all << tree
         end
 
-        all = all.flatten.uniq
-
-        puts
-        puts "Normalized installation order for all packages: #{all.collect(&:name).join(', ')}"
-
-        all.each do |package|
+        normalize(all) do |package|
           package.process(deployment, @roles)
         end
       end
 
-      def select_package(name, packages)
-        if packages.size <= 1
-          package = packages.first
-        else
-          package = choose do |menu|
-            menu.prompt = "Multiple choices exist for virtual package #{name}"
-            menu.choices *packages.collect(&:to_s)
+      private
+
+        def select_package(name, packages)
+          if packages.size <= 1
+            package = packages.first
+          else
+            package = choose do |menu|
+              menu.prompt = "Multiple choices exist for virtual package #{name}"
+              menu.choices *packages.collect(&:to_s)
+            end
+            package = Sprinkle::Package::PACKAGES[package]
           end
-          package = Sprinkle::Package::PACKAGES[package]
+
+          puts "Selecting #{package.to_s} for virtual package #{name}"
+
+          package
         end
 
-        puts "Selecting #{package.to_s} for virtual package #{name}"
-
-        package
-      end
+        def normalize(all, &block)
+          all = all.flatten.uniq
+          puts; puts "Normalized installation order for all packages: #{all.collect(&:name).join(', ')}"
+          all.each &block
+        end
     end
   end
 end
