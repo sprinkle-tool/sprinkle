@@ -12,7 +12,7 @@ module Sprinkle
         if block
           self.instance_eval &block
         else
-          @config.load 'deploy' # normall config/deploy for rails
+          @config.load 'deploy' # normally in the config directory for rails
         end
       end
 

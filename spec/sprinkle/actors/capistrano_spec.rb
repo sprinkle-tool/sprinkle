@@ -27,16 +27,14 @@ describe Sprinkle::Actors::Capistrano do
 
     describe 'with a block' do
 
-      it 'should evaluate the block against the actor instance'
-
-      it 'should load capistrano recipes file' do
-        @cap.should_receive(:load).with('deploy').and_return
+      before do
+        @actor = create_cap do
+          recipes 'cool gear' # default is deploy
+        end
       end
 
-      after do
-        @actor = create_cap do
-          recipes 'deploy'
-        end
+      it 'should evaluate the block against the actor instance' do
+        @actor.loaded_recipes.should include('cool gear')
       end
 
     end
@@ -73,16 +71,58 @@ describe Sprinkle::Actors::Capistrano do
 
   describe 'processing commands' do
 
-    it 'should dynamically create a capistrano task containing the commands'
-    it 'should invoke capistrano task after creation'
+    before do
+      @commands = %w( op1 op2 )
+      @roles    = %w( app )
+      @name     = 'name'
+
+      @cap = create_cap do; recipes 'deploy'; end
+      @cap.stub!(:run).and_return
+    end
+
+    it 'should dynamically create a capistrano task containing the commands' do
+      @cap.config.should_receive(:task).and_return
+    end
+
+    it 'should invoke capistrano task after creation' do
+      @cap.should_receive(:run).with(@name).and_return
+    end
+
+    after do
+      @cap.process @name, @commands, @roles
+    end
 
   end
 
   describe 'generated task' do
 
-    it 'should use sudo to invoke commands when so configured'
-    it 'should generate a name for the task including supplied parameters'
-    it 'should be applicable for the supplied roles'
+    before do
+      @commands = %w( op1 op2 )
+      @roles    = %w( app )
+      @name     = 'name'
+
+      @cap = create_cap do; recipes 'deploy'; end
+      @cap.config.stub!(:fetch).and_return(:sudo)
+      @cap.config.stub!(:invoke_command).and_return
+    end
+
+    it 'should use sudo to invoke commands when so configured' do
+      @cap.config.should_receive(:fetch).with(:run_method, :sudo).and_return(:sudo)
+    end
+
+    it 'should run the supplied commands' do
+      @cap.config.should_receive(:invoke_command).with('op1', :via => :sudo).ordered.and_return
+      @cap.config.should_receive(:invoke_command).with('op2', :via => :sudo).ordered.and_return
+    end
+
+    it 'should be applicable for the supplied roles' do
+      @cap.stub!(:run).and_return
+      @cap.config.should_receive(:task).with(:install_name, :roles => @roles).and_return
+    end
+
+    after do
+      @cap.process @name, @commands, @roles
+    end
 
   end
 
