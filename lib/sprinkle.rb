@@ -1,5 +1,4 @@
 require 'rubygems'
-require 'logger'
 require 'active_support'
 
 # Use active supports auto load mechanism
@@ -16,11 +15,12 @@ module Sprinkle
   OPTIONS = { :testing => false }
 end
 
-# Define a global logger thats available everywhere
 class Object
   include Sprinkle::Package, Sprinkle::Policy, Sprinkle::Deployment  # understand packages, policies and deployment DSL
+end
 
-  def log
-    @@__log__ ||= Logger.new($stdout)
+module Kernel
+  def logger
+    @@__log__ ||= ActiveSupport::BufferedLogger.new($stdout)
   end
 end
