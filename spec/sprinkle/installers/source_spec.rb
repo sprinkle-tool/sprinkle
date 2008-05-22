@@ -129,7 +129,21 @@ describe Sprinkle::Installers::Source do
       )
     end
 
-    it 'should configure the source'
+    it 'should configure the source' do
+      enable  = %w( headers ssl deflate so ).inject([]) { |m, value| m << "--enable-#{value}"; m }
+      disable = %w( cache proxy rewrite ).inject([]) { |m, value| m << "--disable-#{value}"; m }
+
+      with    = %w( debug extras ).inject([]) { |m, value| m << "--with-#{value}"; m }
+      without = %w( fancyisms ).inject([]) { |m, value| m << "--without-#{value}"; m }
+
+      options = "#{enable.join(' ')} #{disable.join(' ')} #{with.join(' ')} #{without.join(' ')}"
+
+      @installer.should_receive(:build).and_return(
+        [
+         "bash -c 'cd /usr/local/builds && ./configure --silent --prefix /usr/local #{options} > #{@package.name}-configure.log 2>&1'"
+        ]
+      )
+    end
 
     it 'should build the source' do
       @installer.should_receive(:build).and_return(
