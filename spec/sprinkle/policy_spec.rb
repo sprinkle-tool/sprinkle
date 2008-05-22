@@ -55,7 +55,6 @@ describe Sprinkle::Policy do
 
       @policy = policy :test, :roles => :app do; requires :a; end
       $terminal.stub!(:choose).and_return(:c) # stub out highline asking questions
-      @policy.stub!(:puts).and_return
     end
 
     describe 'when applying' do

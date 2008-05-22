@@ -96,6 +96,7 @@ describe Sprinkle::Installers::Installer do
 
       before do
         Sprinkle::OPTIONS[:testing] = true
+        @logger = mock(ActiveSupport::BufferedLogger, :debug => true)
       end
 
       it 'should not invoke the delivery mechanism with the install sequence' do
@@ -103,7 +104,7 @@ describe Sprinkle::Installers::Installer do
       end
 
       it 'should print the install sequence to the console' do
-        @installer.should_receive(:puts)
+        @installer.should_receive(:logger).and_return(@logger)
       end
 
     end

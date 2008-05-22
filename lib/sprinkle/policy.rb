@@ -32,20 +32,18 @@ module Sprinkle
       def process(deployment)
         all = []
 
-        puts "Package hierarchy for policy #{@name}\n\n"
+        logger.debug "Package hierarchy for policy #{@name}\n\n"
 
         @packages.each do |p|
-          puts "Policy #{@name} requires package #{p}"
+          logger.debug "Policy #{@name} requires package #{p}"
 
           package = Sprinkle::Package::PACKAGES[p]
           package = select_package(p, package) if package.is_a? Array # handle virtual package selection
 
           tree = package.tree do |parent, child, depth|
-            depth.times { print "\t" }
-            puts "Package #{parent.name} requires #{child.name}"
+            indent = '\t' * depth
+            logger.debug "#{indent}Package #{parent.name} requires #{child.name}"
           end
-
-          puts
 
           all << tree
         end
@@ -68,14 +66,14 @@ module Sprinkle
             package = Sprinkle::Package::PACKAGES[package]
           end
 
-          puts "Selecting #{package.to_s} for virtual package #{name}"
+          logger.debug "Selecting #{package.to_s} for virtual package #{name}"
 
           package
         end
 
         def normalize(all, &block)
           all = all.flatten.uniq
-          puts; puts "Normalized installation order for all packages: #{all.collect(&:name).join(', ')}"
+          logger.debug "Normalized installation order for all packages: #{all.collect(&:name).join(', ')}"
           all.each &block
         end
     end

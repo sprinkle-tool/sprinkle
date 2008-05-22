@@ -7,7 +7,7 @@ module Sprinkle
 
       def initialize(&block)
         @config = ::Capistrano::Configuration.new
-        @config.logger.level = ::Capistrano::Logger::TRACE
+        @config.logger.level = ::Capistrano::Logger::INFO
         @config.set(:password) { ::Capistrano::CLI.password_prompt }
         if block
           self.instance_eval &block

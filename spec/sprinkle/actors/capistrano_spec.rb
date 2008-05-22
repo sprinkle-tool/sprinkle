@@ -22,7 +22,7 @@ describe Sprinkle::Actors::Capistrano do
 
     it 'should set logging on the capistrano object' do
       @cap = create_cap
-      @cap.config.logger.level.should == ::Capistrano::Logger::TRACE
+      @cap.config.logger.level.should == ::Capistrano::Logger::INFO
     end
 
     describe 'with a block' do

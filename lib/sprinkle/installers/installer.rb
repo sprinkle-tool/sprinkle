@@ -20,7 +20,7 @@ module Sprinkle
 
         if Sprinkle::OPTIONS[:testing]
           sequence = install_sequence; sequence = sequence.join('; ') if sequence.is_a? Array
-          puts "TESTING: #{@package.name} install sequence: #{sequence} for roles: #{roles}"
+          logger.debug "TESTING: #{@package.name} install sequence: #{sequence} for roles: #{roles}"
         else
           @delivery.process(@package.name, install_sequence, roles)
         end
