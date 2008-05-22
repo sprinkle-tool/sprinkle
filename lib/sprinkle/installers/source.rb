@@ -9,7 +9,7 @@ module Sprinkle
         super parent, &block
       end
 
-      def pre(stage, *commmands)
+      def pre(stage, *commands)
         (@pre[stage] ||= []) << commands
       end
 
@@ -72,6 +72,15 @@ module Sprinkle
           [ "bash -c 'cd #{build_dir} && make install > #{@package.name}-install.log 2>&1'" ]
         end
 
+        def custom_install?
+          !! @options[:custom_install]
+        end
+
+        # REVISIT: must be better processing of custom install commands somehow? use splat operator?
+        def custom_install_commands
+          dress @options[:custom_install], :install
+        end
+
       private
 
         def pre_commands(stage)
@@ -86,15 +95,6 @@ module Sprinkle
           commands.collect { |command| "bash -c 'cd #{build_dir} && #{command} >> #{@package.name}-#{stage}.log 2>&1'" }
         end
 
-        def custom_install?
-          !@options[:custom_install].nil?
-        end
-
-        # REVISIT: must be better processing of custom install commands somehow? use splat operator?
-        def custom_install_commands
-          dress @options[:custom_install], :install
-        end
-
         def create_options(key, prefix)
           @options[key].inject(' ') { |m, option| m << "#{prefix}-#{option} "; m }
         end
@@ -102,13 +102,13 @@ module Sprinkle
         def extract_command
           case @source
           when /(tar.gz)|(tgz)$/
-            "tar xzf"
+            'tar xzf'
           when /(tar.bz2)|(tb2)$/
-            "tar xjf"
+            'tar xjf'
           when /tar$/
-            "tar xf"
+            'tar xf'
           when /zip$/
-            "unzip"
+            'unzip'
           else
             raise "Unknown source archive format: #{archive_name}"
           end

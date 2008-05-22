@@ -161,68 +161,154 @@ describe Sprinkle::Installers::Source do
       )
     end
 
+    describe 'during a customized install' do
+
+      before do
+        @installer = create_source @source do
+          custom_install 'ruby setup.rb'
+        end
+
+        @installer.defaults(@deployment)
+      end
+
+      it 'should store the custom insatll commands' do
+        @installer.options[:custom_install].should == 'ruby setup.rb'
+      end
+
+      it 'should identify as having a custom install command' do
+        @installer.should be_custom_install
+      end
+
+      it 'should not configure the source automatically' do
+        @installer.should_receive(:configure).and_return([])
+      end
+
+      it 'should not build the source automatically' do
+        @installer.should_receive(:build).and_return([])
+      end
+
+      it 'should install the source using a custom installation command' do
+        @installer.send(:custom_install_commands).should == [ "bash -c 'cd /usr/builds/ruby-1.8.6-p111 && ruby setup.rb >> package-install.log 2>&1'" ]
+      end
+
+      it 'should be run relative to the source build area' do
+        @installer.send(:custom_install_commands).first.should =~ %r{cd /usr/builds/ruby-1.8.6-p111}
+      end
+
+    end
+
     after do
       @installer.send :install_sequence
     end
 
   end
 
-  describe 'during customized installation' do
-
-    it 'should prepare the build area'
-    it 'should prepare the installation area'
-    it 'should prepare the source download area'
-    it 'should download the source archive'
-    it 'should extract the source archive'
-    it 'should not configure the source automatically'
-    it 'should not build the source automatically'
-    it 'should install the source using a custom installation command'
-
-  end
-
-  describe 'customized installer commands' do
-
-    it 'should be run relative to the source build area'
-
-  end
-
   describe 'pre stage commands' do
 
-    it 'should run pre-prepare commands if any before build/install/source area preparation'
-    it 'should run pre-download commands if any before downloading the source archive'
-    it 'should run pre-extract commands if any before extracting the source archive'
-    it 'should run pre-configure if any before configuring the source'
-    it 'should run pre-build commands if any before building the source'
-    it 'should run pre-install commands if any before installing the source'
-    it 'should be run relative to the source build area'
+    before do
+      @commands = {
+        :prepare   => %w( prepare1 prepare2 ),
+        :download  => %w( down1 down2 ),
+        :extract   => %w( ex1 ex2 ),
+        :configure => %w( conf1 conf2 ),
+        :build     => %w( build1 build2 ),
+        :install   => %w( install1 install2 )
+      }
+
+      @installer = create_source @source
+      @commands.each { |k, v| @installer.pre k, *v }
+      @installer.defaults(@deployment)
+    end
+
+    it 'should run all pre-prepare commands' do
+      @commands.each { |k, v| @installer.should_receive(:pre_commands).with(k).and_return(v) }
+    end
+
+    it 'should be run relative to the source build area' do
+      @commands.each { |stage, command| @installer.send(:pre_commands, stage).first.should =~ %r{cd /usr/builds/ruby-1.8.6-p111} }
+    end
+
+    after do
+      @installer.send :install_sequence
+    end
 
   end
 
-  describe 'pre stage commands' do
+  describe 'post stage commands' do
 
-    it 'should run post-prepare commands if any after build/install/source area preparation'
-    it 'should run post-download commands if any after downloading the source archive'
-    it 'should run post-extract commands if any after extracting the source archive'
-    it 'should run post-configure if any after configuring the source'
-    it 'should run post-build commands if any after building the source'
-    it 'should run post-install commands if any after installing the source'
-    it 'should be run relative to the source build area'
+    before do
+      @commands = {
+        :prepare   => %w( prepare1 prepare2 ),
+        :download  => %w( down1 down2 ),
+        :extract   => %w( ex1 ex2 ),
+        :configure => %w( conf1 conf2 ),
+        :build     => %w( build1 build2 ),
+        :install   => %w( install1 install2 )
+      }
+
+      @installer = create_source @source
+      @commands.each { |k, v| @installer.post k, *v }
+      @installer.defaults(@deployment)
+    end
+
+    it 'should run all post-prepare commands' do
+      @commands.each { |k, v| @installer.should_receive(:post_commands).with(k).and_return(v) }
+    end
+
+    it 'should be run relative to the source build area' do
+      @commands.each { |stage, command| @installer.send(:post_commands, stage).first.should =~ %r{cd /usr/builds/ruby-1.8.6-p111} }
+    end
+
+    after do
+      @installer.send :install_sequence
+    end
 
   end
 
   describe 'install sequence' do
 
-    it 'should prepare, then download, then extract, then configure, then build, then install'
+    it 'should prepare, then download, then extract, then configure, then build, then install' do
+      %w( prepare download extract configure build install ).each do |stage|
+        @installer.should_receive(stage).ordered.and_return([])
+      end
+    end
+
+    after do
+      @installer.send :install_sequence
+    end
 
   end
 
   describe 'source extraction' do
 
-    it 'should support tgz archives'
-    it 'should support tar.gz archives'
-    it 'should support tar.bz2 archives'
-    it 'should support tb2 archives'
-    it 'should support zip archives'
+    it 'should support tgz archives' do
+      @installer.source = 'blah.tgz'
+      @extraction = 'tar xzf'
+    end
+
+    it 'should support tar.gz archives' do
+      @installer.source = 'blah.tgz'
+      @extraction = 'tar xzf'
+    end
+
+    it 'should support tar.bz2 archives' do
+      @installer.source = 'blah.tar.bz2'
+      @extraction = 'tar xjf'
+    end
+
+    it 'should support tb2 archives' do
+      @installer.source = 'blah.tb2'
+      @extraction = 'tar xjf'
+    end
+
+    it 'should support zip archives' do
+      @installer.source = 'blah.zip'
+      @extraction = 'unzip'
+    end
+
+    after do
+      @installer.send(:extract_command).should == @extraction
+    end
 
   end
 
