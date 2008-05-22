@@ -7,7 +7,7 @@ describe Sprinkle::Policy do
     @name = 'a policy'
   end
 
-  describe Sprinkle::Policy, 'when created' do
+  describe 'when created' do
 
     it 'should be invalid without a name' do
       lambda { policy nil }.should raise_error
@@ -41,7 +41,7 @@ describe Sprinkle::Policy do
 
   end
 
-  describe Sprinkle::Policy, 'with packages' do
+  describe 'with packages' do
     include Sprinkle::Package
 
     before do
@@ -55,9 +55,10 @@ describe Sprinkle::Policy do
 
       @policy = policy :test, :roles => :app do; requires :a; end
       $terminal.stub!(:choose).and_return(:c) # stub out highline asking questions
+      @policy.stub!(:puts).and_return
     end
 
-    describe Sprinkle::Policy, 'when applying' do
+    describe 'when applying' do
       include Sprinkle::Package
 
       it 'should determine the packages to install via the hierarchy dependency tree of each package in the policy' do
@@ -79,7 +80,7 @@ describe Sprinkle::Policy do
       end
     end
 
-    describe Sprinkle::Policy, 'containing package dependencies with versions' do
+    describe 'containing package dependencies with versions' do
 
       it 'should be invalid if the specified package does not exist'
       it 'should ignore any packages of the same name that have other versions'
@@ -87,7 +88,7 @@ describe Sprinkle::Policy do
 
     end
 
-    describe Sprinkle::Policy, 'containing virtual packages' do
+    describe 'containing virtual packages' do
 
       it 'should automatically select a concrete package implementation for a virtual one when there exists only one possible selection' do
         @policy = policy :virtual, :roles => :app do; requires :xyz; end
@@ -107,5 +108,4 @@ describe Sprinkle::Policy do
       @policy.process(@deployment)
     end
   end
-
 end
