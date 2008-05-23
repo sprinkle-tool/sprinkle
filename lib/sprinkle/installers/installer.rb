@@ -3,9 +3,9 @@ module Sprinkle
     class Installer
       attr_accessor :delivery, :package, :options
 
-      def initialize(package, &block)
+      def initialize(package, options = {}, &block)
         @package = package
-        @options = {}
+        @options = options
         self.instance_eval(&block) if block
       end
 
