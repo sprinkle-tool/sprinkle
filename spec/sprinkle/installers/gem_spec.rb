@@ -5,17 +5,18 @@ describe Sprinkle::Installers::Gem do
   before do
     @gem = 'rails'
     @version = '2.0.2'
+    @options = { :source => 'http://gems.github.com/' }
   end
 
-  def create_gem(gem, version = nil, &block)
-    @package = mock(Sprinkle::Package, :name => gem, :version => version)
-    Sprinkle::Installers::Gem.new(@package, gem, &block)
+  def create_gem(gem, version = nil, options = {}, &block)
+    @package = mock(Sprinkle::Package, :name => gem, :version => version, :source => nil)
+    Sprinkle::Installers::Gem.new(@package, gem, options, &block)
   end
 
   describe 'when created' do
 
     before do
-      @installer = create_gem @gem, @version
+      @installer = create_gem @gem, @version, @options
     end
 
     it 'should accept a single package to install' do
@@ -24,6 +25,10 @@ describe Sprinkle::Installers::Gem do
 
     it 'should optionally store a version of the gem to install' do
       @installer.version.should == '2.0.2'
+    end
+
+    it 'should optionally store a source location of the gem to install' do
+      @installer.source.should == 'http://gems.github.com/'
     end
 
   end

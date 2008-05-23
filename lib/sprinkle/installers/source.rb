@@ -3,10 +3,10 @@ module Sprinkle
     class Source < Installer
       attr_accessor :source, :pre, :post
 
-      def initialize(parent, source, &block)
+      def initialize(parent, source, options = {}, &block)
         @pre = {}; @post = {}
         @source = source
-        super parent, &block
+        super parent, options, &block
       end
 
       def pre(stage, *commands)
