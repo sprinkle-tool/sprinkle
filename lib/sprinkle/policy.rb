@@ -32,7 +32,7 @@ module Sprinkle
       def process(deployment)
         all = []
 
-        logger.debug "Package hierarchy for policy #{@name}\n\n"
+        logger.debug "Package hierarchy for policy #{@name}"
 
         @packages.each do |p|
           logger.debug "Policy #{@name} requires package #{p}"
