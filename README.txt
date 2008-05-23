@@ -146,7 +146,7 @@ An full example Sprinkle deployment script for deploying Rails (via gems), MySQL
 
     package :mongrel_cluster, :provides => :appserver do
       description 'Cluster Management for Mongrel'
-      gem 'mongrel_cluster'
+      gem 'mongrel_cluster' # :source => 'http://gems.github.com/' for alternate gem server
       version '1.0.5'
       requires :mongrel
     end
