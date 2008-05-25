@@ -10,11 +10,13 @@ module Sprinkle
       end
 
       def pre(stage, *commands)
-        (@pre[stage] ||= []) << commands
+        @pre[stage] ||= []
+        @pre[stage] += commands
       end
 
       def post(stage, *commands)
-        (@post[stage] ||= []) << commands
+        @post[stage] ||= []
+        @post[stage] += commands
       end
 
       protected
