@@ -1,10 +1,12 @@
+#!/usr/bin/env sprinkle -t -s
+
 # Annotated Example Sprinkle Rails deployment script
 #
 # This is an example Sprinkle script configured to install Rails from gems, Apache, Ruby and
 # Sphinx from source, and mysql from apt on an Ubuntu system.
 #
-# Installation is configured to run via capistrano (and an accompanying deploy.rb recipe script). 
-# Source based packages are downloaded and built into /usr/local on the remote system. 
+# Installation is configured to run via capistrano (and an accompanying deploy.rb recipe script).
+# Source based packages are downloaded and built into /usr/local on the remote system.
 #
 # A sprinkle script is separated into 3 different sections. Packages, policies and deployment:
 
