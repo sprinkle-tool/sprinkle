@@ -8,6 +8,14 @@ module Sprinkle
         @gem = gem
       end
 
+      def source(location = nil)
+        # package defines an installer called source so here we specify a method directly
+        # rather than rely on the automatic options processing since packages' method missing
+        # won't be run
+        return @options[:source] unless location
+        @options[:source] = location
+      end
+
       protected
 
         # rubygems 0.9.5+ installs dependencies by default, and does platform selection
