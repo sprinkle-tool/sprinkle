@@ -1,4 +1,4 @@
-# Annoted Example Sprinkle Rails deployment script
+# Annotated Example Sprinkle Rails deployment script
 #
 # This is an example Sprinkle script configured to install Rails from gems, Apache, Ruby and
 # Sphinx from source, and mysql from apt on an Ubuntu system.
