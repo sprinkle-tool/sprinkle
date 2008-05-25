@@ -1,4 +1,4 @@
-#!/usr/bin/env sprinkle -t -s
+#!/usr/bin/env sprinkle -s
 
 # Annotated Example Sprinkle Rails deployment script
 #
