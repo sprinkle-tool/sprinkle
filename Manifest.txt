@@ -36,7 +36,6 @@ lib/sprinkle/script.rb
 lib/sprinkle/version.rb
 script/destroy
 script/generate
-script/txt2html
 spec/spec.opts
 spec/spec_helper.rb
 spec/sprinkle/actors/capistrano_spec.rb
