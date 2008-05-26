@@ -23,7 +23,7 @@ Sprinkle
 
 http://github.com/crafterm/sprinkle
 
-Sprinkle is a software provisioning tool you can use to build remote servers with. eg. to 
+Sprinkle is a software provisioning tool you can use to build remote servers with. eg. to
 install a Rails or Merb stack on a brand new slice directly after its been created. It uses
 a Ruby based domain specific language to describe packages and policies to determine what
 should be installed on particular systems.
@@ -42,6 +42,8 @@ BANNER
           "Path to a sprinkle script to run") { |OPTIONS[:path]| }
   opts.on("-t", "--test",
           "Process but don't perform any actions") { |OPTIONS[:test]| }
+  opts.on("-v", "--verbose",
+          "Verbose output") { |OPTIONS[:verbose]| }
   opts.on("-h", "--help",
           "Show this help message.") { puts opts; exit }
   opts.parse!(ARGV)
@@ -51,11 +53,20 @@ BANNER
   end
 end
 
+def set_operation_mode(options)
+  Sprinkle::OPTIONS[:testing] = OPTIONS[:test] || false
+end
+
+def set_log_level(options)
+  Object.logger.level = ActiveSupport::BufferedLogger::Severity::DEBUG if options[:verbose]
+end
+
 require 'sprinkle'
 
 path = OPTIONS[:path]
 raise "Script is not readable: #{path}" unless File.readable?(path)
 
-Sprinkle::OPTIONS[:testing] = OPTIONS[:test] || false
+set_operation_mode(OPTIONS)
+set_log_level(OPTIONS)
 
 Sprinkle::Script.sprinkle File.read(path), path
