@@ -32,10 +32,10 @@ module Sprinkle
       def process(deployment)
         all = []
 
-        cloud_info "Package hierarchy for policy #{@name}"
+        cloud_info "--> Cloud hierarchy for policy #{@name}"
 
         @packages.each do |p|
-          cloud_info "Policy #{@name} requires package #{p}"
+          cloud_info "\nPolicy #{@name} requires package #{p}"
 
           package = Sprinkle::Package::PACKAGES[p]
           package = select_package(p, package) if package.is_a? Array # handle virtual package selection
@@ -76,7 +76,7 @@ module Sprinkle
 
         def normalize(all, &block)
           all = all.flatten.uniq
-          cloud_info "Normalized installation order for all packages: #{all.collect(&:name).join(', ')}"
+          cloud_info "\n--> Normalized installation order for all packages: #{all.collect(&:name).join(', ')}"
           all.each &block
         end
     end
