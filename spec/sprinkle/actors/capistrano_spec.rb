@@ -20,9 +20,30 @@ describe Sprinkle::Actors::Capistrano do
       create_cap
     end
 
-    it 'should set logging on the capistrano object' do
-      @cap = create_cap
-      @cap.config.logger.level.should == ::Capistrano::Logger::INFO
+    describe 'when verbose' do
+
+      before do
+        Sprinkle::OPTIONS[:verbose] = true
+      end
+
+      it 'should set verbose logging on the capistrano object' do
+        @cap = create_cap
+        @cap.config.logger.level.should == ::Capistrano::Logger::INFO
+      end
+
+    end
+
+    describe 'when not verbose' do
+
+      before do
+        Sprinkle::OPTIONS[:verbose] = false
+      end
+
+      it 'should set quiet logging on the capistrano object' do
+        @cap = create_cap
+        @cap.config.logger.level.should == ::Capistrano::Logger::IMPORTANT
+      end
+
     end
 
     describe 'with a block' do
