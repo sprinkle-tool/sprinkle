@@ -59,10 +59,6 @@ def operation_mode(options)
   Sprinkle::OPTIONS[:testing] = OPTIONS[:testing] || false
 end
 
-def verbosity(options)
-  Sprinkle::OPTIONS[:verbose] = OPTIONS[:verbose] || false
-end
-
 def powder_cloud(options)
   Sprinkle::OPTIONS[:cloud] = OPTIONS[:cloud] || false
 end
@@ -77,7 +73,6 @@ powder = OPTIONS[:path]
 raise "Sprinkle script is not readable: #{powder}" unless File.readable?(powder)
 
 operation_mode(OPTIONS)
-verbosity(OPTIONS)
 powder_cloud(OPTIONS)
 log_level(OPTIONS)
 

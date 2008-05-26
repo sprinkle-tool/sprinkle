@@ -18,10 +18,13 @@ module Sprinkle
       def process(roles)
         raise 'Unknown command delivery target' unless @delivery
 
-        if Sprinkle::OPTIONS[:testing]
+        if logger.debug?
           sequence = install_sequence; sequence = sequence.join('; ') if sequence.is_a? Array
-          logger.debug "TESTING: #{@package.name} install sequence: #{sequence} for roles: #{roles}"
-        else
+          logger.debug "#{@package.name} install sequence: #{sequence} for roles: #{roles}\n"
+        end
+
+        unless Sprinkle::OPTIONS[:testing]
+          logger.info "--> Installing #{package.name} for roles: #{roles}"
           @delivery.process(@package.name, install_sequence, roles)
         end
       end
