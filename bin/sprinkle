@@ -44,6 +44,8 @@ BANNER
           "Process but don't perform any actions") { |OPTIONS[:test]| }
   opts.on("-v", "--verbose",
           "Verbose output") { |OPTIONS[:verbose]| }
+  opts.on("-c", "--cloud",
+          "Show powder cloud, ie. package hierarchy and installation order") { |OPTIONS[:cloud]| }
   opts.on("-h", "--help",
           "Show this help message.") { puts opts; exit }
   opts.parse!(ARGV)
@@ -53,20 +55,25 @@ BANNER
   end
 end
 
-def set_operation_mode(options)
+def operation_mode(options)
   Sprinkle::OPTIONS[:testing] = OPTIONS[:test] || false
 end
 
-def set_log_level(options)
+def powder_cloud(options)
+  Sprinkle::OPTIONS[:cloud] = OPTIONS[:cloud] || false
+end
+
+def log_level(options)
   Object.logger.level = ActiveSupport::BufferedLogger::Severity::DEBUG if options[:verbose]
 end
 
 require 'sprinkle'
 
-path = OPTIONS[:path]
-raise "Script is not readable: #{path}" unless File.readable?(path)
+powder = OPTIONS[:path]
+raise "Sprinkle script is not readable: #{powder}" unless File.readable?(powder)
 
-set_operation_mode(OPTIONS)
-set_log_level(OPTIONS)
+operation_mode(OPTIONS)
+powder_cloud(OPTIONS)
+log_level(OPTIONS)
 
-Sprinkle::Script.sprinkle File.read(path), path
+Sprinkle::Script.sprinkle File.read(powder), powder
