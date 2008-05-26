@@ -13,7 +13,13 @@ describe Sprinkle do
   end
 
   it 'should automatically create a logger object on Kernel' do
-    Kernel.should respond_to(:logger)
+    Object.should respond_to(:logger)
+    logger.should_not be_nil
+    logger.class.should == ActiveSupport::BufferedLogger
+  end
+
+  it 'should create a logger of level INFO' do
+    logger.level.should == ActiveSupport::BufferedLogger::Severity::INFO
   end
 
 end
