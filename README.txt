@@ -167,7 +167,7 @@ An full example Sprinkle deployment script for deploying Rails (via gems), MySQL
 
     # Deployment
 
-    # Configures spinkle to use capistrano for delivery of commands to the remote machines (via
+    # Configures sprinkle to use capistrano for delivery of commands to the remote machines (via
     # the named 'deploy' recipe). Also configures 'source' installer defaults to put package gear
     # in /usr/local
 
