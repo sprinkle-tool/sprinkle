@@ -5,13 +5,11 @@ module Sprinkle
         super parent, &block
         @commands = commands
       end
-      
+
       protected
-      
+
         def install_sequence
-          if @commands
-            "rake #{@commands.join(' ')}"
-          end
+          "rake #{@commands.join(' ')}"
         end
     end
   end
