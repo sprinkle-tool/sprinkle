@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = %q{sprinkle}
-  s.version = "0.1.0"
+  s.version = "0.1.1"
 
   s.specification_version = 2 if s.respond_to? :specification_version=
 
