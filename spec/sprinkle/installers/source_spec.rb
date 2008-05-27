@@ -140,7 +140,7 @@ describe Sprinkle::Installers::Source do
 
       @installer.should_receive(:build).and_return(
         [
-         "bash -c 'cd /usr/local/builds && ./configure --prefix /usr/local #{options} > #{@package.name}-configure.log 2>&1'"
+         "bash -c 'cd /usr/local/builds && ./configure --prefix=/usr/local #{options} > #{@package.name}-configure.log 2>&1'"
         ]
       )
     end
