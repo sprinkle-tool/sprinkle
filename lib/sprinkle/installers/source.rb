@@ -52,7 +52,7 @@ module Sprinkle
         def configure_commands
           return [] if custom_install?
 
-          command = "bash -c 'cd #{build_dir} && ./configure --silent --prefix #{@options[:prefix]} "
+          command = "bash -c 'cd #{build_dir} && ./configure --prefix #{@options[:prefix]} "
 
           extras = {
             :enable  => '--enable', :disable => '--disable',
