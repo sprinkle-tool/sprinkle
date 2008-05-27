@@ -1,4 +1,3 @@
-(in /Users/crafterm/workspace/ruby/sprinkle)
 Gem::Specification.new do |s|
   s.name = %q{sprinkle}
   s.version = "0.1.0"
