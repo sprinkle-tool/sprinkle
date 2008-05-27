@@ -38,6 +38,7 @@ module Sprinkle
           cloud_info "\nPolicy #{@name} requires package #{p}"
 
           package = Sprinkle::Package::PACKAGES[p]
+          raise "Package definition not found for key: #{p}" unless package
           package = select_package(p, package) if package.is_a? Array # handle virtual package selection
 
           tree = package.tree do |parent, child, depth|

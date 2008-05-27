@@ -108,3 +108,19 @@ describe Sprinkle::Policy do
     end
   end
 end
+
+describe Sprinkle::Policy, 'with missing packages' do
+
+  before do
+    @deployment = mock(Sprinkle::Deployment)
+    Sprinkle::Package::PACKAGES.clear # reset full package list before each spec is run
+
+    @policy = policy :test, :roles => :app do; requires :z; end
+    $terminal.stub!(:choose).and_return(:c) # stub out highline asking questions
+  end
+
+  it 'should raise an error if a package is missing' do
+    lambda { @policy.process(@deployment) }.should raise_error
+  end
+
+end
