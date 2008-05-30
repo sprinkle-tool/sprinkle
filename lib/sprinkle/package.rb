@@ -30,6 +30,10 @@ module Sprinkle
         @installer = Sprinkle::Installers::Apt.new(self, *names)
       end
 
+      def rpm(*names)
+        @installer = Sprinkle::Installers::Rpm.new(self, *names)
+      end
+
       def gem(name, options = {}, &block)
         @dependencies << :rubygems
         @installer = Sprinkle::Installers::Gem.new(self, name, options, &block)
