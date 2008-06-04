@@ -9,7 +9,7 @@ describe Sprinkle::Package do
     @opts = { }
   end
 
-  describe Sprinkle::Package, 'when created' do
+  describe 'when created' do
 
     it 'should be invalid without a block descriptor' do
       lambda { package @name }.should raise_error
@@ -60,7 +60,7 @@ describe Sprinkle::Package do
 
   end
 
-  describe Sprinkle::Package, 'helper method' do
+  describe 'helper method' do
 
     it 'should added new packages to the global package hash' do
       pkg = package @name do; end
@@ -74,7 +74,7 @@ describe Sprinkle::Package do
 
   end
 
-  describe Sprinkle::Package, 'installer configuration' do
+  describe 'installer configuration' do
 
     it 'should optionally accept an apt installer' do
       pkg = package @name do
@@ -110,7 +110,7 @@ describe Sprinkle::Package do
 
   end
 
-  describe Sprinkle::Package, 'with a source installer' do
+  describe 'with a source installer' do
 
     it 'should optionally accept a block containing customisations' do
       pkg = package @name do
@@ -129,7 +129,7 @@ describe Sprinkle::Package do
 
   end
 
-  describe Sprinkle::Package, 'with an gem installer' do
+  describe 'with an gem installer' do
 
     it 'should automatically add a rubygems dependency' do
       pkg = package @name do
@@ -140,7 +140,7 @@ describe Sprinkle::Package do
 
   end
 
-  describe Sprinkle::Package, 'when processing' do
+  describe 'when processing' do
 
     before do
       @deployment = mock(Sprinkle::Deployment)
@@ -149,7 +149,7 @@ describe Sprinkle::Package do
       @package = package @name do; end
     end
 
-    describe Sprinkle::Package, 'with an installer' do
+    describe 'with an installer' do
 
       before do
         @package.installer = @installer
@@ -168,7 +168,7 @@ describe Sprinkle::Package do
       end
     end
 
-    describe Sprinkle::Package, 'without an installer' do
+    describe 'without an installer' do
 
       it 'should not request the installer to process if the package is a metapackage' do
         @installer.should_not_receive(:process)
@@ -179,7 +179,7 @@ describe Sprinkle::Package do
 
   end
 
-  describe Sprinkle::Package, 'hierarchies' do
+  describe 'hierarchies' do
 
     before do
       @a = package :a do; requires :b; end
@@ -204,6 +204,21 @@ describe Sprinkle::Package do
     it 'should maintain a depth count of how deep the hierarchy is' do
       @b.should_receive(:tree).with(2).and_return([@b])
       @a.tree do; end
+    end
+
+  end
+
+  describe 'with missing dependencies' do
+
+    before do
+      @pkg = package @name do
+        gem 'gem'
+        requires :missing
+      end
+    end
+
+    it 'should raise an error if a package is missing' do
+      lambda { @pkg.tree }.should raise_error
     end
 
   end

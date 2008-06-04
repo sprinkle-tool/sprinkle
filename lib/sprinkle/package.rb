@@ -61,6 +61,7 @@ module Sprinkle
 
         @dependencies.each do |dep|
           package = PACKAGES[dep]
+          raise "Package definition not found for key: #{dep}" unless package
           block.call(self, package, depth) if block
           packages << package.tree(depth + 1, &block)
         end
