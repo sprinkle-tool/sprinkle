@@ -18,6 +18,7 @@ examples/rails/packages/server.rb
 examples/rails/rails.rb
 lib/sprinkle.rb
 lib/sprinkle/actors/capistrano.rb
+lib/sprinkle/actors/vlad.rb
 lib/sprinkle/deployment.rb
 lib/sprinkle/extensions/arbitrary_options.rb
 lib/sprinkle/extensions/array.rb
@@ -29,6 +30,7 @@ lib/sprinkle/installers/apt.rb
 lib/sprinkle/installers/gem.rb
 lib/sprinkle/installers/installer.rb
 lib/sprinkle/installers/rake.rb
+lib/sprinkle/installers/rpm.rb
 lib/sprinkle/installers/source.rb
 lib/sprinkle/package.rb
 lib/sprinkle/policy.rb
@@ -45,11 +47,13 @@ spec/sprinkle/extensions/string_spec.rb
 spec/sprinkle/installers/apt_spec.rb
 spec/sprinkle/installers/gem_spec.rb
 spec/sprinkle/installers/installer_spec.rb
+spec/sprinkle/installers/rpm_spec.rb
 spec/sprinkle/installers/source_spec.rb
 spec/sprinkle/package_spec.rb
 spec/sprinkle/policy_spec.rb
 spec/sprinkle/script_spec.rb
 spec/sprinkle/sprinkle_spec.rb
+sprinkle.gemspec
 tasks/deployment.rake
 tasks/environment.rake
 tasks/rspec.rake
