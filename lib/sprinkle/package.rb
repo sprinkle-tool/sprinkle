@@ -15,7 +15,7 @@ module Sprinkle
 
     class Package
       include ArbitraryOptions
-      attr_accessor :name, :provides, :installer, :dependencies
+      attr_accessor :name, :provides, :installer, :dependencies, :recommends
 
       def initialize(name, metadata = {}, &block)
         raise 'No package name supplied' unless name
@@ -23,6 +23,7 @@ module Sprinkle
         @name = name
         @provides = metadata[:provides]
         @dependencies = []
+        @recommends = []
         self.instance_eval &block
       end
 
@@ -35,12 +36,12 @@ module Sprinkle
       end
 
       def gem(name, options = {}, &block)
-        @dependencies << :rubygems
+        @recommends << :rubygems
         @installer = Sprinkle::Installers::Gem.new(self, name, options, &block)
       end
 
       def source(source, options = {}, &block)
-        @dependencies << :build_essential # REVISIT: should only be for Ubuntu/Debian, need platform specific bits here
+        @recommends << :build_essential # Ubuntu/Debian
         @installer = Sprinkle::Installers::Source.new(self, source, options, &block)
       end
 
@@ -56,8 +57,20 @@ module Sprinkle
         @dependencies.flatten!
       end
 
+      def recommends(*packages)
+        @recommends << packages
+        @recommends.flatten!
+      end
+
       def tree(depth = 1, &block)
         packages = []
+
+        @recommends.each do |dep|
+          package = PACKAGES[dep]
+          next unless package # skip missing recommended packages as they can be optional
+          block.call(self, package, depth) if block
+          packages << package.tree(depth + 1, &block)
+        end
 
         @dependencies.each do |dep|
           package = PACKAGES[dep]

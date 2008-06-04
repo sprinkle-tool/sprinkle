@@ -48,6 +48,13 @@ describe Sprinkle::Package do
       pkg.dependencies.should == [:webserver, :database]
     end
 
+    it 'should optionally accept recommended dependencies' do
+      pkg = package @name do
+        recommends :webserver, :database
+      end
+      pkg.recommends.should == [:webserver, :database]
+    end
+
     it 'should optionally define a virtual package implementation' do
       pkg = package @name, :provides => :database do; end
       pkg.provides.should == :database
@@ -120,22 +127,22 @@ describe Sprinkle::Package do
       pkg.installer.class.should == Sprinkle::Installers::Source
     end
 
-    it 'should automatically add a build essential dependency' do
+    it 'should automatically add a build essential recommendation' do
       pkg = package @name do
         source 'archive'
       end
-      pkg.dependencies.should include(:build_essential)
+      pkg.recommends.should include(:build_essential)
     end
 
   end
 
   describe 'with an gem installer' do
 
-    it 'should automatically add a rubygems dependency' do
+    it 'should automatically add a rubygems recommendation' do
       pkg = package @name do
         gem 'gem'
       end
-      pkg.dependencies.should include(:rubygems)
+      pkg.recommends.should include(:rubygems)
     end
 
   end
@@ -184,13 +191,27 @@ describe Sprinkle::Package do
     before do
       @a = package :a do; requires :b; end
       @b = package :b do; requires :c; end
-      @c = package :c do; end
+      @c = package :c do; recommends :d; end
+      @d = package :d do; end
     end
 
     it 'should be able to return a dependency hierarchy tree' do
-      @a.tree.flatten.should == [ @c, @b, @a ]
-      @b.tree.flatten.should == [ @c, @b ]
-      @c.tree.flatten.should == [ @c ]
+      @a.tree.flatten.should == [ @d, @c, @b, @a ]
+      @b.tree.flatten.should == [ @d, @c, @b ]
+      @c.tree.flatten.should == [ @d, @c ]
+      @d.tree.flatten.should == [ @d ]
+    end
+
+    describe 'with missing recommendations' do
+
+      before do
+        @d.recommends :e
+      end
+
+      it 'should ignore missing recommendations' do
+        @d.tree.flatten.should == [ @d ]
+      end
+
     end
 
     it 'should optionally accept a block to call upon item in the tree during hierarchy traversal' do
@@ -198,7 +219,7 @@ describe Sprinkle::Package do
       @a.tree do
         @count += 1
       end
-      @count.should == 2
+      @count.should == 3
     end
 
     it 'should maintain a depth count of how deep the hierarchy is' do
