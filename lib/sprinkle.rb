@@ -16,13 +16,10 @@ module Sprinkle
   OPTIONS = { :testing => false, :verbose => false }
 end
 
-# Understand packages, policies and deployment DSL
+# Define a logging target and understand packages, policies and deployment DSL
 class Object
   include Sprinkle::Package, Sprinkle::Policy, Sprinkle::Deployment
-end
 
-# Define a logging target
-class Object
   def logger
     @@__log__ ||= ActiveSupport::BufferedLogger.new($stdout, ActiveSupport::BufferedLogger::Severity::INFO)
   end
