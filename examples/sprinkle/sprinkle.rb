@@ -2,7 +2,8 @@
 
 # Example of a simple Sprinkle script to install a single gem on a remote host.
 
-# Packages, sprinkle and its dependencies including rubygems and ruby
+# Packages, sprinkle and its dependencies including rubygems and ruby, delivery mechanism
+# uses Vlad
 
 package :build_essential do
   description 'Build tools'
@@ -50,8 +51,8 @@ end
 deployment do
 
   # mechanism for deployment
-  delivery :capistrano do
-    recipes 'deploy'
+  delivery :vlad do
+    role :app, 'yourhost.com'
   end
 
 end
