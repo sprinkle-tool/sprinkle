@@ -24,6 +24,7 @@ module Sprinkle
           cmd = "gem install #{gem}"
           cmd << " --version '#{version}'" if version
           cmd << " --source #{source}" if source
+          cmd << " --install-dir #{repository}" if repository
           cmd
         end
     end

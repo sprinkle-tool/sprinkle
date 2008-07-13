@@ -5,11 +5,11 @@ describe Sprinkle::Installers::Gem do
   before do
     @gem = 'rails'
     @version = '2.0.2'
-    @options = { :source => 'http://gems.github.com/' }
+    @options = { :source => 'http://gems.github.com/', :repository => '/tmp/gems' }
   end
 
   def create_gem(gem, version = nil, options = {}, &block)
-    @package = mock(Sprinkle::Package, :name => gem, :version => version, :source => nil)
+    @package = mock(Sprinkle::Package, :name => gem, :version => version, :source => nil, :repository => nil)
     Sprinkle::Installers::Gem.new(@package, gem, options, &block)
   end
 
@@ -29,6 +29,10 @@ describe Sprinkle::Installers::Gem do
 
     it 'should optionally store a source location of the gem to install' do
       @installer.source.should == 'http://gems.github.com/'
+    end
+
+    it 'should optionally store the repository location where gems are to be installed' do
+      @installer.repository.should == @options[:repository]
     end
 
   end

@@ -11,6 +11,7 @@ package :sprinkle do
   description 'Sprinkle Provisioning Tool'
   gem 'sprinkle' do
     source 'http://gems.github.com' # use alternate gem server
+    #repository '/opt/local/gems'   # specify an alternate local gem repository
   end
 end
 
