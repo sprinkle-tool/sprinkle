@@ -1,5 +1,6 @@
 = SPRINKLE
 
+http://redartisan.com/2008/5/27/sprinkle-intro
 http://github.com/crafterm/sprinkle
 
 == DESCRIPTION:
@@ -17,7 +18,7 @@ An example package description follows:
     package :ruby do
       description 'Ruby Virtual Machine'
       version '1.8.6'
-      source "ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-#{version}-p111.tar.gz" # implicit :style => :gnu
+      source "ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-#{version}-p111.tar.gz"
       requires :ruby_dependencies
     end
 
@@ -31,7 +32,8 @@ Since packages come in many forms (eg. gems, pre-compiled debs, compressed sourc
 many different installer types, giving you the most amount of flexibility of how you'd like software installed.
 New installer types can be added into the system easily.
 
-For example, you could install Rails via gems, nginx via source, and mysql via APT.
+For example, you could install Rails via gems, nginx via source, and mysql via APT, while retaining the flexibility
+of changing installer types as software is updated upstream.
 
 Sprinkle also supports dependencies between packages, allowing you specify pre-requisites that need to be
 installed in order.
@@ -41,28 +43,29 @@ Packages can be grouped into polices to define several packages that should be i
 An example policy:
 
     policy :rails, :roles => :app do
-      requires :rails, :version => '2.0.2'
+      requires :rails, :version => '2.1.0'
       requires :appserver
       requires :database
       requires :webserver
     end
 
 This defines a policy called Rails, that applies to machines of role :app. The policy includes the packages
-rails (version 2.0.2), appserver, database and webserver.
+rails (version 2.1.0), appserver, database and webserver.
 
 appserver, database and webserver can be virtual packages, where the user will be prompted for selection if
 multiple choices for the virtual package exist.
 
 Sprinkle is architected to be extendable in many ways, one of those areas is in its deployment of commands to
-remote hosts. Currently Sprinkle uses Capistrano to issue commands on remote hosts via ssh, but it could also
-conceivably use vlad, etc, or be used to simply issue installation commands on the local system.
+remote hosts. Currently Sprinkle supports the use of Capistrano or Vlad to issue commands on remote hosts via ssh,
+but could also be extended to use any other command transport mechanism or be used to simply issue installation
+commands on the local system.
 
 An full example Sprinkle deployment script for deploying Rails (via gems), MySQL (via APT), and Apache (via source):
 
     # Sprinkle Rails deployment script
     #
     # This is an example Sprinkle script, configured to install Rails from gems, Apache and Ruby from source,
-    # and mysql from apt on an Ubuntu system. Installation is configured to run via capistrano (and
+    # and mysql from apt on an Ubuntu system. Installation is configured to run via Capistrano (and
     # an accompanying deploy.rb recipe script). Source based packages are downloaded and built into
     # /usr/local on the remote system.
     #
@@ -85,15 +88,10 @@ An full example Sprinkle deployment script for deploying Rails (via gems), MySQL
 
     # Packages
 
-    package :build_essential do # special package, anything that uses a 'source' installer will have build-essential installed for Ubuntu
-      description 'Build tools'
-      apt 'build-essential'
-    end
-
     package :ruby do
       description 'Ruby Virtual Machine'
       version '1.8.6'
-      source "ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-#{version}-p111.tar.gz" # implicit :style => :gnu
+      source "ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-#{version}-p111.tar.gz"
       requires :ruby_dependencies
     end
 
@@ -109,7 +107,7 @@ An full example Sprinkle deployment script for deploying Rails (via gems), MySQL
 
     package :apache, :provides => :webserver do
       description 'Apache 2 HTTP Server'
-      version '2.2.6'
+      version '2.2.9'
       source "http://apache.wildit.net.au/httpd/httpd-#{version}.tar.bz2" do
         enable %w( mods-shared=all proxy proxy-balancer proxy-http rewrite cache headers ssl deflate so )
         prefix "/opt/local/apache2-#{version}"
@@ -125,8 +123,8 @@ An full example Sprinkle deployment script for deploying Rails (via gems), MySQL
 
     package :rubygems do
       description 'Ruby Gems Package Management System'
-      version '1.0.1'
-      source "http://rubyforge.org/frs/download.php/29548/rubygems-#{version}.tgz" do
+      version '1.2.0'
+      source "http://rubyforge.org/frs/download.php/38646/rubygems-#{version}.tgz" do
         custom_install 'ruby setup.rb'
       end
       requires :ruby
@@ -135,13 +133,13 @@ An full example Sprinkle deployment script for deploying Rails (via gems), MySQL
     package :rails do
       description 'Ruby on Rails'
       gem 'rails'
-      version '2.0.2'
+      version '2.1.0'
     end
 
     package :mongrel do
       description 'Mongrel Application Server'
       gem 'mongrel'
-      version '1.1.4'
+      version '1.1.5'
     end
 
     package :mongrel_cluster, :provides => :appserver do
@@ -159,7 +157,7 @@ An full example Sprinkle deployment script for deploying Rails (via gems), MySQL
     # the user is requested to select which one to use.
 
     policy :rails, :roles => :app do
-      requires :rails, :version => '2.0.2'
+      requires :rails, :version => '2.1.0'
       requires :appserver
       requires :database
       requires :webserver
@@ -186,6 +184,8 @@ An full example Sprinkle deployment script for deploying Rails (via gems), MySQL
       end
 
     end
+
+Please see the examples directory for more complete examples of Sprinkle deployment scripts.
 
 Sprinkle is a work in progress and I'm excited to hear if anyone finds it useful - please feel free to
 comment, ask any questions, or send in any ideas, patches, bugs. All most welcome.
