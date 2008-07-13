@@ -13,8 +13,8 @@ end
 
 package :apache, :provides => :webserver do
   description 'Apache 2 HTTP Server'
-  version '2.2.6'
-  source "http://apache.wildit.net.au/httpd/httpd-#{version}.tar.bz2" do
+  version '2.2.9'
+  source "http://www.apache.org/dist/httpd/httpd-#{version}.tar.bz2" do
     enable %w( mods-shared=all proxy proxy-balancer proxy-http rewrite cache headers ssl deflate so )
     prefix "/opt/local/apache2-#{version}"
     post :install, 'install -m 755 support/apachectl /etc/init.d/apache2', 'update-rc.d -f apache2 defaults'
