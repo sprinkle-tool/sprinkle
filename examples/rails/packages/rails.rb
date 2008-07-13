@@ -14,8 +14,8 @@ end
 
 package :rubygems do
   description 'Ruby Gems Package Management System'
-  version '1.0.1'
-  source "http://rubyforge.org/frs/download.php/29548/rubygems-#{version}.tgz" do
+  version '1.2.0'
+  source "http://rubyforge.org/frs/download.php/38646/rubygems-#{version}.tgz" do
     custom_install 'ruby setup.rb'
   end
   requires :ruby
