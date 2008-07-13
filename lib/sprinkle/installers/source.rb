@@ -1,22 +1,11 @@
 module Sprinkle
   module Installers
     class Source < Installer
-      attr_accessor :source, :pre, :post
+      attr_accessor :source
 
       def initialize(parent, source, options = {}, &block)
-        @pre = {}; @post = {}
         @source = source
         super parent, options, &block
-      end
-
-      def pre(stage, *commands)
-        @pre[stage] ||= []
-        @pre[stage] += commands
-      end
-
-      def post(stage, *commands)
-        @post[stage] ||= []
-        @post[stage] += commands
       end
 
       protected
@@ -83,19 +72,13 @@ module Sprinkle
           dress @options[:custom_install], :install
         end
 
-      private
-
-        def pre_commands(stage)
-          dress @pre[stage] || [], :pre
-        end
-
-        def post_commands(stage)
-          dress @post[stage] || [], :post
-        end
+      protected
 
         def dress(commands, stage)
           commands.collect { |command| "bash -c 'cd #{build_dir} && #{command} >> #{@package.name}-#{stage}.log 2>&1'" }
         end
+
+      private
 
         def create_options(key, prefix)
           @options[key].inject(' ') { |m, option| m << "#{prefix}-#{option} "; m }

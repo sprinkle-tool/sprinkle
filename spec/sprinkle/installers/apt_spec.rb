@@ -27,16 +27,23 @@ describe Sprinkle::Installers::Apt do
   describe 'during installation' do
 
     before do
-      @installer = create_apt 'ruby'
-      @install_sequence = @installer.send :install_sequence
+      @installer = create_apt 'ruby' do
+        pre :install, 'op1'
+        post :install, 'op2'
+      end
+      @install_commands = @installer.send :install_commands
     end
 
     it 'should invoke the apt installer for all specified packages' do
-      @install_sequence.should =~ /apt-get -qyu install ruby/
+      @install_commands.should =~ /apt-get -qyu install ruby/
     end
 
     it 'should specify a non interactive mode to the apt installer' do
-      @install_sequence.should =~ /DEBIAN_FRONTEND=noninteractive/
+      @install_commands.should =~ /DEBIAN_FRONTEND=noninteractive/
+    end
+
+    it 'should automatically insert pre/post commands for the specified package' do
+      @installer.send(:install_sequence).should == [ 'op1', %(DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive apt-get -qyu install ruby), 'op2' ]
     end
 
     it 'should install a specific version if defined'

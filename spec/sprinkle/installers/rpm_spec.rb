@@ -27,12 +27,19 @@ describe Sprinkle::Installers::Rpm do
   describe 'during installation' do
 
     before do
-      @installer = create_rpm 'ruby'
-      @install_sequence = @installer.send :install_sequence
+      @installer = create_rpm 'ruby' do
+        pre :install, 'op1'
+        post :install, 'op2'
+      end
+      @install_commands = @installer.send :install_commands
     end
 
-    it 'should invoke the apt installer for all specified packages' do
-      @install_sequence.should =~ /rpm -Uvh ruby/
+    it 'should invoke the rpm installer for all specified packages' do
+      @install_commands.should =~ /rpm -Uvh ruby/
+    end
+
+    it 'should automatically insert pre/post commands for the specified package' do
+      @installer.send(:install_sequence).should == [ 'op1', 'rpm -Uvh ruby', 'op2' ]
     end
 
     it 'should specify a non interactive mode to the apt installer'

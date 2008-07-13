@@ -42,11 +42,18 @@ describe Sprinkle::Installers::Gem do
     describe 'without a version' do
 
       before do
-        @installer = create_gem @gem
+        @installer = create_gem @gem do
+          pre :install, 'op1'
+          post :install, 'op2'
+        end
       end
 
-      it 'should invoke the gem installer for all specified package' do
-        @installer.send(:install_sequence).should == "gem install #{@gem}"
+      it 'should invoke the gem installer for the specified package' do
+        @installer.send(:install_commands).should == "gem install #{@gem}"
+      end
+
+      it 'should automatically insert pre/post commands for the specified package' do
+        @installer.send(:install_sequence).should == [ 'op1', "gem install #{@gem}", 'op2' ]
       end
 
     end
@@ -58,7 +65,7 @@ describe Sprinkle::Installers::Gem do
       end
 
       it 'should install a specific version if defined' do
-        @installer.send(:install_sequence).should == "gem install #{@gem} --version '#{@version}'"
+        @installer.send(:install_commands).should == "gem install #{@gem} --version '#{@version}'"
       end
 
     end

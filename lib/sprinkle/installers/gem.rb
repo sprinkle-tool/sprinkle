@@ -20,13 +20,14 @@ module Sprinkle
 
         # rubygems 0.9.5+ installs dependencies by default, and does platform selection
 
-        def install_sequence
+        def install_commands
           cmd = "gem install #{gem}"
           cmd << " --version '#{version}'" if version
           cmd << " --source #{source}" if source
           cmd << " --install-dir #{repository}" if repository
           cmd
         end
+
     end
   end
 end

@@ -8,9 +8,10 @@ module Sprinkle
 
       protected
 
-        def install_sequence
+        def install_commands
           "rake #{@commands.join(' ')}"
         end
+
     end
   end
 end

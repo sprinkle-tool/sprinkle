@@ -11,9 +11,9 @@ module Sprinkle
 
       protected
 
-      def install_sequence
-        "rpm -Uvh #{@packages.join(' ')}"
-      end
+        def install_commands
+          "rpm -Uvh #{@packages.join(' ')}"
+        end
 
     end
   end

@@ -11,7 +11,7 @@ module Sprinkle
 
       protected
 
-        def install_sequence
+        def install_commands
           "DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive apt-get -qyu install #{@packages.join(' ')}"
         end
 
