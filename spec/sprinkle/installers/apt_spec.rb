@@ -6,8 +6,8 @@ describe Sprinkle::Installers::Apt do
     @package = mock(Sprinkle::Package, :name => 'package')
   end
 
-  def create_apt(debs, &block)
-    Sprinkle::Installers::Apt.new(@package, debs, &block)
+  def create_apt(*debs, &block)
+    Sprinkle::Installers::Apt.new(@package, *debs, &block)
   end
 
   describe 'when created' do
@@ -20,6 +20,15 @@ describe Sprinkle::Installers::Apt do
     it 'should accept an array of packages to install' do
       @installer = create_apt %w( gcc gdb g++ )
       @installer.packages.should == ['gcc', 'gdb', 'g++']
+    end
+
+  end
+
+  describe 'when created for dependencies only install' do
+
+    it 'should remove options from packages list' do
+      @installer = create_apt 'ruby', :dependencies_only => true
+      @installer.packages.should == [ 'ruby' ]
     end
 
   end
@@ -49,5 +58,17 @@ describe Sprinkle::Installers::Apt do
     it 'should install a specific version if defined'
 
   end
+  
+  describe 'during dependencies only installation' do
 
+    before do
+      @installer = create_apt 'ruby', :dependencies_only => true
+      @install_commands = @installer.send :install_commands
+    end
+
+    it 'should invoke the apt installer with build-dep command for all specified packages' do
+      @install_commands.should =~ /apt-get -qyu build-dep ruby/
+    end
+    
+  end
 end
