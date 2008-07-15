@@ -8,6 +8,24 @@ describe Sprinkle::Package do
     @empty = Proc.new { }
     @opts = { }
   end
+  
+  # Kind of a messy way to do this but it works and DRYs out
+  # the specs. Checks to make sure an installer is receiving
+  # the block passed to it throught the package block.
+  def check_block_forwarding_on(installer)
+    eval(<<CODE)
+    pre_count = 0
+    lambda {
+      pkg = package @name do
+        #{installer} 'archive' do
+          pre :install, 'preOp'
+        end
+      end
+      
+      pre_count = pkg.installer.instance_variable_get(:@pre)[:install].length
+    }.should change { pre_count }.by(1)
+CODE
+  end
 
   describe 'when created' do
 
@@ -126,6 +144,10 @@ describe Sprinkle::Package do
       pkg.should respond_to(:source)
       pkg.installer.class.should == Sprinkle::Installers::Source
     end
+    
+    it 'should forward block to installer superclass' do
+      check_block_forwarding_on(:source)
+    end
 
     it 'should automatically add a build essential recommendation' do
       pkg = package @name do
@@ -135,6 +157,18 @@ describe Sprinkle::Package do
     end
 
   end
+  
+  describe 'with an apt installer' do
+    it 'should forward block to installer superclass' do
+      check_block_forwarding_on(:apt)
+    end
+  end
+  
+  describe 'with an rpm installer' do
+    it 'should forward block to installer superclass' do
+      check_block_forwarding_on(:rpm)
+    end
+  end
 
   describe 'with an gem installer' do
 
@@ -143,6 +177,10 @@ describe Sprinkle::Package do
         gem 'gem'
       end
       pkg.recommends.should include(:rubygems)
+    end
+    
+    it 'should forward block to installer superclass' do
+      check_block_forwarding_on(:gem)
     end
 
   end

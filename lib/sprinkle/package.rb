@@ -27,12 +27,12 @@ module Sprinkle
         self.instance_eval &block
       end
 
-      def apt(*names)
-        @installer = Sprinkle::Installers::Apt.new(self, *names)
+      def apt(*names, &block)
+        @installer = Sprinkle::Installers::Apt.new(self, *names, &block)
       end
 
-      def rpm(*names)
-        @installer = Sprinkle::Installers::Rpm.new(self, *names)
+      def rpm(*names, &block)
+        @installer = Sprinkle::Installers::Rpm.new(self, *names, &block)
       end
 
       def gem(name, options = {}, &block)
