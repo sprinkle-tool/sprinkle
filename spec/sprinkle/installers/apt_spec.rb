@@ -24,10 +24,10 @@ describe Sprinkle::Installers::Apt do
 
   end
 
-  describe 'when created for :build_dep install' do
+  describe 'when created for dependencies only install' do
 
-    it 'should remove :build_dep from packages list' do
-      @installer = create_apt :build_dep, 'ruby'
+    it 'should remove options from packages list' do
+      @installer = create_apt 'ruby', :dependencies_only => true
       @installer.packages.should == [ 'ruby' ]
     end
 
@@ -59,10 +59,10 @@ describe Sprinkle::Installers::Apt do
 
   end
   
-  describe 'during :build_dep installation' do
+  describe 'during dependencies only installation' do
 
     before do
-      @installer = create_apt :build_dep, 'ruby'
+      @installer = create_apt 'ruby', :dependencies_only => true
       @install_commands = @installer.send :install_commands
     end
 

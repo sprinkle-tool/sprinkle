@@ -6,11 +6,11 @@ module Sprinkle
       def initialize(parent, *packages, &block)
         super parent, &block
         packages.flatten!
-        @command = 'install'
-        if packages.first == :build_dep
-          packages.shift
-          @command = 'build-dep'
-        end        
+        
+        options = { :dependencies_only => false }
+        options.update(packages.pop) if packages.last.is_a?(Hash)
+        
+        @command = options[:dependencies_only] ? 'build-dep' : 'install'
         @packages = packages
       end
 
