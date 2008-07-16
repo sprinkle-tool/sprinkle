@@ -106,7 +106,7 @@ module Sprinkle
         end
 
         def build_dir
-          "#{@options[:builds]}/#{base_dir}"
+          "#{@options[:builds]}/#{options[:custom_dir] || base_dir}"
         end
 
         def base_dir
@@ -115,6 +115,7 @@ module Sprinkle
           end
           raise "Unknown base path for source archive: #{@source}, please update code knowledge"
         end
+        
     end
   end
 end

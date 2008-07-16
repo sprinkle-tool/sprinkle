@@ -171,10 +171,10 @@ describe Sprinkle::Installers::Source do
         @installer.defaults(@deployment)
       end
 
-      it 'should store the custom insatll commands' do
+      it 'should store the custom install commands' do
         @installer.options[:custom_install].should == 'ruby setup.rb'
       end
-
+      
       it 'should identify as having a custom install command' do
         @installer.should be_custom_install
       end
@@ -188,11 +188,27 @@ describe Sprinkle::Installers::Source do
       end
 
       it 'should install the source using a custom installation command' do
-        @installer.send(:custom_install_commands).should == [ "bash -c 'cd /usr/builds/ruby-1.8.6-p111 && ruby setup.rb >> package-install.log 2>&1'" ]
+        @installer.send(:custom_install_commands).first.should =~ /ruby setup.rb/
       end
-
+      
       it 'should be run relative to the source build area' do
         @installer.send(:custom_install_commands).first.should =~ %r{cd /usr/builds/ruby-1.8.6-p111}
+      end
+      
+      describe 'with a customized directory' do
+        
+        before do
+          @installer.options[:custom_dir] = 'test'
+        end
+        
+        it 'should install the source from the custom dir path' do
+          @installer.send(:custom_install_commands).first.should =~ /test/
+        end
+        
+        it 'should store the custom build dir path' do
+          @installer.options[:custom_dir].should == 'test'
+        end
+        
       end
 
     end
