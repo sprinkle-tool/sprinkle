@@ -37,6 +37,7 @@ lib/sprinkle/installers/source.rb
 lib/sprinkle/package.rb
 lib/sprinkle/policy.rb
 lib/sprinkle/script.rb
+lib/sprinkle/verify.rb
 lib/sprinkle/version.rb
 script/destroy
 script/generate
@@ -55,6 +56,7 @@ spec/sprinkle/package_spec.rb
 spec/sprinkle/policy_spec.rb
 spec/sprinkle/script_spec.rb
 spec/sprinkle/sprinkle_spec.rb
+spec/sprinkle/verify_spec.rb
 sprinkle.gemspec
 tasks/deployment.rake
 tasks/environment.rake

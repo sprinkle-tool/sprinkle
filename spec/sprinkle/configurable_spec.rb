@@ -34,6 +34,11 @@ describe Sprinkle::Configurable do
     end
     @configurable.hsv.should == 'gts'
   end
+  
+  it 'should allow the delivery instance variable to be accessed' do
+    @configurable.delivery = "string"
+    @configurable.instance_variable_get(:@delivery).should eql("string")
+  end
 
   after do
     @configurable.defaults(@deployment)

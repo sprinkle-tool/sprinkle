@@ -20,10 +20,16 @@ An example package description follows:
       version '1.8.6'
       source "ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-#{version}-p111.tar.gz"
       requires :ruby_dependencies
+      
+      verify do
+        has_file '/usr/bin/ruby'
+      end
     end
 
 This defines a package called 'ruby', that uses the source based installer to build Ruby 1.8.6 from source,
-installing the package 'ruby_dependencies' beforehand.
+installing the package 'ruby_dependencies' beforehand. Additionally, the package verifies it was installed
+correctly by verifying the file '/usr/bin/ruby' exists after installation. If this verification fails, the
+sprinkle script will gracefully stop.
 
 Reasonable defaults are set by sprinkle, such as the install prefix, download area, etc, but can be customized
 globally or per package (see below for an example).

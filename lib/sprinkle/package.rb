@@ -15,7 +15,7 @@ module Sprinkle
 
     class Package
       include ArbitraryOptions
-      attr_accessor :name, :provides, :installer, :dependencies, :recommends
+      attr_accessor :name, :provides, :installer, :dependencies, :recommends, :verifications
 
       def initialize(name, metadata = {}, &block)
         raise 'No package name supplied' unless name
@@ -24,6 +24,7 @@ module Sprinkle
         @provides = metadata[:provides]
         @dependencies = []
         @recommends = []
+        @verifications = []
         self.instance_eval &block
       end
 
@@ -44,12 +45,21 @@ module Sprinkle
         @recommends << :build_essential # Ubuntu/Debian
         @installer = Sprinkle::Installers::Source.new(self, source, options, &block)
       end
+      
+      def verify(description = '', &block)
+        @verifications << Sprinkle::Verify.new(self, description, &block)
+      end
 
       def process(deployment, roles)
         return if meta_package?
 
         @installer.defaults(deployment)
         @installer.process(roles)
+        
+        @verifications.each do |v|
+          v.defaults(deployment)
+          v.process(roles)
+        end
       end
 
       def requires(*packages)

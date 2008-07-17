@@ -26,6 +26,16 @@ describe Sprinkle::Package do
     }.should change { pre_count }.by(1)
 CODE
   end
+  
+  # More of Mitchell's meta-programming to dry up specs.
+  def create_package_with_blank_verify(n = 1)
+    eval(<<CODE)
+    @pkg = package @name do
+      gem 'gem'
+      #{"verify 'stuff happens' do; end\n" * n}
+    end
+CODE
+  end
 
   describe 'when created' do
 
@@ -221,6 +231,33 @@ CODE
       end
 
     end
+    
+    describe 'with verifications' do
+      before do
+        @pkg = create_package_with_blank_verify(3)
+        @pkg.installer = @installer
+        @installer.stub!(:defaults)
+        @installer.stub!(:process)
+      end
+      
+      it 'should request _each_ verification to configure itself against the deployment context' do
+        @pkg.verifications.each do |v|
+          v.should_receive(:defaults).with(@deployment).once
+          v.stub!(:process)
+        end
+        
+        @pkg.process(@deployment, @roles)
+      end
+      
+      it 'should request _each_ verification to process' do
+        @pkg.verifications.each do |v|
+          v.stub!(:defaults)
+          v.should_receive(:process).with(@roles).once
+        end
+        
+        @pkg.process(@deployment, @roles)
+      end
+    end
 
   end
 
@@ -280,6 +317,36 @@ CODE
       lambda { @pkg.tree }.should raise_error
     end
 
+  end
+  
+  describe 'with verifications' do    
+    it 'should create a Sprinkle::Verification object for the verify block' do
+      Sprinkle::Verify.should_receive(:new).once
+      
+      create_package_with_blank_verify
+    end
+    
+    it 'should create multiple Sprinkle::Verification objects for multiple verify blocks' do
+      Sprinkle::Verify.should_receive(:new).twice
+      
+      create_package_with_blank_verify(2)
+    end
+    
+    it 'should add each Sprinkle::Verificaton object to the @verifications array' do
+      @pkg = create_package_with_blank_verify(3)
+      @pkg.verifications.length.should eql(3)
+    end
+    
+    it 'should initialize Sprinkle::Verification with the package name, description, and block' do
+      Sprinkle::Verify.should_receive(:new) do |pkg, desc|
+        pkg.name.should eql(@name)
+        desc.should eql('stuff happens')
+      end
+      
+      # We do a should_not raise_error because if a block was NOT passed, an error
+      # is raised. This is specced in verification_spec.rb
+      lambda { create_package_with_blank_verify }.should_not raise_error
+    end
   end
 
 end
