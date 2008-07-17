@@ -37,8 +37,8 @@ describe Sprinkle::Verify do
       @verification.should respond_to(:defaults)
     end
     
-    it 'should default failures option to /tmp' do
-      @verification.failures.should eql('/tmp')
+    it 'should default padding option to 4' do
+      @verification.padding.should eql(4)
     end
   end
   
@@ -71,14 +71,19 @@ describe Sprinkle::Verify do
     describe 'when testing' do
       before do
         Sprinkle::OPTIONS[:testing] = true
+        @logger = mock(ActiveSupport::BufferedLogger, :debug => true, :debug? => true)
       end
       
       it 'should not call process on the delivery' do
         @delivery.should_not_receive(:process)
-        @verification.process([:app])
+      end
+
+      it 'should print the install sequence to the console' do
+        @verification.should_receive(:logger).twice.and_return(@logger)
       end
       
       after do
+        @verification.process([:app])
         Sprinkle::OPTIONS[:testing] = false
       end
     end

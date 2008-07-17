@@ -10,17 +10,22 @@ module Sprinkle
       @description = description
       @commands = []
       @options ||= {}
-      @options[:failures] = '/tmp'
+      @options[:padding] = 4
       
       self.instance_eval(&block)
     end
     
-    def process(roles)
+    def process(roles, pre = false)
       assert_delivery
       
+      description = @description.empty? ? @package.name : @description
+      
+      if logger.debug?
+        logger.debug "#{@package.name}#{description} verification sequence: #{@commands.join('; ')} for roles: #{roles}\n"
+      end
+      
       unless Sprinkle::OPTIONS[:testing]
-        description = @description.empty? ? '' : " (#{@description})"
-        logger.info "--> Verifying #{@package.name}#{description} for roles: #{roles}"
+        logger.info "#{" " * @options[:padding]}--> Verifying #{description}..."
         
         unless @delivery.process(@package.name, @commands, roles, true)
           # Verification failed, halt sprinkling gracefully.

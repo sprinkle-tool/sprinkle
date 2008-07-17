@@ -72,7 +72,13 @@ module Sprinkle
         process_verifications(deployment, roles)
       end
       
-      def process_verifications(deployment, roles)
+      def process_verifications(deployment, roles, pre = false)
+        if pre
+          logger.info "--> Checking if #{self.name} is already installed for roles: #{roles}"
+        else
+          logger.info "--> Verifying #{self.name} was properly installed for roles: #{roles}"
+        end
+        
         @verifications.each do |v|
           v.defaults(deployment)
           v.process(roles)

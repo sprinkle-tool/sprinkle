@@ -298,6 +298,8 @@ CODE
       @pkg.installer = @installer
       @installer.stub!(:defaults)
       @installer.stub!(:process)
+      @logger = mock(ActiveSupport::BufferedLogger, :debug => true, :debug? => true)
+      @logger.stub!(:info)
     end
     
     it 'should request _each_ verification to configure itself against the deployment context' do
@@ -312,6 +314,15 @@ CODE
         v.stub!(:defaults)
         v.should_receive(:process).with(@roles).once
       end
+    end
+    
+    it 'should enter a log info event to notify user whats happening' do
+      @pkg.verifications.each do |v|
+        v.stub!(:defaults)
+        v.stub!(:process)
+      end
+      
+      @pkg.should_receive(:logger).once.and_return(@logger)
     end
     
     after do
