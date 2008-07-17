@@ -17,6 +17,12 @@ describe Sprinkle::Verify do
         
         # Check a symlink points to a certain file
         has_symlink 'mypointer', 'myfile'
+        
+        # Check if an executable exists
+        has_executable '/usr/bin/ruby'
+        
+        # Check if a global executable exists (in PATH)
+        has_executable 'rails'
       end
     end
     @verification = @package.verifications[0]
@@ -45,6 +51,14 @@ describe Sprinkle::Verify do
     
     it 'should do a test equality to check a symlink points to a specific file' do
       @verification.commands.should include("test 'myfile' = `readlink mypointer`")
+    end
+    
+    it 'should do a "test -x" to check for an executable' do
+      @verification.commands.should include("test -x /usr/bin/ruby")
+    end
+    
+    it 'should test the "which" command to look for a global executable' do
+      @verification.commands.should include('[ -n "`which rails`"]')
     end
   end
   
