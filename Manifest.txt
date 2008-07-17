@@ -37,6 +37,10 @@ lib/sprinkle/installers/source.rb
 lib/sprinkle/package.rb
 lib/sprinkle/policy.rb
 lib/sprinkle/script.rb
+lib/sprinkle/verifiers/directory.rb
+lib/sprinkle/verifiers/executable.rb
+lib/sprinkle/verifiers/file.rb
+lib/sprinkle/verifiers/symlink.rb
 lib/sprinkle/verify.rb
 lib/sprinkle/version.rb
 script/destroy

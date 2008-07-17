@@ -119,4 +119,19 @@ describe Sprinkle::Verify do
       end
     end
   end
+  
+  describe 'with registering new verification modules' do
+    module MyModule
+      def rawr; end
+    end
+    
+    it 'should not respond to rawr initially' do
+      @verification.should_not respond_to(:rawr)
+    end
+    
+    it 'should respond to rawr after registering the module' do
+      Sprinkle::Verify.register(MyModule)
+      @verification.should respond_to(:rawr)
+    end
+  end
 end

@@ -3,6 +3,13 @@ module Sprinkle
     include Sprinkle::Configurable
     attr_accessor :package, :description, :commands
     
+    class <<self
+      # Register a verification module
+      def register(new_module)
+        class_eval { include new_module }
+      end
+    end
+    
     def initialize(package, description = '', &block)
       raise 'Verify requires a block.' unless block
       
@@ -31,32 +38,6 @@ module Sprinkle
           # Verification failed, halt sprinkling gracefully.
           raise Sprinkle::VerificationFailed.new(@package, description)
         end
-      end
-    end
-    
-    def has_file(path)
-      @commands << "test -f #{path}"
-    end
-    
-    def has_directory(dir)
-      @commands << "test -d #{dir}"
-    end
-    
-    def has_symlink(symlink, file = nil)
-      if file.nil?
-        @commands << "test -L #{symlink}"
-      else
-        @commands << "test '#{file}' = `readlink #{symlink}`"
-      end
-    end
-    
-    def has_executable(path)
-      # Be smart: If the path includes a forward slash, we're checking
-      # an absolute path. Otherwise, we're checking a global executable
-      if path.include?('/')
-        @commands << "test -x #{path}"
-      else
-        @commands << "[ -n \"`which #{path}`\"]"
       end
     end
   end
