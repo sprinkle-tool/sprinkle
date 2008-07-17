@@ -57,7 +57,7 @@ module Sprinkle
         # we can skip it, unless we have the force option turned on!
         unless @verifications.empty? || Sprinkle::OPTIONS[:force]
           begin
-            process_verifications(deployment, roles)
+            process_verifications(deployment, roles, true)
             
             logger.info "--> #{self.name} already installed for roles: #{roles}"
             return

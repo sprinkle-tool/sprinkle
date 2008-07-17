@@ -264,7 +264,8 @@ CODE
         end
         
         it 'should process verifications twice' do
-          @pkg.should_receive(:process_verifications).twice.and_raise(Sprinkle::VerificationFailed.new(@pkg, ''))
+          @pkg.should_receive(:process_verifications).once.with(@deployment, @roles, true).and_raise(Sprinkle::VerificationFailed.new(@pkg, ''))
+          @pkg.should_receive(:process_verifications).once.with(@deployment, @roles).and_raise(Sprinkle::VerificationFailed.new(@pkg, ''))
         end
         
         it 'should continue with installation if pre-verification fails' do
