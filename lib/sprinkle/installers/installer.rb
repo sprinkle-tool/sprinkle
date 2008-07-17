@@ -1,7 +1,7 @@
 module Sprinkle
   module Installers
     class Installer
-      include Sprinkle::Runnable
+      include Sprinkle::Configurable
       attr_accessor :delivery, :package, :options, :pre, :post
 
       def initialize(package, options = {}, &block)

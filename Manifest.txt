@@ -20,6 +20,7 @@ examples/sprinkle/sprinkle.rb
 lib/sprinkle.rb
 lib/sprinkle/actors/capistrano.rb
 lib/sprinkle/actors/vlad.rb
+lib/sprinkle/configurable.rb
 lib/sprinkle/deployment.rb
 lib/sprinkle/extensions/arbitrary_options.rb
 lib/sprinkle/extensions/array.rb
@@ -35,7 +36,6 @@ lib/sprinkle/installers/rpm.rb
 lib/sprinkle/installers/source.rb
 lib/sprinkle/package.rb
 lib/sprinkle/policy.rb
-lib/sprinkle/runnable.rb
 lib/sprinkle/script.rb
 lib/sprinkle/version.rb
 script/destroy

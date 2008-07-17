@@ -53,37 +53,10 @@ describe Sprinkle::Installers::Installer do
   end
 
   describe 'during configuration' do
-
-    before do
-      @default = Proc.new { }
-      @defaults = { :installer => @default }
-      @deployment.stub!(:defaults).and_return(@defaults)
-    end
-
-    it 'should be configurable via external defaults' do
+    # We just check to make sure it has the Sprinkle::Configurable method
+    it 'should be configurable' do
       @installer.should respond_to(:defaults)
     end
-
-    it 'should select the defaults for the particular concrete installer class' do
-      @deployment.should_receive(:defaults).and_return(@defaults)
-      @defaults.should_receive(:[]).with(:installer).and_return(@default)
-    end
-
-    it 'should configure the installer delivery mechansim' do
-      @installer.should_receive(:instance_eval)
-    end
-
-    it 'should maintain an options hash set arbitrarily via method missing' do
-      @installer.instance_eval do
-        hsv 'gts'
-      end
-      @installer.hsv.should == 'gts'
-    end
-
-    after do
-      @installer.defaults(@deployment)
-    end
-
   end
 
   describe 'during installation' do

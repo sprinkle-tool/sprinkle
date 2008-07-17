@@ -1,5 +1,5 @@
 module Sprinkle
-  module Runnable
+  module Configurable
     def defaults(deployment)
       defaults = deployment.defaults[self.class.name.split(/::/).last.downcase.to_sym]
       self.instance_eval(&defaults) if defaults
@@ -12,6 +12,7 @@ module Sprinkle
     
     def method_missing(sym, *args, &block)
       unless args.empty? # mutate if not set
+        @options ||= {}
         @options[sym] = *args unless @options[sym]
       end
 
