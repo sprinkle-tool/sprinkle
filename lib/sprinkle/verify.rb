@@ -19,11 +19,12 @@ module Sprinkle
       assert_delivery
       
       unless Sprinkle::OPTIONS[:testing]
-        logger.info "--> Verifying #{@package.name} for roles: #{roles}"
+        description = @description.empty? ? '' : " (#{@description})"
+        logger.info "--> Verifying #{@package.name}#{description} for roles: #{roles}"
         
         unless @delivery.process(@package.name, @commands, roles, true)
           # Verification failed, halt sprinkling gracefully.
-          raise Sprinkle::VerificationFailed.new(@package, @description)
+          raise Sprinkle::VerificationFailed.new(@package, description)
         end
       end
     end
