@@ -14,10 +14,19 @@ module Sprinkle
         @loaded_recipes << script
       end
 
-      def process(name, commands, roles)
+      def process(name, commands, roles, suppress_and_return_failures = false)
         commands = commands.join ' && ' if commands.is_a? Array
         t = remote_task(task_sym(name), :roles => roles) { run commands }
-        t.invoke
+        
+        begin
+          t.invoke
+          return true
+        rescue ::Vlad::CommandFailedError => e
+          return false if suppress_and_return_failures
+          
+          # Reraise error if we're not suppressing it
+          raise
+        end
       end
 
       private

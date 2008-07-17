@@ -22,14 +22,23 @@ module Sprinkle
         @loaded_recipes << script
       end
 
-      def process(name, commands, roles)
+      def process(name, commands, roles, suppress_and_return_failures = false)
         define_task(name, roles) do
           via = fetch(:run_method, :sudo)
           commands.each do |command|
             invoke_command command, :via => via
           end
         end
-        run(name)
+        
+        begin
+          run(name)
+          return true
+        rescue ::Capistrano::CommandError => e
+          return false if suppress_and_return_failures
+          
+          # Reraise error if we're not suppressing it
+          raise
+        end
       end
 
       private

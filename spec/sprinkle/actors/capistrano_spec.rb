@@ -99,6 +99,8 @@ describe Sprinkle::Actors::Capistrano do
 
       @cap = create_cap do; recipes 'deploy'; end
       @cap.stub!(:run).and_return
+      
+      @testing_errors = false
     end
 
     it 'should dynamically create a capistrano task containing the commands' do
@@ -108,9 +110,27 @@ describe Sprinkle::Actors::Capistrano do
     it 'should invoke capistrano task after creation' do
       @cap.should_receive(:run).with(@name).and_return
     end
+    
+    it 'should raise capistrano errors when suppressing parameter is not set' do
+      @testing_errors = true
+      
+      @cap.should_receive(:run).and_raise(::Capistrano::CommandError)
+      lambda { @cap.process @name, @commands, @roles }.should raise_error(::Capistrano::CommandError)
+    end
+    
+    it 'should not raise errors and instead return false when suppressing parameter is set' do
+      @testing_errors = true
+      
+      @cap.should_receive(:run).and_raise(::Capistrano::CommandError)
+      
+      value = nil
+      lambda { value = @cap.process(@name, @commands, @roles, true) }.should_not raise_error(::Capistrano::CommandError)
+      
+      value.should_not be
+    end
 
     after do
-      @cap.process @name, @commands, @roles
+      @cap.process @name, @commands, @roles unless @testing_errors
     end
 
   end
