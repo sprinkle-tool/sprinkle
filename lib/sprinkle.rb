@@ -13,7 +13,7 @@ Dir[File.dirname(__FILE__) + '/sprinkle/extensions/*.rb'].each { |e| require e }
 
 # Configuration options
 module Sprinkle
-  OPTIONS = { :testing => false, :verbose => false }
+  OPTIONS = { :testing => false, :verbose => false, :force => false }
 end
 
 # Define a logging target and understand packages, policies and deployment DSL

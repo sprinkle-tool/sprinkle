@@ -46,6 +46,8 @@ BANNER
           "Verbose output") { |OPTIONS[:verbose]| }
   opts.on("-c", "--cloud",
           "Show powder cloud, ie. package hierarchy and installation order") { |OPTIONS[:cloud]| }
+  opts.on("-f", "--force",
+          "Force installation of all packages even if it is detected that it has been previously installed") { |OPTIONS[:force]| }
   opts.on("-h", "--help",
           "Show this help message.") { puts opts; exit }
   opts.parse!(ARGV)
@@ -53,6 +55,10 @@ BANNER
   if MANDATORY_OPTIONS && MANDATORY_OPTIONS.find { |option| OPTIONS[option.to_sym].nil? }
     puts opts; exit
   end
+end
+
+def force_mode(options)
+  Sprinkle::OPTIONS[:force] = OPTIONS[:force] || false
 end
 
 def operation_mode(options)
@@ -72,6 +78,7 @@ require 'sprinkle'
 powder = OPTIONS[:path]
 raise "Sprinkle script is not readable: #{powder}" unless File.readable?(powder)
 
+force_mode(OPTIONS)
 operation_mode(OPTIONS)
 powder_cloud(OPTIONS)
 log_level(OPTIONS)

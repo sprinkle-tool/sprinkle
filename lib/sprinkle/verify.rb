@@ -20,7 +20,11 @@ module Sprinkle
       
       unless Sprinkle::OPTIONS[:testing]
         logger.info "--> Verifying #{@package.name} for roles: #{roles}"
-        @delivery.process(@package.name, @commands, roles).to_s
+        
+        unless @delivery.process(@package.name, @commands, roles, true)
+          # Verification failed, halt sprinkling gracefully.
+          raise Sprinkle::VerificationFailed.new(@package, @description)
+        end
       end
     end
     
@@ -30,6 +34,17 @@ module Sprinkle
     
     def has_directory(dir)
       @commands << "test -d #{dir}"
+    end
+  end
+  
+  class VerificationFailed < Exception
+    attr_accessor :package, :description
+    
+    def initialize(package, description)
+      super("Verifying #{package.name}#{description} failed.")
+      
+      @package = package
+      @description = description
     end
   end
 end

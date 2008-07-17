@@ -240,25 +240,83 @@ CODE
         @installer.stub!(:process)
       end
       
-      it 'should request _each_ verification to configure itself against the deployment context' do
-        @pkg.verifications.each do |v|
-          v.should_receive(:defaults).with(@deployment).once
-          v.stub!(:process)
+      describe 'with forcing' do
+        before do
+          # Being explicit
+          Sprinkle::OPTIONS[:force] = true
         end
         
-        @pkg.process(@deployment, @roles)
+        it 'should process verifications only once' do
+          @pkg.should_receive(:process_verifications).once
+          @pkg.process(@deployment, @roles)
+        end
+        
+        after do
+          # Being explicit
+          Sprinkle::OPTIONS[:force] = false
+        end
       end
       
-      it 'should request _each_ verification to process' do
-        @pkg.verifications.each do |v|
-          v.stub!(:defaults)
-          v.should_receive(:process).with(@roles).once
+      describe 'without forcing' do
+        before do
+          # Being explicit
+          Sprinkle::OPTIONS[:force] = false
         end
         
-        @pkg.process(@deployment, @roles)
+        it 'should process verifications twice' do
+          @pkg.should_receive(:process_verifications).twice.and_raise(Sprinkle::VerificationFailed.new(@pkg, ''))
+        end
+        
+        it 'should continue with installation if pre-verification fails' do
+          @pkg.should_receive(:process_verifications).twice.and_raise(Sprinkle::VerificationFailed.new(@pkg, ''))
+          @installer.should_receive(:defaults)
+          @installer.should_receive(:process)
+        end
+        
+        it 'should only process verifications once and should not process installer if verifications succeed' do
+          @pkg.should_receive(:process_verifications).once.and_return(nil)
+          @installer.should_not_receive(:defaults)
+          @installer.should_not_receive(:process)
+        end
+        
+        after do
+          begin
+            @pkg.process(@deployment, @roles)
+          rescue Sprinkle::VerificationFailed => e; end
+        end
       end
     end
 
+  end
+  
+  describe 'when processing verifications' do
+    before do
+      @deployment = mock(Sprinkle::Deployment)
+      @roles = [ :app, :db ]
+      @installer = mock(Sprinkle::Installers::Installer, :defaults => true, :process => true)
+      @pkg = create_package_with_blank_verify(3)
+      @pkg.installer = @installer
+      @installer.stub!(:defaults)
+      @installer.stub!(:process)
+    end
+    
+    it 'should request _each_ verification to configure itself against the deployment context' do
+      @pkg.verifications.each do |v|
+        v.should_receive(:defaults).with(@deployment).once
+        v.stub!(:process)
+      end
+    end
+
+    it 'should request _each_ verification to process' do
+      @pkg.verifications.each do |v|
+        v.stub!(:defaults)
+        v.should_receive(:process).with(@roles).once
+      end
+    end
+    
+    after do
+      @pkg.process_verifications(@deployment, @roles)
+    end
   end
 
   describe 'hierarchies' do

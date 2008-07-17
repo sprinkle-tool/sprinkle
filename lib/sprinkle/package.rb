@@ -52,10 +52,25 @@ module Sprinkle
 
       def process(deployment, roles)
         return if meta_package?
+        
+        # Run a pre-test to see if the software is already installed. If so,
+        # we can skip it, unless we have the force option turned on!
+        unless @verifications.empty? || Sprinkle::OPTIONS[:force]
+          begin
+            process_verifications(deployment, roles)
+            return
+          rescue Sprinkle::VerificationFailed => e
+            # Continue
+          end
+        end
 
         @installer.defaults(deployment)
         @installer.process(roles)
         
+        process_verifications(deployment, roles)
+      end
+      
+      def process_verifications(deployment, roles)
         @verifications.each do |v|
           v.defaults(deployment)
           v.process(roles)

@@ -5,7 +5,7 @@ describe Sprinkle::Verify do
     @name = :package
     @package = package @name do
       gem 'nonexistent'
-      verify do
+      verify 'moo' do
         has_file 'my_file.txt'
         has_directory 'mydir'
       end
@@ -55,8 +55,16 @@ describe Sprinkle::Verify do
       end
       
       it 'should call process on the delivery with the correct parameters' do
-        @delivery.should_receive(:process).with(@name, @verification.commands, [:app]).once
+        @delivery.should_receive(:process).with(@name, @verification.commands, [:app], true).once.and_return(true)
         @verification.process([:app])
+      end
+      
+      it 'should raise Sprinkle::VerificationFailed exception when commands fail' do
+        @delivery.should_receive(:process).once.and_return(false)
+        lambda { @verification.process([:app]) }.should raise_error(Sprinkle::VerificationFailed) do |error|
+          error.package.should eql(@package)
+          error.description.should eql('moo')
+        end
       end
     end
     
