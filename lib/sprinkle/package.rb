@@ -58,6 +58,8 @@ module Sprinkle
         unless @verifications.empty? || Sprinkle::OPTIONS[:force]
           begin
             process_verifications(deployment, roles)
+            
+            logger.info "--> #{self.name} already installed for roles: #{roles}"
             return
           rescue Sprinkle::VerificationFailed => e
             # Continue
