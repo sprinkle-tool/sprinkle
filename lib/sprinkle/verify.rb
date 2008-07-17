@@ -41,6 +41,14 @@ module Sprinkle
     def has_directory(dir)
       @commands << "test -d #{dir}"
     end
+    
+    def has_symlink(symlink, file = nil)
+      if file.nil?
+        @commands << "test -L #{symlink}"
+      else
+        @commands << "test '#{file}' = `readlink #{symlink}`"
+      end
+    end
   end
   
   class VerificationFailed < Exception

@@ -6,8 +6,17 @@ describe Sprinkle::Verify do
     @package = package @name do
       gem 'nonexistent'
       verify 'moo' do
+        # Check a file exists
         has_file 'my_file.txt'
+        
+        # Check a directory exists
         has_directory 'mydir'
+        
+        # Check a symlink exists
+        has_symlink 'mypointer'
+        
+        # Check a symlink points to a certain file
+        has_symlink 'mypointer', 'myfile'
       end
     end
     @verification = @package.verifications[0]
@@ -28,6 +37,14 @@ describe Sprinkle::Verify do
     
     it 'should do a "test -d" on the has_directory check' do
       @verification.commands.should include('test -d mydir')
+    end
+    
+    it 'should do a "test -L" to check something is a symbolic link' do
+      @verification.commands.should include('test -L mypointer')
+    end
+    
+    it 'should do a test equality to check a symlink points to a specific file' do
+      @verification.commands.should include("test 'myfile' = `readlink mypointer`")
     end
   end
   
