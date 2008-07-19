@@ -23,6 +23,9 @@ describe Sprinkle::Verify do
         
         # Check if a global executable exists (in PATH)
         has_executable 'rails'
+        
+        # Check for a process
+        has_process 'httpd'
       end
     end
     @verification = @package.verifications[0]
@@ -59,6 +62,10 @@ describe Sprinkle::Verify do
     
     it 'should test the "which" command to look for a global executable' do
       @verification.commands.should include('[ -n "`which rails`"]')
+    end
+    
+    it 'should test the process list to find a process' do
+      @verification.commands.should include("ps aux | grep 'httpd' | grep -v grep")
     end
   end
   
