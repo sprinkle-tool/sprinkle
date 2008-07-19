@@ -18,6 +18,7 @@ examples/rails/packages/server.rb
 examples/rails/rails.rb
 examples/sprinkle/sprinkle.rb
 lib/sprinkle.rb
+lib/sprinkle/actors/actors.rb
 lib/sprinkle/actors/capistrano.rb
 lib/sprinkle/actors/vlad.rb
 lib/sprinkle/configurable.rb

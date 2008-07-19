@@ -1,4 +1,4 @@
-class String
+class String #:nodoc:
   
   # REVISIT: what chars shall we allow in task names?
   def to_task_name

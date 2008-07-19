@@ -1,16 +1,72 @@
 module Sprinkle
   module Installers
+    # = Source Package Installer
+    #
+    # The source package installer installs software from source.
+    # It handles downloading, extracting, configuring, building, 
+    # and installing software. 
+    #
+    # == Configuration Options
+    #
+    # The source installer has many configuration options:
+    # * <b>prefix</b> - The prefix directory that is configured to.
+    # * <b>archives</b> - The location all the files are downloaded to.
+    # * <b>builds</b> - The directory the package is extracted to to configure and install
+    #
+    # == Pre/Post Hooks
+    #
+    # The source installer defines a myriad of new stages which can be hooked into:
+    # * <b>prepare</b> - Prepare is the stage which all the prefix, archives, and build directories are made.
+    # * <b>download</b> - Download is the stage which the software package is downloaded.
+    # * <b>extract</b> - Extract is the stage which the software package is extracted.
+    # * <b>configure</b> - Configure is the stage which the ./configure script is run.
+    # * <b>build</b> - Build is the stage in which `make` is called.
+    # * <b>install</b> - Install is the stage which `make install` is called.
+    # 
+    # == Example Usage
+    #
+    # First, a simple package, no configuration:
+    #
+    #   package :magic_beans do
+    #     source 'http://magicbeansland.com/latest-1.1.1.tar.gz'
+    #   end
+    #
+    # Second, specifying exactly where I want my files:
+    #
+    #   package :magic_beans do
+    #     source 'http://magicbeansland.com/latest-1.1.1.tar.gz' do
+    #       prefix    '/usr/local'
+    #       archives  '/tmp'
+    #       builds    '/tmp/builds'
+    #     end
+    #   end
+    #
+    # Third, specifying some hooks:
+    #
+    #   package :magic_beans do
+    #     source 'http://magicbeansland.com/latest-1.1.1.tar.gz' do
+    #       prefix    '/usr/local'
+    #       
+    #       pre :prepare { 'echo "Here we go folks."' }
+    #       post :extract { 'echo "I believe..."' }
+    #       pre :build { 'echo "Cross your fingers!"' }
+    #     end
+    #   end
+    #
+    # As you can see, setting options is as simple as creating a
+    # block and calling the option as a method with the value as 
+    # its parameter.
     class Source < Installer
-      attr_accessor :source
+      attr_accessor :source #:nodoc:
 
-      def initialize(parent, source, options = {}, &block)
+      def initialize(parent, source, options = {}, &block) #:nodoc:
         @source = source
         super parent, options, &block
       end
 
       protected
 
-        def install_sequence
+        def install_sequence #:nodoc:
           prepare + download + extract + configure + build + install
         end
 
@@ -20,7 +76,7 @@ module Sprinkle
           end
         end
 
-        def prepare_commands
+        def prepare_commands #:nodoc:
           raise 'No installation area defined' unless @options[:prefix]
           raise 'No build area defined' unless @options[:builds]
           raise 'No source download area defined' unless @options[:archives]
@@ -30,15 +86,15 @@ module Sprinkle
             "mkdir -p #{@options[:archives]}" ]
         end
 
-        def download_commands
+        def download_commands #:nodoc:
           [ "wget -cq --directory-prefix='#{@options[:archives]}' #{@source}" ]
         end
 
-        def extract_commands
+        def extract_commands #:nodoc:
           [ "bash -c 'cd #{@options[:builds]} && #{extract_command} #{@options[:archives]}/#{archive_name}'" ]
         end
 
-        def configure_commands
+        def configure_commands #:nodoc:
           return [] if custom_install?
 
           command = "bash -c 'cd #{build_dir} && ./configure --prefix=#{@options[:prefix]} "
@@ -53,38 +109,40 @@ module Sprinkle
           [ command << " > #{@package.name}-configure.log 2>&1'" ]
         end
 
-        def build_commands
+        def build_commands #:nodoc:
           return [] if custom_install?
           [ "bash -c 'cd #{build_dir} && make > #{@package.name}-build.log 2>&1'" ]
         end
 
-        def install_commands
+        def install_commands #:nodoc:
           return custom_install_commands if custom_install?
           [ "bash -c 'cd #{build_dir} && make install > #{@package.name}-install.log 2>&1'" ]
         end
 
-        def custom_install?
+        def custom_install? #:nodoc:
           !! @options[:custom_install]
         end
 
         # REVISIT: must be better processing of custom install commands somehow? use splat operator?
-        def custom_install_commands
+        def custom_install_commands #:nodoc:
           dress @options[:custom_install], :install
         end
 
       protected
 
+        # dress is overriden from the base Sprinkle::Installers::Installer class so that the command changes
+        # directory to the build directory first. Also, the result of the command is logged.
         def dress(commands, stage)
           commands.collect { |command| "bash -c 'cd #{build_dir} && #{command} >> #{@package.name}-#{stage}.log 2>&1'" }
         end
 
       private
 
-        def create_options(key, prefix)
+        def create_options(key, prefix) #:nodoc:
           @options[key].inject(' ') { |m, option| m << "#{prefix}-#{option} "; m }
         end
 
-        def extract_command
+        def extract_command #:nodoc:
           case @source
           when /(tar.gz)|(tgz)$/
             'tar xzf'
@@ -99,17 +157,17 @@ module Sprinkle
           end
         end
 
-        def archive_name
+        def archive_name #:nodoc:
           name = @source.split('/').last
           raise "Unable to determine archive name for source: #{source}, please update code knowledge" unless name
           name
         end
 
-        def build_dir
+        def build_dir #:nodoc:
           "#{@options[:builds]}/#{options[:custom_dir] || base_dir}"
         end
 
-        def base_dir
+        def base_dir #:nodoc:
           if @source.split('/').last =~ /(.*)\.(tar\.gz|tgz|tar\.bz2|tb2)/
             return $1
           end

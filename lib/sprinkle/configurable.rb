@@ -1,5 +1,8 @@
 module Sprinkle
-  module Configurable
+  #--
+  # TODO: Possible documentation?
+  #++
+  module Configurable #:nodoc:
     attr_accessor :delivery
     
     def defaults(deployment)

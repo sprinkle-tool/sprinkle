@@ -2,10 +2,26 @@ require 'capistrano/cli'
 
 module Sprinkle
   module Actors
+    # = Capistrano Delivery Method
+    #
+    # Capistrano is one of the delivery method options available out of the
+    # box with Sprinkle. If you have the capistrano gem install, you may use
+    # this delivery. The only configuration option available, and which is 
+    # mandatory to include is +recipes+. An example:
+    #
+    #   deployment do
+    #     delivery :capistrano do
+    #       recipes 'deploy'
+    #     end
+    #   end
+    #
+    # Recipes is given a list of files which capistrano will include and load.
+    # These recipes are mainly to set variables such as :user, :password, and to 
+    # set the app domain which will be sprinkled. 
     class Capistrano
-      attr_accessor :config, :loaded_recipes
+      attr_accessor :config, :loaded_recipes #:nodoc:
 
-      def initialize(&block)
+      def initialize(&block) #:nodoc:
         @config = ::Capistrano::Configuration.new
         @config.logger.level = Sprinkle::OPTIONS[:verbose] ? ::Capistrano::Logger::INFO : ::Capistrano::Logger::IMPORTANT
         @config.set(:password) { ::Capistrano::CLI.password_prompt }
@@ -16,13 +32,25 @@ module Sprinkle
         end
       end
 
+      # Defines a recipe file which will be included by capistrano. Use these
+      # recipe files to set capistrano specific configurations. Default recipe
+      # included is "deploy." But if any other recipe is specified, it will
+      # include that instead. Multiple recipes may be specified through multiple
+      # recipes calls, an example:
+      #
+      #   deployment do
+      #     delivery :capistrano do
+      #       recipes 'deploy'
+      #       recipes 'magic_beans'
+      #     end
+      #   end
       def recipes(script)
         @loaded_recipes ||= []
         @config.load script
         @loaded_recipes << script
       end
 
-      def process(name, commands, roles, suppress_and_return_failures = false)
+      def process(name, commands, roles, suppress_and_return_failures = false) #:nodoc:
         define_task(name, roles) do
           via = fetch(:run_method, :sudo)
           commands.each do |command|

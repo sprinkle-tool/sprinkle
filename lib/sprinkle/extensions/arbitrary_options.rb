@@ -1,4 +1,4 @@
-module ArbitraryOptions
+module ArbitraryOptions #:nodoc:
   def self.included(base)
     base.alias_method_chain :method_missing, :arbitrary_options
   end

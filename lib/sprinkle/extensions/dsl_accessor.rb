@@ -1,4 +1,4 @@
-class Module
+class Module #:nodoc:
   def dsl_accessor(*symbols)
     symbols.each do |sym|
       class_eval %{
