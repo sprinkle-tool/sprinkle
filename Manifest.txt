@@ -2,7 +2,7 @@ CREDITS
 History.txt
 MIT-LICENSE
 Manifest.txt
-README.rdoc
+README.txt
 Rakefile
 bin/sprinkle
 config/hoe.rb
