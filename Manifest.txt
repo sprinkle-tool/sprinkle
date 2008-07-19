@@ -7,7 +7,6 @@ Rakefile
 bin/sprinkle
 config/hoe.rb
 config/requirements.rb
-examples/merb/deploy.rb
 examples/rails/README
 examples/rails/deploy.rb
 examples/rails/packages/database.rb
