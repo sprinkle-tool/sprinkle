@@ -87,6 +87,59 @@ describe Sprinkle::Installers::Installer do
         @delivery.should_receive(:process).with(@package.name, @sequence, @roles)
       end
     end
+    
+    describe "with a pre command" do
+      
+      def create_installer_with_pre_command(cmd="")
+        installer = Sprinkle::Installers::Installer.new @package do
+          pre :install, cmd
+          
+          def install_commands
+            ["installer"]
+          end          
+        end
+        
+        installer.stub!(:puts).and_return
+        installer.delivery = @delivery
+        installer
+      end
+      before do
+        @installer = create_installer_with_pre_command('run')
+      end
+      describe "string commands" do
+        it "should insert the pre command for the specific package in the installation process" do
+          @installer.send(:install_sequence).should == [ 'run', 'installer' ]
+        end
+      end      
+      describe "blocks as commands" do
+        before(:each) do          
+          @installer = Sprinkle::Installers::Installer.new @package do
+            pre :install do
+              %w(a b c)
+            end
+
+            def install_commands
+              ["installer"]
+            end          
+          end
+
+          @installer.stub!(:puts).and_return
+          @installer.delivery = @delivery
+        end
+        it "should be able to store a block if it's the pre command" do
+          @installer.send(:install_sequence).should == [ "a", "b", "c", 'installer' ]
+        end
+      end
+      describe "blocks as commands" do
+        before(:each) do
+          @array = ["a", "b"]
+          @installer = create_installer_with_pre_command(@array)
+        end
+        it "should be able to store a block if it's the pre command" do
+          @installer.send(:install_sequence).should == [ @array, 'installer' ].flatten
+        end
+      end
+    end
 
     after do
       @installer.process(@roles)

@@ -14,11 +14,13 @@ module Sprinkle
       def pre(stage, *commands)
         @pre[stage] ||= []
         @pre[stage] += commands
+        @pre[stage] += [yield] if block_given?
       end
 
       def post(stage, *commands)
         @post[stage] ||= []
         @post[stage] += commands
+        @post[stage] += [yield] if block_given?
       end
 
       def process(roles)
