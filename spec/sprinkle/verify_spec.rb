@@ -26,6 +26,9 @@ describe Sprinkle::Verify do
         
         # Check for a process
         has_process 'httpd'
+        
+        # Check that ruby can include files
+        ruby_can_load 'a', 'b', 'c'
       end
     end
     @verification = @package.verifications[0]
@@ -61,11 +64,15 @@ describe Sprinkle::Verify do
     end
     
     it 'should test the "which" command to look for a global executable' do
-      @verification.commands.should include('[ -n "`which rails`"]')
+      @verification.commands.should include('[ -n "`echo \`which rails\``" ]')
     end
     
     it 'should test the process list to find a process' do
       @verification.commands.should include("ps aux | grep 'httpd' | grep -v grep")
+    end
+    
+    it 'should check if ruby can include a, b, c' do
+      @verification.commands.should include("ruby -e \"require 'rubygems';require 'a';require 'b';require 'c'\"")
     end
   end
   

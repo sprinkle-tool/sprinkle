@@ -28,7 +28,7 @@ module Sprinkle
         if path.include?('/')
           @commands << "test -x #{path}"
         else
-          @commands << "[ -n \"`which #{path}`\"]"
+          @commands << "[ -n \"`echo \\`which #{path}\\``\" ]"
         end
       end
     end
