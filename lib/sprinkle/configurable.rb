@@ -23,5 +23,9 @@ module Sprinkle
 
       @options[sym] || @package.send(sym, *args, &block) # try the parents options if unknown
     end
+    
+    def option?(sym)
+      !@options[sym].nil?
+    end
   end
 end
