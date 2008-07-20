@@ -40,6 +40,8 @@ lib/sprinkle/script.rb
 lib/sprinkle/verifiers/directory.rb
 lib/sprinkle/verifiers/executable.rb
 lib/sprinkle/verifiers/file.rb
+lib/sprinkle/verifiers/process.rb
+lib/sprinkle/verifiers/ruby.rb
 lib/sprinkle/verifiers/symlink.rb
 lib/sprinkle/verify.rb
 lib/sprinkle/version.rb
