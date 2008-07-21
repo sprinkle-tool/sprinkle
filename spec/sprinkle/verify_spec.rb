@@ -29,6 +29,10 @@ describe Sprinkle::Verify do
         
         # Check that ruby can include files
         ruby_can_load 'a', 'b', 'c'
+        
+        # Check that a gem exists
+        has_gem 'rails'
+        has_gem 'rails', '2.1.0'
       end
     end
     @verification = @package.verifications[0]
@@ -73,6 +77,11 @@ describe Sprinkle::Verify do
     
     it 'should check if ruby can include a, b, c' do
       @verification.commands.should include("ruby -e \"require 'rubygems';require 'a';require 'b';require 'c'\"")
+    end
+    
+    it 'should check that a ruby gem is installed' do
+      @verification.commands.should include("sudo gem list | grep -e '^rails (.*.*)$'")
+      @verification.commands.should include("sudo gem list | grep -e '^rails (.*2\\.1\\.0.*)$'")
     end
   end
   
