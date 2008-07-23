@@ -30,20 +30,21 @@ module Sprinkle
       attr_accessor :packages #:nodoc:
 
       def initialize(parent, *packages, &block) #:nodoc:
-        super parent, &block
         packages.flatten!
         
         options = { :dependencies_only => false }
         options.update(packages.pop) if packages.last.is_a?(Hash)
         
-        @command = options[:dependencies_only] ? 'build-dep' : 'install'
+        super parent, options, &block
+        
         @packages = packages
       end
 
       protected
 
         def install_commands #:nodoc:
-          "DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive apt-get -qyu #{@command} #{@packages.join(' ')}"
+          command = @options[:dependencies_only] ? 'build-dep' : 'install'
+          "DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive apt-get -qyu #{command} #{@packages.join(' ')}"
         end
 
     end

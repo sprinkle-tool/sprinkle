@@ -22,10 +22,6 @@ describe Sprinkle::Installers::Apt do
       @installer.packages.should == ['gcc', 'gdb', 'g++']
     end
 
-  end
-
-  describe 'when created for dependencies only install' do
-
     it 'should remove options from packages list' do
       @installer = create_apt 'ruby', :dependencies_only => true
       @installer.packages.should == [ 'ruby' ]
@@ -62,7 +58,7 @@ describe Sprinkle::Installers::Apt do
   describe 'during dependencies only installation' do
 
     before do
-      @installer = create_apt 'ruby', :dependencies_only => true
+      @installer = create_apt('ruby') { dependencies_only true }
       @install_commands = @installer.send :install_commands
     end
 
