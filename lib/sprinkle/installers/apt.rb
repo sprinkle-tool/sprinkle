@@ -1,9 +1,35 @@
 module Sprinkle
   module Installers
+    # = Apt Package Installer
+    #
+    # The Apt package installer uses the +apt-get+ command to install
+    # packages. The apt installer has only one option which can be
+    # modified which is the +dependencies_only+ option. When this is
+    # set to true, the installer uses +build-dep+ instead of +install+
+    # to only build the dependencies.
+    # 
+    # == Example Usage
+    #
+    # First, a simple installation of the magic_beans package:
+    #
+    #   package :magic_beans do
+    #     description "Beans beans they're good for your heart..."
+    #     apt 'magic_beans_package'
+    #   end
+    #
+    # Second, only build the magic_beans dependencies:
+    #
+    #   package :magic_beans_depends do
+    #     apt 'magic_beans_package' { dependencies_only true }
+    #   end
+    #
+    # As you can see, setting options is as simple as creating a
+    # block and calling the option as a method with the value as 
+    # its parameter.
     class Apt < Installer
-      attr_accessor :packages
+      attr_accessor :packages #:nodoc:
 
-      def initialize(parent, *packages, &block)
+      def initialize(parent, *packages, &block) #:nodoc:
         super parent, &block
         packages.flatten!
         
@@ -16,7 +42,7 @@ module Sprinkle
 
       protected
 
-        def install_commands
+        def install_commands #:nodoc:
           "DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive apt-get -qyu #{@command} #{@packages.join(' ')}"
         end
 

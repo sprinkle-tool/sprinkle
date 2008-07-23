@@ -69,7 +69,7 @@ describe Sprinkle::Installers::Gem do
       end
 
     end
-
+    
   end
 
 end

@@ -53,37 +53,10 @@ describe Sprinkle::Installers::Installer do
   end
 
   describe 'during configuration' do
-
-    before do
-      @default = Proc.new { }
-      @defaults = { :installer => @default }
-      @deployment.stub!(:defaults).and_return(@defaults)
-    end
-
-    it 'should be configurable via external defaults' do
+    # We just check to make sure it has the Sprinkle::Configurable method
+    it 'should be configurable' do
       @installer.should respond_to(:defaults)
     end
-
-    it 'should select the defaults for the particular concrete installer class' do
-      @deployment.should_receive(:defaults).and_return(@defaults)
-      @defaults.should_receive(:[]).with(:installer).and_return(@default)
-    end
-
-    it 'should configure the installer delivery mechansim' do
-      @installer.should_receive(:instance_eval)
-    end
-
-    it 'should maintain an options hash set arbitrarily via method missing' do
-      @installer.instance_eval do
-        hsv 'gts'
-      end
-      @installer.hsv.should == 'gts'
-    end
-
-    after do
-      @installer.defaults(@deployment)
-    end
-
   end
 
   describe 'during installation' do
@@ -112,6 +85,59 @@ describe Sprinkle::Installers::Installer do
     describe 'when in production' do
       it 'should invoke the delivery mechanism to process the install sequence' do
         @delivery.should_receive(:process).with(@package.name, @sequence, @roles)
+      end
+    end
+    
+    describe "with a pre command" do
+      
+      def create_installer_with_pre_command(cmd="")
+        installer = Sprinkle::Installers::Installer.new @package do
+          pre :install, cmd
+          
+          def install_commands
+            ["installer"]
+          end          
+        end
+        
+        installer.stub!(:puts).and_return
+        installer.delivery = @delivery
+        installer
+      end
+      before do
+        @installer = create_installer_with_pre_command('run')
+      end
+      describe "string commands" do
+        it "should insert the pre command for the specific package in the installation process" do
+          @installer.send(:install_sequence).should == [ 'run', 'installer' ]
+        end
+      end      
+      describe "blocks as commands" do
+        before(:each) do          
+          @installer = Sprinkle::Installers::Installer.new @package do
+            pre :install do
+              %w(a b c)
+            end
+
+            def install_commands
+              ["installer"]
+            end          
+          end
+
+          @installer.stub!(:puts).and_return
+          @installer.delivery = @delivery
+        end
+        it "should be able to store a block if it's the pre command" do
+          @installer.send(:install_sequence).should == [ "a", "b", "c", 'installer' ]
+        end
+      end
+      describe "blocks as commands" do
+        before(:each) do
+          @array = ["a", "b"]
+          @installer = create_installer_with_pre_command(@array)
+        end
+        it "should be able to store a block if it's the pre command" do
+          @installer.send(:install_sequence).should == [ @array, 'installer' ].flatten
+        end
       end
     end
 

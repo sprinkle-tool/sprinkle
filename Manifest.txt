@@ -7,7 +7,6 @@ Rakefile
 bin/sprinkle
 config/hoe.rb
 config/requirements.rb
-examples/merb/deploy.rb
 examples/rails/README
 examples/rails/deploy.rb
 examples/rails/packages/database.rb
@@ -18,8 +17,10 @@ examples/rails/packages/server.rb
 examples/rails/rails.rb
 examples/sprinkle/sprinkle.rb
 lib/sprinkle.rb
+lib/sprinkle/actors/actors.rb
 lib/sprinkle/actors/capistrano.rb
 lib/sprinkle/actors/vlad.rb
+lib/sprinkle/configurable.rb
 lib/sprinkle/deployment.rb
 lib/sprinkle/extensions/arbitrary_options.rb
 lib/sprinkle/extensions/array.rb
@@ -36,6 +37,13 @@ lib/sprinkle/installers/source.rb
 lib/sprinkle/package.rb
 lib/sprinkle/policy.rb
 lib/sprinkle/script.rb
+lib/sprinkle/verifiers/directory.rb
+lib/sprinkle/verifiers/executable.rb
+lib/sprinkle/verifiers/file.rb
+lib/sprinkle/verifiers/process.rb
+lib/sprinkle/verifiers/ruby.rb
+lib/sprinkle/verifiers/symlink.rb
+lib/sprinkle/verify.rb
 lib/sprinkle/version.rb
 script/destroy
 script/generate
@@ -54,6 +62,7 @@ spec/sprinkle/package_spec.rb
 spec/sprinkle/policy_spec.rb
 spec/sprinkle/script_spec.rb
 spec/sprinkle/sprinkle_spec.rb
+spec/sprinkle/verify_spec.rb
 sprinkle.gemspec
 tasks/deployment.rake
 tasks/environment.rake
