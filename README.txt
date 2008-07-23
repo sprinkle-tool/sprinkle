@@ -66,13 +66,14 @@ remote hosts. Currently Sprinkle supports the use of Capistrano or Vlad to issue
 but could also be extended to use any other command transport mechanism or be used to simply issue installation
 commands on the local system.
 
-An full example Sprinkle deployment script for deploying Rails (via gems), MySQL (via APT), and Apache (via source):
+An full example Sprinkle deployment script for deploying Rails (via gems), MySQL (via APT), Apache (via source) 
+and Git (via source with dependencies from APT):
 
     # Sprinkle Rails deployment script
     #
-    # This is an example Sprinkle script, configured to install Rails from gems, Apache and Ruby from source,
-    # and mysql from apt on an Ubuntu system. Installation is configured to run via Capistrano (and
-    # an accompanying deploy.rb recipe script). Source based packages are downloaded and built into
+    # This is an example Sprinkle script, configured to install Rails from gems, Apache, Ruby and Git from source,
+    # and mysql and Git dependencies from apt on an Ubuntu system. Installation is configured to run via 
+    # Capistrano (and an accompanying deploy.rb recipe script). Source based packages are downloaded and built into
     # /usr/local on the remote system.
     #
     # A sprinkle script is separated into 3 different sections. Packages, policies and deployment.
@@ -154,6 +155,18 @@ An full example Sprinkle deployment script for deploying Rails (via gems), MySQL
       version '1.0.5'
       requires :mongrel
     end
+    
+    package :git, :provides => :scm do
+      description 'Git Distributed Version Control'
+      version '1.5.6.3'
+      source "http://kernel.org/pub/software/scm/git/git-#{version}.tar.gz"
+      requires :git_dependencies
+    end
+
+    package :git_dependencies do
+      description 'Git Build Dependencies'
+      apt 'git', :dependencies_only => true
+    end
 
     # Policies
 
@@ -167,6 +180,7 @@ An full example Sprinkle deployment script for deploying Rails (via gems), MySQL
       requires :appserver
       requires :database
       requires :webserver
+      requires :scm
     end
 
     # Deployment
