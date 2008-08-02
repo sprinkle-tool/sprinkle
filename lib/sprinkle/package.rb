@@ -165,6 +165,8 @@ module Sprinkle
       end
       
       def process_verifications(deployment, roles, pre = false)
+        return if @verifications.blank?
+        
         if pre
           logger.info "--> Checking if #{self.name} is already installed for roles: #{roles}"
         else
