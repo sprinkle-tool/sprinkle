@@ -62,9 +62,9 @@ appserver, database and webserver can be virtual packages, where the user will b
 multiple choices for the virtual package exist.
 
 Sprinkle is architected to be extendable in many ways, one of those areas is in its deployment of commands to
-remote hosts. Currently Sprinkle supports the use of Capistrano or Vlad to issue commands on remote hosts via ssh,
-but could also be extended to use any other command transport mechanism or be used to simply issue installation
-commands on the local system.
+remote hosts. Currently Sprinkle supports the use of Capistrano, Vlad, or a direct net/ssh connection to 
+issue commands on remote hosts via ssh, but could also be extended to use any other command transport mechanism
+desired. Sprinkle can also be configured to simply issue installation commands to provision the local system.
 
 An full example Sprinkle deployment script for deploying Rails (via gems), MySQL (via APT), Apache (via source) 
 and Git (via source with dependencies from APT):
