@@ -97,7 +97,11 @@ module Sprinkle
         end
 
         def download_commands #:nodoc:
-          [ "wget -cq --directory-prefix='#{@options[:archives]}' #{@source}" ]
+          if File.exist? @source
+            [ "cp #{@source} #{@options[:archives]}/#{archive_name}" ]
+          else
+            [ "wget -cq --directory-prefix='#{@options[:archives]}' #{@source}" ]
+          end
         end
 
         def extract_commands #:nodoc:
