@@ -42,6 +42,7 @@ lib/sprinkle/extensions/dsl_accessor.rb
 lib/sprinkle/extensions/string.rb
 lib/sprinkle/extensions/symbol.rb
 lib/sprinkle/installers/apt.rb
+lib/sprinkle/installers/deb.rb
 lib/sprinkle/installers/gem.rb
 lib/sprinkle/installers/installer.rb
 lib/sprinkle/installers/rake.rb
