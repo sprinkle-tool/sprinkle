@@ -124,8 +124,16 @@ module Sprinkle
         @installer = Sprinkle::Installers::Apt.new(self, *names, &block)
       end
 
+      def deb(*names, &block)
+        @installer = Sprinkle::Installers::Deb.new(self, *names, &block)
+      end
+
       def rpm(*names, &block)
         @installer = Sprinkle::Installers::Rpm.new(self, *names, &block)
+      end
+
+      def yum(*names, &block)
+        @installer = Sprinkle::Installers::Yum.new(self, *names, &block)
       end
 
       def gem(name, options = {}, &block)
