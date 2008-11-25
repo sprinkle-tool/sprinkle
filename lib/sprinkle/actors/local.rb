@@ -18,7 +18,11 @@ module Sprinkle
     class Local
       
       def process(name, commands, roles, suppress_and_return_failures = false) #:nodoc:
-        commands.each { |command| system command }
+        commands.each do |command|
+          system command
+          return false if $?.to_i != 0
+        end
+        return true
       end
       
     end
