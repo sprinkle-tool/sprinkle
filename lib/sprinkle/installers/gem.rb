@@ -53,6 +53,7 @@ module Sprinkle
           cmd << " --version '#{version}'" if version
           cmd << " --source #{source}" if source
           cmd << " --install-dir #{repository}" if option?(:repository)
+          cmd << " --no-rdoc --no-ri" unless option?(:build_docs)
           cmd
         end
         

@@ -49,11 +49,11 @@ describe Sprinkle::Installers::Gem do
       end
 
       it 'should invoke the gem installer for the specified package' do
-        @installer.send(:install_commands).should == "gem install #{@gem}"
+        @installer.send(:install_commands).should == "gem install #{@gem} --no-rdoc --no-ri"
       end
 
       it 'should automatically insert pre/post commands for the specified package' do
-        @installer.send(:install_sequence).should == [ 'op1', "gem install #{@gem}", 'op2' ]
+        @installer.send(:install_sequence).should == [ 'op1', "gem install #{@gem} --no-rdoc --no-ri", 'op2']
       end
 
     end
@@ -61,10 +61,10 @@ describe Sprinkle::Installers::Gem do
     describe 'with a specific version' do
 
       before do
-        @installer = create_gem @gem, @version
+        @installer = create_gem @gem, @version, :build_docs => true
       end
 
-      it 'should install a specific version if defined' do
+      it 'should install a specific version if defined, and with docs' do
         @installer.send(:install_commands).should == "gem install #{@gem} --version '#{@version}'"
       end
 
