@@ -20,7 +20,7 @@ module Sprinkle
     #   end
      
     class Rake < Installer
-      def initialize(parent, commands = [], options = {}, &block) #:nodoc:
+      def initialize(parent, commands, options = {}, &block) #:nodoc:
         super parent, options, &block
         @commands = commands.to_a
       end

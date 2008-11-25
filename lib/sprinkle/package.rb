@@ -145,9 +145,9 @@ module Sprinkle
         @recommends << :build_essential # Ubuntu/Debian
         @installer = Sprinkle::Installers::Source.new(self, source, options, &block)
       end
-
-      def rake(*names, &block)
-        @installer = Sprinkle::Installers::Rake.new(self, options, *names, &block)        
+      
+      def rake(name, options = {}, &block)
+        @installer = Sprinkle::Installers::Rake.new(self, name, options, &block)        
       end
       
       def verify(description = '', &block)
