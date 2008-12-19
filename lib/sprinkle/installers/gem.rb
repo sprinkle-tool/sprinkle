@@ -54,6 +54,7 @@ module Sprinkle
           cmd << " --source #{source}" if source
           cmd << " --install-dir #{repository}" if option?(:repository)
           cmd << " --no-rdoc --no-ri" unless option?(:build_docs)
+          cmd << " -- #{build_flags}" if option?(:build_flags)
           cmd
         end
         

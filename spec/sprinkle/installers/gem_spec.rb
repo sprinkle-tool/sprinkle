@@ -5,7 +5,7 @@ describe Sprinkle::Installers::Gem do
   before do
     @gem = 'rails'
     @version = '2.0.2'
-    @options = { :source => 'http://gems.github.com/', :repository => '/tmp/gems' }
+    @options = { :source => 'http://gems.github.com/', :repository => '/tmp/gems', :build_flags => '--build_flag=foo' }
   end
 
   def create_gem(gem, version = nil, options = {}, &block)
@@ -33,6 +33,10 @@ describe Sprinkle::Installers::Gem do
 
     it 'should optionally store the repository location where gems are to be installed' do
       @installer.repository.should == @options[:repository]
+    end
+    
+    it 'should optionally store the build flags' do
+      @installer.build_flags.should == @options[:build_flags]
     end
 
   end
@@ -68,6 +72,18 @@ describe Sprinkle::Installers::Gem do
         @installer.send(:install_commands).should == "gem install #{@gem} --version '#{@version}'"
       end
 
+    end
+    
+    describe 'with build flags' do
+      
+      before do
+        @installer = create_gem @gem, nil, :build_flags => '--option=foo'
+      end
+      
+      it 'should install with defined build flags' do
+        @installer.send(:install_commands).should == "gem install #{@gem} --no-rdoc --no-ri -- --option=foo"
+      end
+      
     end
     
   end
