@@ -35,11 +35,11 @@ describe Sprinkle::Installers::Yum do
     end
 
     it 'should invoke the rpm installer for all specified packages' do
-      @install_commands.should =~ /yum ruby -y/
+      @install_commands.should =~ /yum install ruby -y/
     end
 
     it 'should automatically insert pre/post commands for the specified package' do
-      @installer.send(:install_sequence).should == [ 'op1', 'yum ruby -y', 'op2' ]
+      @installer.send(:install_sequence).should == [ 'op1', 'yum install ruby -y', 'op2' ]
     end
 
     it 'should install a specific version if defined'
