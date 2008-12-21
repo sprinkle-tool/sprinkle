@@ -5,7 +5,7 @@ end
 
 package :mysql_ruby_driver do
   description 'Ruby MySQL database driver'
-  gem 'mysql'
+  gem 'mysql' # :build_flags => "—with-mysql-config=/usr/local/mysql/bin/mysql_config"
   
   verify do
     ruby_can_load 'mysql'
