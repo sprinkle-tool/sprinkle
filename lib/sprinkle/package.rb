@@ -120,6 +120,10 @@ module Sprinkle
         self.instance_eval &block
       end
 
+      def pkg(*names, &block)
+        @installer = Sprinkle::Installers::Pkg.new(self, *names, &block)
+      end
+
       def apt(*names, &block)
         @installer = Sprinkle::Installers::Apt.new(self, *names, &block)
       end
