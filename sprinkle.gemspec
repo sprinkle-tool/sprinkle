@@ -25,11 +25,11 @@ Gem::Specification.new do |s|
              "lib/sprinkle/extensions/string.rb", "lib/sprinkle/extensions/symbol.rb", "lib/sprinkle/installers/apt.rb",
              "lib/sprinkle/installers/deb.rb", "lib/sprinkle/installers/gem.rb", "lib/sprinkle/installers/installer.rb",
              "lib/sprinkle/installers/rake.rb", "lib/sprinkle/installers/rpm.rb", "lib/sprinkle/installers/source.rb",
-             "lib/sprinkle/installers/yum.rb", "lib/sprinkle/package.rb", "lib/sprinkle/policy.rb", "lib/sprinkle/script.rb",
-             "lib/sprinkle/verifiers/directory.rb", "lib/sprinkle/verifiers/executable.rb", "lib/sprinkle/verifiers/file.rb",
-             "lib/sprinkle/verifiers/process.rb", "lib/sprinkle/verifiers/ruby.rb", "lib/sprinkle/verifiers/symlink.rb",
-              "lib/sprinkle/verify.rb", "lib/sprinkle/version.rb", "script/destroy", "script/generate", "sprinkle.gemspec",
-              "tasks/deployment.rake", "tasks/environment.rake", "tasks/rspec.rake"]
+             "lib/sprinkle/installers/yum.rb", "lib/sprinkle/installers/pkg.rb", "lib/sprinkle/package.rb", "lib/sprinkle/policy.rb", 
+             "lib/sprinkle/script.rb", "lib/sprinkle/verifiers/directory.rb", "lib/sprinkle/verifiers/executable.rb", 
+             "lib/sprinkle/verifiers/file.rb", "lib/sprinkle/verifiers/process.rb", "lib/sprinkle/verifiers/ruby.rb", 
+             "lib/sprinkle/verifiers/symlink.rb", "lib/sprinkle/verify.rb", "lib/sprinkle/version.rb", "script/destroy", 
+             "script/generate", "sprinkle.gemspec", "tasks/deployment.rake", "tasks/environment.rake", "tasks/rspec.rake"]
               
   s.test_files = ["spec/spec.opts", "spec/spec_helper.rb", "spec/sprinkle/actors/capistrano_spec.rb",
                   "spec/sprinkle/actors/local_spec.rb", "spec/sprinkle/configurable_spec.rb", "spec/sprinkle/deployment_spec.rb",

@@ -49,6 +49,7 @@ lib/sprinkle/installers/rake.rb
 lib/sprinkle/installers/rpm.rb
 lib/sprinkle/installers/source.rb
 lib/sprinkle/installers/yum.rb
+lib/sprinkle/installers/pkg.rb
 lib/sprinkle/package.rb
 lib/sprinkle/policy.rb
 lib/sprinkle/script.rb
@@ -76,6 +77,7 @@ spec/sprinkle/installers/installer_spec.rb
 spec/sprinkle/installers/rpm_spec.rb
 spec/sprinkle/installers/yum_spec.rb
 spec/sprinkle/installers/source_spec.rb
+spec/sprinkle/installers/pkg_spec.rb
 spec/sprinkle/package_spec.rb
 spec/sprinkle/policy_spec.rb
 spec/sprinkle/script_spec.rb
