@@ -123,6 +123,10 @@ module Sprinkle
       def pkg(*names, &block)
         @installer = Sprinkle::Installers::Pkg.new(self, *names, &block)
       end
+      
+      def port(port, &block)
+        @installer = Sprinkle::Installers::Port.new(self, port, &block)
+      end
 
       def apt(*names, &block)
         @installer = Sprinkle::Installers::Apt.new(self, *names, &block)
