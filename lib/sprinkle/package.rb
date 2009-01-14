@@ -120,12 +120,12 @@ module Sprinkle
         self.instance_eval &block
       end
 
-      def pkg(*names, &block)
-        @installer = Sprinkle::Installers::Pkg.new(self, *names, &block)
+      def freebsd_pkg(*names, &block)
+        @installer = Sprinkle::Installers::FreebsdPkg.new(self, *names, &block)
       end
       
-      def port(port, &block)
-        @installer = Sprinkle::Installers::Port.new(self, port, &block)
+      def bsd_port(port, &block)
+        @installer = Sprinkle::Installers::BsdPort.new(self, port, &block)
       end
 
       def apt(*names, &block)
