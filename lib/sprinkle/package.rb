@@ -128,6 +128,10 @@ module Sprinkle
         @installer = Sprinkle::Installers::OpenbsdPkg.new(self, *names, &block)
       end
       
+      def opensolaris_pkg(*names, &block)
+        @installer = Sprinkle::Installers::OpensolarisPkg.new(self, *names, &block)
+      end
+      
       def bsd_port(port, &block)
         @installer = Sprinkle::Installers::BsdPort.new(self, port, &block)
       end

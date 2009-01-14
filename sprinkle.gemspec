@@ -26,19 +26,20 @@ Gem::Specification.new do |s|
              "lib/sprinkle/installers/deb.rb", "lib/sprinkle/installers/gem.rb", "lib/sprinkle/installers/installer.rb",
              "lib/sprinkle/installers/rake.rb", "lib/sprinkle/installers/rpm.rb", "lib/sprinkle/installers/source.rb",
              "lib/sprinkle/installers/yum.rb", "lib/sprinkle/installers/freebsd_pkg.rb", "lib/sprinkle/installers/openbsd_pkg.rb",
-             "lib/sprinkle/installers/bsd_port.rb", "lib/sprinkle/installers/mac_port.rb", "lib/sprinkle/package.rb", 
-             "lib/sprinkle/policy.rb", "lib/sprinkle/script.rb", "lib/sprinkle/verifiers/directory.rb", "lib/sprinkle/verifiers/executable.rb", 
-             "lib/sprinkle/verifiers/file.rb", "lib/sprinkle/verifiers/process.rb", "lib/sprinkle/verifiers/ruby.rb", 
-             "lib/sprinkle/verifiers/symlink.rb", "lib/sprinkle/verify.rb", "lib/sprinkle/version.rb", "script/destroy", 
-             "script/generate", "sprinkle.gemspec", "tasks/deployment.rake", "tasks/environment.rake", "tasks/rspec.rake"]
+             "lib/sprinkle/installers/opensolaris_pkg.rb", "lib/sprinkle/installers/bsd_port.rb", "lib/sprinkle/installers/mac_port.rb", 
+             "lib/sprinkle/package.rb", "lib/sprinkle/policy.rb", "lib/sprinkle/script.rb", "lib/sprinkle/verifiers/directory.rb", 
+             "lib/sprinkle/verifiers/executable.rb", "lib/sprinkle/verifiers/file.rb", "lib/sprinkle/verifiers/process.rb", 
+             "lib/sprinkle/verifiers/ruby.rb", "lib/sprinkle/verifiers/symlink.rb", "lib/sprinkle/verify.rb", "lib/sprinkle/version.rb",
+             "script/destroy", "script/generate", "sprinkle.gemspec", "tasks/deployment.rake", "tasks/environment.rake", "tasks/rspec.rake"]
               
   s.test_files = ["spec/spec.opts", "spec/spec_helper.rb", "spec/sprinkle/actors/capistrano_spec.rb",
                   "spec/sprinkle/actors/local_spec.rb", "spec/sprinkle/configurable_spec.rb", "spec/sprinkle/deployment_spec.rb",
                   "spec/sprinkle/extensions/array_spec.rb", "spec/sprinkle/extensions/string_spec.rb", "spec/sprinkle/installers/apt_spec.rb",
                   "spec/sprinkle/installers/gem_spec.rb", "spec/sprinkle/installers/installer_spec.rb", "spec/sprinkle/installers/rpm_spec.rb",
-                  "spec/sprinkle/installers/yum_spec.rb", "spec/sprinkle/installers/source_spec.rb", "spec/sprinkle/package_spec.rb",
-                  "spec/sprinkle/policy_spec.rb", "spec/sprinkle/script_spec.rb", "spec/sprinkle/sprinkle_spec.rb",
-                  "spec/sprinkle/installers/rake_spec.rb", "spec/sprinkle/verify_spec.rb"]
+                  "spec/sprinkle/installers/yum_spec.rb", "spec/sprinkle/installers/source_spec.rb", "spec/sprinkle/installers/freebsd_pkg_spec.rb",
+                  "spec/sprinkle/installers/openbsd_pkg_spec.rb", "spec/sprinkle/installers/opensolaris_pkg_spec.rb",
+                  "spec/sprinkle/installers/mac_port_spec.rb", "spec/sprinkle/bsd_port_spec.rb", "spec/sprinkle/policy_spec.rb",
+                  "spec/sprinkle/script_spec.rb", "spec/sprinkle/sprinkle_spec.rb", "spec/sprinkle/installers/rake_spec.rb", "spec/sprinkle/verify_spec.rb"]
   s.has_rdoc = true
   s.homepage = %q{http://sprinkle.rubyforge.org}
   s.rdoc_options = ["--main", "README.txt"]
