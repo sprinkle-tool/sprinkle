@@ -1,15 +1,15 @@
 module Sprinkle
   module Installers
-    # = FreeBSD Port Installer
+    # = OpenBSD and FreeBSD Port Installer
     #
-    # The Port installer installs FreeBSD ports.
+    # The Port installer installs OpenBSD and FreeBSD ports.
     # 
     # == Example Usage
     #
     # Installing the magic_beans port.
     #
     #   package :magic_beans do
-    #     port 'magic/magic_beans'
+    #     bsd_port 'magic/magic_beans'
     #   end
     #
     class BsdPort < Installer
