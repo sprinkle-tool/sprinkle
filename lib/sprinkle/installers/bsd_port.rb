@@ -3,6 +3,8 @@ module Sprinkle
     # = OpenBSD and FreeBSD Port Installer
     #
     # The Port installer installs OpenBSD and FreeBSD ports.
+    # Before usage, the ports sytem must be installed and
+    # read on the target operating system.
     # 
     # == Example Usage
     #
