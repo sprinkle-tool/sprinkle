@@ -131,6 +131,10 @@ module Sprinkle
       def bsd_port(port, &block)
         @installer = Sprinkle::Installers::BsdPort.new(self, port, &block)
       end
+      
+      def mac_port(port, &block)
+        @installer = Sprinkle::Installers::MacPort.new(self, port, &block)
+      end
 
       def apt(*names, &block)
         @installer = Sprinkle::Installers::Apt.new(self, *names, &block)
