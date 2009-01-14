@@ -18,7 +18,7 @@ module Sprinkle
     #     openbsd_pkg %w(magic_beans magic_sauce)
     #   end
     #
-    # Note:
+    # == Notes
     # Before OpenBSD packages can be installed, the PKG_PATH
     # environment variable must be set.
     #
