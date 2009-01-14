@@ -17,6 +17,16 @@ module Sprinkle
     #   package :magic_beans do
     #     openbsd_pkg %w(magic_beans magic_sauce)
     #   end
+    #
+    # Note:
+    # Before OpenBSD packages can be installed, the PKG_PATH
+    # environment variable must be set.
+    #
+    # You must set PKG_PATH in ~/.ssh/environment on the remote
+    # system and enable 'PermitUserEnvironment yes' in /etc/ssh/sshd_config
+    # 
+    # For help on PKG_PATH see section 15.2.2 of the OpenBSD FAQ 
+    # (http://www.openbsd.org/faq/faq15.html)
     class OpenbsdPkg < Installer
       attr_accessor :packages #:nodoc:
 
