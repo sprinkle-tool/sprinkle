@@ -49,8 +49,10 @@ lib/sprinkle/installers/rake.rb
 lib/sprinkle/installers/rpm.rb
 lib/sprinkle/installers/source.rb
 lib/sprinkle/installers/yum.rb
-lib/sprinkle/installers/pkg.rb
-lib/sprinkle/installers/port.rb
+lib/sprinkle/installers/freebsd_pkg.rb
+lib/sprinkle/installers/openbsd_pkg.rb
+lib/sprinkle/installers/bsd_port.rb
+lib/sprinkle/installers/mac_port.rb
 lib/sprinkle/package.rb
 lib/sprinkle/policy.rb
 lib/sprinkle/script.rb
