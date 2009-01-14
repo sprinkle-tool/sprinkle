@@ -51,6 +51,7 @@ lib/sprinkle/installers/source.rb
 lib/sprinkle/installers/yum.rb
 lib/sprinkle/installers/freebsd_pkg.rb
 lib/sprinkle/installers/openbsd_pkg.rb
+lib/sprinkle/installers/opensolaris_pkg.rb
 lib/sprinkle/installers/bsd_port.rb
 lib/sprinkle/installers/mac_port.rb
 lib/sprinkle/package.rb
