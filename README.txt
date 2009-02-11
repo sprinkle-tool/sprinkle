@@ -4,6 +4,7 @@ http://redartisan.com/2008/5/27/sprinkle-intro
 http://github.com/crafterm/sprinkle
 http://github.com/benschwarz/passenger-stack
 http://www.vimeo.com/2888665
+http://redartisan.lighthouseapp.com/projects/25275-sprinkle/tickets
 
 == DESCRIPTION:
 
