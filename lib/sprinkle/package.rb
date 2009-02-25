@@ -237,6 +237,8 @@ module Sprinkle
 
         @dependencies.each do |dep|
           package = PACKAGES[dep]
+          package = select_package(dep, package) if package.is_a? Array
+          
           raise "Package definition not found for key: #{dep}" unless package
           block.call(self, package, depth) if block
           packages << package.tree(depth + 1, &block)

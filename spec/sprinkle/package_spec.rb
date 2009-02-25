@@ -374,6 +374,19 @@ CODE
 
   end
 
+  describe 'virtual package dependencies' do
+    before do
+      @a = package :a do; requires :virtual ; end
+      @v1 = package :v1, :provides => :virtual do; end
+      @v2 = package :v2, :provides => :virtual do; end
+    end
+    
+    it 'should select package for an array' do
+      @a.should_receive(:select_package).with(:virtual, [@v1,@v2]).and_return(@v1)
+      @a.tree do; end
+    end
+  end
+
   describe 'with missing dependencies' do
 
     before do
