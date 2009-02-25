@@ -251,6 +251,22 @@ module Sprinkle
 
       private
 
+        def select_package(name, packages)
+          if packages.size <= 1
+            package = packages.first
+          else
+            package = choose do |menu|
+              menu.prompt = "Multiple choices exist for virtual package #{name}"
+              menu.choices *packages.collect(&:to_s)
+            end
+            package = Sprinkle::Package::PACKAGES[package]
+          end
+
+          cloud_info "Selecting #{package.to_s} for virtual package #{name}"
+
+          package
+        end
+
         def meta_package?
           @installer == nil
         end
