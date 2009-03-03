@@ -9,6 +9,9 @@ describe Sprinkle::Verify do
         # Check a file exists
         has_file 'my_file.txt'
         
+        # Check that a file contains a substring
+        file_contains 'my_file.txt', 'A sunny day on the lower east-side'
+        
         # Check a directory exists
         has_directory 'mydir'
         
@@ -49,6 +52,10 @@ describe Sprinkle::Verify do
   describe 'with checks' do
     it 'should do a "test -f" on the has_file check' do
       @verification.commands.should include('test -f my_file.txt')
+    end
+    
+    it 'should do a grep to see if a file contains a text string' do
+      @verification.commands.should include("grep 'A sunny day on the lower east-side' my_file.txt")
     end
     
     it 'should do a "test -d" on the has_directory check' do
