@@ -25,8 +25,15 @@ module Sprinkle
         @config = ::Capistrano::Configuration.new
         @config.logger.level = Sprinkle::OPTIONS[:verbose] ? ::Capistrano::Logger::INFO : ::Capistrano::Logger::IMPORTANT
         @config.set(:password) { ::Capistrano::CLI.password_prompt }
+        
+        @config.set(:_sprinkle_actor, self)
+        
+        def @config.recipes(script)
+          _sprinkle_actor.recipes(script)
+        end
+        
         if block
-          self.instance_eval &block
+          @config.instance_eval &block
         else
           @config.load 'deploy' # normally in the config directory for rails
         end
