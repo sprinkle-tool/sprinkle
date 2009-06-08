@@ -55,6 +55,19 @@ module Sprinkle
         end
       end
 
+			# Sorry, all transfers are recursive
+      def transfer(name, source, destination, roles, recursive = true, suppress_and_return_failures = false) #:nodoc:
+        begin
+					rsync source, destination
+          return true
+        rescue ::Vlad::CommandFailedError => e
+          return false if suppress_and_return_failures
+          
+          # Reraise error if we're not suppressing it
+          raise
+        end
+      end
+
       private
 
         def task_sym(name)
