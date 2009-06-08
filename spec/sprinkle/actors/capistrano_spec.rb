@@ -135,6 +135,51 @@ describe Sprinkle::Actors::Capistrano do
 
   end
 
+  describe 'transferring files' do
+
+    before do
+      @source = 'source'
+			@dest   = 'dest'
+      @roles    = %w( app )
+      @name     = 'name'
+
+      @cap = create_cap do; recipes 'deploy'; end
+      @cap.stub!(:run).and_return
+      
+      @testing_errors = false
+    end
+
+    it 'should dynamically create a capistrano task containing calling upload' do
+      @cap.config.should_receive(:task).and_return
+    end
+
+    it 'should invoke capistrano task after creation' do
+      @cap.should_receive(:run).with(@name).and_return
+    end
+    
+    it 'should raise capistrano errors when suppressing parameter is not set' do
+      @testing_errors = true
+      
+      @cap.should_receive(:run).and_raise(::Capistrano::CommandError)
+      lambda { @cap.process @name, @commands, @roles }.should raise_error(::Capistrano::CommandError)
+    end
+    
+    it 'should not raise errors and instead return false when suppressing parameter is set' do
+      @testing_errors = true
+      
+      @cap.should_receive(:run).and_raise(::Capistrano::CommandError)
+      
+      value = nil
+      lambda { value = @cap.process(@name, @commands, @roles, true) }.should_not raise_error(::Capistrano::CommandError)
+      
+      value.should_not be
+    end
+
+    after do
+      @cap.transfer @name, @source, @dest, @roles unless @testing_errors
+    end
+  end
+
   describe 'generated task' do
 
     before do
@@ -165,6 +210,56 @@ describe Sprinkle::Actors::Capistrano do
       @cap.process @name, @commands, @roles
     end
 
+  end
+
+  describe 'generated transfer' do
+    before do
+      @source   = 'source'
+			@dest     = 'dest'
+      @roles    = %w( app )
+      @name     = 'name'
+
+      @cap = create_cap do; recipes 'deploy'; end
+      @cap.config.stub!(:upload).and_return
+    end
+
+    it 'should call upload with the source and destination via :scp' do
+      @cap.config.should_receive(:upload).with(@source, @dest, :via => :scp, :recursive => true).and_return
+    end
+
+    it 'should be applicable for the supplied roles' do
+      @cap.stub!(:run).and_return
+      @cap.config.should_receive(:task).with(:install_name, :roles => @roles).and_return
+    end
+
+    after do
+      @cap.transfer @name, @source, @dest, @roles
+    end
+  end
+
+  describe 'generated transfer when recursive is false' do
+    before do
+      @source   = 'source'
+			@dest     = 'dest'
+      @roles    = %w( app )
+      @name     = 'name'
+
+      @cap = create_cap do; recipes 'deploy'; end
+      @cap.config.stub!(:upload).and_return
+    end
+
+    it 'should call upload with the source and destination via :scp' do
+      @cap.config.should_receive(:upload).with(@source, @dest, :via => :scp, :recursive => false).and_return
+    end
+
+    it 'should be applicable for the supplied roles' do
+      @cap.stub!(:run).and_return
+      @cap.config.should_receive(:task).with(:install_name, :roles => @roles).and_return
+    end
+
+    after do
+      @cap.transfer @name, @source, @dest, @roles, false
+    end
   end
 
 end
