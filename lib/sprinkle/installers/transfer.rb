@@ -34,6 +34,10 @@ module Sprinkle
         @destination = destination
       end
 
+			def install_commands
+				nil
+			end
+			
       def process(roles) #:nodoc:
         assert_delivery
 
@@ -42,8 +46,22 @@ module Sprinkle
         end
 
         unless Sprinkle::OPTIONS[:testing]
+					pre = pre_commands(:install)
+					unless pre.empty?
+						sequence = pre; sequence = sequence.join('; ') if sequence.is_a? Array
+						logger.info "#{@package.name} pre-transfer commands: #{sequence} for roles: #{roles}\n"
+						@delivery.process sequence
+					end
+					
           logger.info "--> Transferring #{@source} to #{@destination} for roles: #{roles}"
           @delivery.transfer(@package.name, @source, @destination, roles)
+
+					post = post_commands(:install)
+					unless post.empty?
+						sequence = post; sequence = sequence.join('; ') if sequence.is_a? Array
+						logger.info "#{@package.name} post-transfer commands: #{sequence} for roles: #{roles}\n"
+						@delivery.process sequence
+					end
         end
       end
     end
