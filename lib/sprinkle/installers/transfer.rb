@@ -2,29 +2,32 @@ module Sprinkle
   module Installers
     # Beware, strange "installer" coming your way.
     #
-    # = Text configuration installer
+    # = File transfer installer
     #
-    # This installer pushes simple configuration into a file.
+    # This installer pushes files from the local disk to remote servers.
     # 
     # == Example Usage
     #
-    # Installing magic_beans into apache2.conf
+    # Installing a nginx.conf onto remote servers
     #
-    #   package :magic_beans do
-    #     push_text 'magic_beans', '/etc/apache2/apache2.conf'
+    #   package :nginx_conf do
+    #     transfer 'files/nginx.conf', '/etc/nginx.conf'
     #   end
     #
     # If you user has access to 'sudo' and theres a file that requires
     # priveledges, you can pass :sudo => true 
     #
-    #   package :magic_beans do
-    #     push_text 'magic_beans', '/etc/apache2/apache2.conf', :sudo => true
+    #   package :nginx_conf do
+    #     transfer 'files/nginx.conf', '/etc/nginx.conf', :sudo => true
     #   end
     #
-    # A special verify step exists for this very installer
-    # its known as file_contains, it will test that a file indeed
-    # contains a substring that you send it.
+		# By default, transfers are recursive and you can move whole directories
+		# via this method. If you wish to disable recursive transfers, you can pass
+		# recursive => false, although it will not be obeyed when using the Vlad actor.
     #
+		# Finally, should you need to run commands before or after the file transfer (making
+		# directories or changing permissions), you can use the pre/post :install directives
+		# and they will be run.
     class Transfer < Installer
       attr_accessor :source, :destination #:nodoc:
 
@@ -34,6 +37,10 @@ module Sprinkle
         @destination = destination
       end
 
+			def install_commands
+				nil
+			end
+			
       def process(roles) #:nodoc:
         assert_delivery
 
@@ -42,8 +49,22 @@ module Sprinkle
         end
 
         unless Sprinkle::OPTIONS[:testing]
+					pre = pre_commands(:install)
+					unless pre.empty?
+						sequence = pre; sequence = sequence.join('; ') if sequence.is_a? Array
+						logger.info "#{@package.name} pre-transfer commands: #{sequence} for roles: #{roles}\n"
+						@delivery.process @package.name, sequence, roles
+					end
+					
           logger.info "--> Transferring #{@source} to #{@destination} for roles: #{roles}"
           @delivery.transfer(@package.name, @source, @destination, roles)
+
+					post = post_commands(:install)
+					unless post.empty?
+						sequence = post; sequence = sequence.join('; ') if sequence.is_a? Array
+						logger.info "#{@package.name} post-transfer commands: #{sequence} for roles: #{roles}\n"
+						@delivery.process @package.name, sequence, roles
+					end
         end
       end
     end
