@@ -1,3 +1,48 @@
+# Blatantly stole this from Chef
+class TemplateError < RuntimeError
+  attr_reader :original_exception, :context
+  SOURCE_CONTEXT_WINDOW = 2 unless defined? SOURCE_CONTEXT_WINDOW
+  
+  def initialize(original_exception, template, context)
+    @original_exception, @template, @context = original_exception, template, context
+  end
+  
+  def message
+    @original_exception.message
+  end
+  
+  def line_number
+    @line_number ||= $1.to_i if original_exception.backtrace.find {|line| line =~ /\(erubis\):(\d+)/ }
+  end
+  
+  def source_location
+    "on line ##{line_number}"
+  end
+  
+  def source_listing
+		return nil if line_number.nil?
+		
+    @source_listing ||= begin
+      line_index = line_number - 1
+      beginning_line = line_index <= SOURCE_CONTEXT_WINDOW ? 0 : line_index - SOURCE_CONTEXT_WINDOW
+      source_size = SOURCE_CONTEXT_WINDOW * 2 + 1
+      lines = @template.split(/\n/)
+      contextual_lines = lines[beginning_line, source_size]
+      output = []
+      contextual_lines.each_with_index do |line, index|
+        line_number = (index+beginning_line+1).to_s.rjust(3)
+        output << "#{line_number}: #{line}"
+      end
+      output.join("\n")
+    end
+  end
+  
+  def to_s
+    "\n\n#{self.class} (#{message}) #{source_location}:\n\n" +
+      "#{source_listing}\n\n  #{original_exception.backtrace.join("\n  ")}\n\n"
+  end
+end
+
 module Sprinkle
   module Installers
     # Beware, strange "installer" coming your way.
@@ -25,6 +70,10 @@ module Sprinkle
 		# via this method. If you wish to disable recursive transfers, you can pass
 		# recursive => false, although it will not be obeyed when using the Vlad actor.
     #
+		# If you pass the option :render => true, this tells transfer that the source file
+		# is an ERB template to be rendered locally before being transferred (you can declare
+		# variables in the package scope). When render is true, recursive is turned off.
+		#
 		# Finally, should you need to run commands before or after the file transfer (making
 		# directories or changing permissions), you can use the pre/post :install directives
 		# and they will be run.
@@ -39,6 +88,29 @@ module Sprinkle
 
 			def install_commands
 				nil
+			end
+			
+			def self.render_template(template, context, prefix)
+				require 'tempfile'
+				require 'erubis'
+				
+				puts "Foo: #{eval('foo', context)}"
+				
+				begin
+          eruby = Erubis::Eruby.new(template)
+          output = eruby.result(context)
+        rescue Object => e
+          raise TemplateError.new(e, template, context)
+        end
+
+        final_tempfile = Tempfile.new(prefix)
+        final_tempfile.print(output)
+        final_tempfile.close
+				final_tempfile
+			end
+			
+			def render_template(template, context, prefix)
+				self.class.render_template(template, context, prefix)
 			end
 			
       def process(roles) #:nodoc:
@@ -56,9 +128,21 @@ module Sprinkle
 						@delivery.process @package.name, sequence, roles
 					end
 					
-          logger.info "--> Transferring #{@source} to #{@destination} for roles: #{roles}"
-          @delivery.transfer(@package.name, @source, @destination, roles)
-
+					recursive = @options[:recursive]
+					
+					if options[:render] 
+						template = File.read(@source)
+						tempfile = render_template(template, binding(), @package.name)
+						sourcefile = tempfile.path
+						logger.info "Rendering template #{@source} to temporary file #{sourcefile}"
+						recursive = false
+					else
+						sourcefile = @source
+					end
+					
+					logger.info "--> Transferring #{sourcefile} to #{@destination} for roles: #{roles}"
+          @delivery.transfer(@package.name, sourcefile, @destination, roles, recursive)
+					
 					post = post_commands(:install)
 					unless post.empty?
 						sequence = post; sequence = sequence.join('; ') if sequence.is_a? Array
