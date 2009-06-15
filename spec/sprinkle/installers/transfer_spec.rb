@@ -24,7 +24,7 @@ describe Sprinkle::Installers::Transfer do
   end
   
   describe 'when created' do
-    it 'should accept a single package to install' do
+    it 'should accept a source and destination to install' do
       @installer.source.should == @source
       @installer.destination.should == @destination
     end
@@ -50,4 +50,13 @@ describe Sprinkle::Installers::Transfer do
       @installer.process @roles
     end
   end
+
+	describe "if the :render flag is true" do
+		it "should render the source file as a template to a tempfile"
+		it "should call transfer with recursive set to false"
+	end
+	
+	describe "if the :recursive flag is explicitly set to false" do
+		it "should call transfer with recursive set to false"
+	end
 end
