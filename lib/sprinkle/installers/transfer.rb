@@ -113,6 +113,12 @@ module Sprinkle
 				self.class.render_template(template, context, prefix)
 			end
 			
+			def render_template_file(path, context, prefix)
+				template = File.read(path)
+				tempfile = render_template(template, binding(), @package.name)
+				tempfile
+			end
+			
       def process(roles) #:nodoc:
         assert_delivery
 
@@ -131,17 +137,16 @@ module Sprinkle
 					recursive = @options[:recursive]
 					
 					if options[:render] 
-						template = File.read(@source)
-						tempfile = render_template(template, binding(), @package.name)
-						sourcefile = tempfile.path
-						logger.info "Rendering template #{@source} to temporary file #{sourcefile}"
+						tempfile = render_template_file(@source, binding(), @package.name)
+						sourcepath = tempfile.path
+						logger.info "Rendering template #{@source} to temporary file #{sourcepath}"
 						recursive = false
 					else
-						sourcefile = @source
+						sourcepath = @source
 					end
 					
-					logger.info "--> Transferring #{sourcefile} to #{@destination} for roles: #{roles}"
-          @delivery.transfer(@package.name, sourcefile, @destination, roles, recursive)
+					logger.info "--> Transferring #{sourcepath} to #{@destination} for roles: #{roles}"
+          @delivery.transfer(@package.name, sourcepath, @destination, roles, recursive)
 					
 					post = post_commands(:install)
 					unless post.empty?
