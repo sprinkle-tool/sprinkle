@@ -1,0 +1,8 @@
+#!/usr/bin/env ruby
+# File: script/console
+irb = RUBY_PLATFORM =~ /(:?mswin|mingw)/ ? 'irb.bat' : 'irb'
+
+libs =  " -r irb/completion"
+libs <<  " -r #{File.dirname(__FILE__) + '/../lib/sprinkle.rb'}"
+puts "Loading sprinkle gem"
+exec "#{irb} #{libs} --simple-prompt"
