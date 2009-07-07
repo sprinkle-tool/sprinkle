@@ -37,7 +37,7 @@ module Sprinkle
       protected
 
         def install_commands #:nodoc:
-          "echo '#{@text}' |#{'sudo' if option?(:sudo)} tee -a #{@path}"
+          "echo -e '#{@text.gsub("\n", '\n')}' |#{'sudo' if option?(:sudo)} tee -a #{@path}"
         end
 
     end
