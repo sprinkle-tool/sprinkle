@@ -46,16 +46,26 @@ module Sprinkle
     #   package :magic_beans do
     #     source 'http://magicbeansland.com/latest-1.1.1.tar.gz' do
     #       prefix    '/usr/local'
-    #       
+    #
     #       pre :prepare { 'echo "Here we go folks."' }
     #       post :extract { 'echo "I believe..."' }
     #       pre :build { 'echo "Cross your fingers!"' }
     #     end
     #   end
     #
+    # Fourth, specifying a custom archive name because the downloaded file name
+    # differs from the source URL:
+    #
+    #   package :gitosis do
+    #     source 'http://github.com/crafterm/sprinkle/tarball/master' do
+    #       custom_archive 'crafterm-sprinkle-518e33c835986c03ec7ae8ea88c657443b006f28.tar.gz'
+    #     end
+    #   end
+    #
     # As you can see, setting options is as simple as creating a
     # block and calling the option as a method with the value as 
     # its parameter.
+
     class Source < Installer
       attr_accessor :source #:nodoc:
 
@@ -143,7 +153,7 @@ module Sprinkle
         end
 
         def extract_command #:nodoc:
-          case @source
+          case archive_name
           when /(tar.gz)|(tgz)$/
             'tar xzf'
           when /(tar.bz2)|(tb2)$/
@@ -158,7 +168,7 @@ module Sprinkle
         end
 
         def archive_name #:nodoc:
-          name = @source.split('/').last
+          name = @options[:custom_archive] || @source.split('/').last
           raise "Unable to determine archive name for source: #{source}, please update code knowledge" unless name
           name
         end
@@ -168,12 +178,12 @@ module Sprinkle
         end
 
         def base_dir #:nodoc:
-          if @source.split('/').last =~ /(.*)\.(tar\.gz|tgz|tar\.bz2|tb2)/
+          if archive_name.split('/').last =~ /(.*)\.(tar\.gz|tgz|tar\.bz2|tar|tb2)/
             return $1
           end
           raise "Unknown base path for source archive: #{@source}, please update code knowledge"
         end
-        
+
     end
   end
 end
