@@ -73,7 +73,7 @@ def log_level(options)
   Object.logger.level = ActiveSupport::BufferedLogger::Severity::DEBUG if options[:verbose]
 end
 
-require 'sprinkle'
+require File.dirname(__FILE__) + '/../lib/sprinkle'
 
 powder = OPTIONS[:path]
 raise "Sprinkle script is not readable: #{powder}" unless File.readable?(powder)
