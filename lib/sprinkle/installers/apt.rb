@@ -44,7 +44,7 @@ module Sprinkle
 
         def install_commands #:nodoc:
           command = @options[:dependencies_only] ? 'build-dep' : 'install'
-          "DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive apt-get -qyu #{command} #{@packages.join(' ')}"
+          "env DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive apt-get --force-yes -qyu #{command} #{@packages.join(' ')}"
         end
 
     end
