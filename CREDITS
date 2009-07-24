@@ -1,7 +1,7 @@
 = CREDITS
 
 Many thanks to the following people who have submitted ideas, patches, helped with testing
-and/or generally provided support to Sprinke, I really appreciate your help:
+and/or generally provided support to Sprinkle, I really appreciate your help:
 
 Kristin Baumann        (http://crafterm.net/kristin/blog/)
 Ben Schwarz            (http://germanforblack.com/)
@@ -20,3 +20,5 @@ Joshua Sierles         (http://diluvia.net)
 Julian Russell         (http://github.com/plusplus)
 Dave (Gassto)          (http://github.com/gassto)
 Bodaniel Jeanes        (http://bjeanes.github.com)
+
+The transfer installer contains a piece of exception reporting code copied from the Chef library (http://wiki.opscode.com/display/chef/Home)
