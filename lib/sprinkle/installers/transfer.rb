@@ -93,9 +93,7 @@ module Sprinkle
 			def self.render_template(template, context, prefix)
 				require 'tempfile'
 				require 'erubis'
-				
-				puts "Foo: #{eval('foo', context)}"
-				
+
 				begin
           eruby = Erubis::Eruby.new(template)
           output = eruby.result(context)
