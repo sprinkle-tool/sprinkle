@@ -9,8 +9,8 @@ Gem::Specification.new do |s|
   s.description = %q{Ruby DSL based software provisioning tool}
   s.email = ["crafterm@redartisan.com", "mitchell.hashimoto@citrusbyte.com"]
   s.executables = ["sprinkle"]
-  s.extra_rdoc_files = ["History.txt", "Manifest.txt", "README.txt"]
-  s.files = ["CREDITS", "History.txt", "MIT-LICENSE", "Manifest.txt", "README.txt", "Rakefile", "bin/sprinkle",
+  s.extra_rdoc_files = ["History.txt", "Manifest.txt", "README.markdown"]
+  s.files = ["CREDITS", "History.txt", "MIT-LICENSE", "Manifest.txt", "README.markdown", "Rakefile", "bin/sprinkle",
              "config/hoe.rb", "config/requirements.rb", "examples/packages/build_essential.rb", 
              "examples/packages/databases/mysql.rb", "examples/packages/databases/sqlite3.rb", 
              "examples/packages/phusion.rb", "examples/packages/ruby/rails.rb", "examples/packages/ruby/ruby.rb",
@@ -42,7 +42,7 @@ Gem::Specification.new do |s|
                   "spec/sprinkle/script_spec.rb", "spec/sprinkle/sprinkle_spec.rb", "spec/sprinkle/installers/rake_spec.rb", "spec/sprinkle/verify_spec.rb"]
   s.has_rdoc = true
   s.homepage = %q{http://sprinkle.rubyforge.org}
-  s.rdoc_options = ["--main", "README.txt"]
+  s.rdoc_options = ["--main", "README.markdown"]
   s.require_paths = ["lib"]
   s.rubyforge_project = %q{sprinkle}
   s.rubygems_version = %q{1.3.0}
