@@ -45,7 +45,7 @@ end
 
 module Sprinkle
   module Installers
-    # Beware, strange "installer" coming your way.
+    # Beware, another strange "installer" coming your way.
     #
     # = File transfer installer
     #
