@@ -173,7 +173,11 @@ module Sprinkle
       def push_text(text, path, options = {}, &block)
         @installer = Sprinkle::Installers::PushText.new(self, text, path, options, &block)
       end
-      
+
+			def transfer(source, destination, options = {}, &block)
+				@installer = Sprinkle::Installers::Transfer.new(self, source, destination, options, &block)
+      end
+
       def verify(description = '', &block)
         @verifications << Sprinkle::Verify.new(self, description, &block)
       end

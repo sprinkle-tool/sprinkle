@@ -54,6 +54,7 @@ lib/sprinkle/installers/push_text.rb
 lib/sprinkle/installers/rake.rb
 lib/sprinkle/installers/rpm.rb
 lib/sprinkle/installers/source.rb
+lib/sprinkle/installers/transfer.rb
 lib/sprinkle/installers/yum.rb
 lib/sprinkle/package.rb
 lib/sprinkle/policy.rb

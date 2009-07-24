@@ -76,6 +76,22 @@ module Sprinkle
         end
       end
 
+			def transfer(name, source, destination, roles, recursive = true, suppress_and_return_failures = false)
+        define_task(name, roles) do
+          upload source, destination, :via => :scp, :recursive => recursive
+        end
+        
+        begin
+          run(name)
+          return true
+        rescue ::Capistrano::CommandError => e
+          return false if suppress_and_return_failures
+          
+          # Reraise error if we're not suppressing it
+          raise
+        end
+			end
+			
       private
 
         # REVISIT: can we set the description somehow?
