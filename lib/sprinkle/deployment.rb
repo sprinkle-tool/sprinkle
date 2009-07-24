@@ -52,7 +52,7 @@ module Sprinkle
       # the actor. For more information on what configuration options are
       # available, view the corresponding Sprinkle::Actors page.
       def delivery(type, &block) #:doc:
-        @style = Actors.const_get(type.to_s.titleize).new &block
+        @style = ("Sprinkle::Actors::" + type.to_s.titleize).constantize.new &block
       end
 
       def method_missing(sym, *args, &block) #:nodoc:
