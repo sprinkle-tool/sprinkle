@@ -35,7 +35,7 @@ require 'packages/scm'
 #   the user is requested to select which one to use.
 
 policy :rails, :roles => :app do
-  requires :rails, :version => '2.1.0'
+  requires :rails, :version => '2.3.3'
   requires :appserver
   requires :database
   requires :webserver
