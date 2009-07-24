@@ -36,7 +36,7 @@ describe Sprinkle::Installers::PushText do
     end
 
     it 'should automatically insert pre/post commands for the specified package' do
-      @installer.send(:install_sequence).should == [ 'op1', "echo 'another-hair-brained-idea' | tee -a /dev/mind/late-night", 'op2' ]
+      @installer.send(:install_sequence).should == [ 'op1', "echo -e 'another-hair-brained-idea' | tee -a /dev/mind/late-night", 'op2' ]
     end
 
   end
@@ -48,7 +48,7 @@ describe Sprinkle::Installers::PushText do
     end
     
     it "should invoke the push installer with sudo" do
-      @install_commands.should =~ /echo 'I\'m a special user' | sudo tee -a \/dev\/mind\/the-day-after/
+      @install_commands.should =~ /echo -e 'I\'m a special user' | sudo tee -a \/dev\/mind\/the-day-after/
     end
   end
 
