@@ -83,6 +83,13 @@ CODE
       pkg.recommends.should == [:webserver, :database]
     end
 
+    it 'should optionally accept optional dependencies' do
+      pkg = package @name do
+        optional :webserver_configuration, :database_configuration
+      end
+      pkg.optional.should == [:webserver_configuration, :database_configuration]
+    end
+
     it 'should optionally define a virtual package implementation' do
       pkg = package @name, :provides => :database do; end
       pkg.provides.should == :database
@@ -338,6 +345,7 @@ CODE
       @b = package :b do; requires :c; end
       @c = package :c do; recommends :d; end
       @d = package :d do; end
+      @e = package :e do; optional :d; end
     end
 
     it 'should be able to return a dependency hierarchy tree' do
@@ -345,12 +353,25 @@ CODE
       @b.tree.flatten.should == [ @d, @c, @b ]
       @c.tree.flatten.should == [ @d, @c ]
       @d.tree.flatten.should == [ @d ]
+      @e.tree.flatten.should == [ @e, @d ]
     end
 
     describe 'with missing recommendations' do
 
       before do
-        @d.recommends :e
+        @d.recommends :z
+      end
+
+      it 'should ignore missing recommendations' do
+        @d.tree.flatten.should == [ @d ]
+      end
+
+    end
+
+    describe 'with missing optional packages' do
+
+      before do
+        @d.optional :z
       end
 
       it 'should ignore missing recommendations' do

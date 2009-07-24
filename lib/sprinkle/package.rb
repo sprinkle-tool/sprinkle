@@ -116,6 +116,7 @@ module Sprinkle
         @provides = metadata[:provides]
         @dependencies = []
         @recommends = []
+        @optional = []
         @verifications = []
         self.instance_eval &block
       end
@@ -233,12 +234,17 @@ module Sprinkle
         @recommends.flatten!
       end
 
+      def optional(*packages)
+        @optional << packages
+        @optional.flatten!
+      end
+
       def tree(depth = 1, &block)
         packages = []
 
         @recommends.each do |dep|
           package = PACKAGES[dep]
-          next unless package # skip missing recommended packages as they can be optional
+          next unless package # skip missing recommended packages as they're allowed to not exist
           block.call(self, package, depth) if block
           packages << package.tree(depth + 1, &block)
         end
@@ -253,6 +259,15 @@ module Sprinkle
         end
 
         packages << self
+
+        @optional.each do |dep|
+          package = PACKAGES[dep]
+          next unless package # skip missing optional packages as they're allow to not exist
+          block.call(self, package, depth) if block
+          packages << package.tree(depth + 1, &block)
+        end
+
+        packages
       end
 
       def to_s; @name; end
