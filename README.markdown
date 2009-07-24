@@ -208,7 +208,7 @@ and Git (via source with dependencies from APT):
 
     end
 
-Please see the examples directory for more complete examples of Sprinkle deployment scripts, and also the Passenger Stack github page and video by Ben Schwarz (<http://github.com/benschwarz/passenger-stack> and <http://www.vimeo.com/2888665 respectively>).
+Please see the examples directory for more complete examples of Sprinkle deployment scripts, and also the Passenger Stack github page and video by Ben Schwarz (<http://github.com/benschwarz/passenger-stack> and <http://www.vimeo.com/2888665> respectively).
 
 Sprinkle is a work in progress and I'm excited to hear if anyone finds it useful - please feel free to
 comment, ask any questions, or send in any ideas, patches, bugs. All most welcome.
