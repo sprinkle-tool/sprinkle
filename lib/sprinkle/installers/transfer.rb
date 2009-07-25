@@ -45,7 +45,7 @@ end
 
 module Sprinkle
   module Installers
-    # Beware, strange "installer" coming your way.
+    # Beware, another strange "installer" coming your way.
     #
     # = File transfer installer
     #
@@ -73,6 +73,11 @@ module Sprinkle
 		# If you pass the option :render => true, this tells transfer that the source file
 		# is an ERB template to be rendered locally before being transferred (you can declare
 		# variables in the package scope). When render is true, recursive is turned off.
+		#   
+		#   package :nginx_conf do
+		#     nginx_port = 8080
+		#     transfer 'files/nginx.conf', '/etc/nginx.conf', :render => true
+		#   end
 		#
 		# Finally, should you need to run commands before or after the file transfer (making
 		# directories or changing permissions), you can use the pre/post :install directives
