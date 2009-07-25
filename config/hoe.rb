@@ -35,7 +35,7 @@ VERS = Sprinkle::VERSION::STRING + (REV ? ".#{REV}" : "")
 RDOC_OPTS = ['--quiet', '--title', 'sprinkle documentation',
     "--opname", "index.html",
     "--line-numbers", 
-    "--main", "README.txt",
+    "--main", "README.markdown",
     "--inline-source"]
 
 class Hoe
