@@ -7,7 +7,7 @@ describe Sprinkle::Installers::Noop do
   end
 
   def create_noop(names, options = {}, &block)
-    Sprinkle::Installers::Noop.new(@package, &block)
+    Sprinkle::Installers::Noop.new(@package, options, &block)
   end
 
   describe 'during installation' do
@@ -15,7 +15,7 @@ describe Sprinkle::Installers::Noop do
     it 'should always be empty' do
       @installer = create_noop 'spec'
       @install_commands = @installer.send :install_commands
-      @install_commands.should == ''
+      @install_commands.should == 'echo noop'
     end
 
   end

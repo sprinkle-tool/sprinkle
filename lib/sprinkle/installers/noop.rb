@@ -5,8 +5,8 @@ module Sprinkle
     # This installer does nothing, it's simply useful for running pre / post hooks by themselves. 
     # 
     class Noop < Installer
-      def initialize(parent, name, options, &block) #:nodoc:
-        super parent, {}, &block
+      def initialize(parent, name, options = {}, &block) #:nodoc:
+        super parent, options, &block
       end
 
       protected
