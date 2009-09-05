@@ -25,6 +25,8 @@ describe Sprinkle::Installers::Source do
 
       with %w( debug extras )
       without %w( fancyisms )
+
+      option %w( foo bar baz )
     end
 
     @installer.defaults(@deployment)
@@ -84,6 +86,10 @@ describe Sprinkle::Installers::Source do
 
     it 'should support specification of "without" options' do
       @installer.without.should == %w( fancyisms )
+    end
+
+    it 'should support specification of "option" options' do
+      @installer.option.should == %w( foo bar baz )
     end
 
     it 'should support customized build area' do

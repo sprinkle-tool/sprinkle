@@ -111,7 +111,8 @@ module Sprinkle
 
           extras = {
             :enable  => '--enable', :disable => '--disable',
-            :with    => '--with',   :without => '--without'
+            :with    => '--with',   :without => '--without',
+            :option  => '-',
           }
 
           extras.inject(command) { |m, (k, v)| m << create_options(k, v) if options[k]; m }
