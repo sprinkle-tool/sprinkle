@@ -36,6 +36,9 @@ describe Sprinkle::Verify do
         # Check that a gem exists
         has_gem 'rails'
         has_gem 'rails', '2.1.0'
+        
+        # Check for a certain RPM package
+        has_rpm 'ntp'
       end
     end
     @verification = @package.verifications[0]
@@ -89,6 +92,10 @@ describe Sprinkle::Verify do
     it 'should check that a ruby gem is installed' do
       @verification.commands.should include("sudo gem list | grep -e '^rails (.*.*)$'")
       @verification.commands.should include("sudo gem list | grep -e '^rails (.*2\\.1\\.0.*)$'")
+    end
+    
+    it 'should check that an RPM is installed' do
+      @verification.commands.should include("rpm -qa | grep ntp")
     end
   end
   
