@@ -16,6 +16,10 @@ require 'optparse'
 OPTIONS = {}
 MANDATORY_OPTIONS = %w( path )
 
+ARGV.each do |arg|
+  ENV[$1] = $2 if arg =~ /^(\w+)=(.*)$/
+end
+
 parser = OptionParser.new do |opts|
   opts.banner = <<BANNER
 Sprinkle
