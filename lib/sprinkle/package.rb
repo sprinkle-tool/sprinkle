@@ -107,7 +107,7 @@ module Sprinkle
 
     class Package #:nodoc:
       include ArbitraryOptions
-      attr_accessor :name, :provides, :installer, :dependencies, :recommends, :verifications
+      attr_accessor :name, :provides, :installers, :dependencies, :recommends, :verifications
 
       def initialize(name, metadata = {}, &block)
         raise 'No package name supplied' unless name
@@ -118,73 +118,74 @@ module Sprinkle
         @recommends = []
         @optional = []
         @verifications = []
+        @installers = []
         self.instance_eval &block
       end
 
       def freebsd_pkg(*names, &block)
-        @installer = Sprinkle::Installers::FreebsdPkg.new(self, *names, &block)
+        @installers << Sprinkle::Installers::FreebsdPkg.new(self, *names, &block)
       end
       
       def openbsd_pkg(*names, &block)
-        @installer = Sprinkle::Installers::OpenbsdPkg.new(self, *names, &block)
+        @installers << Sprinkle::Installers::OpenbsdPkg.new(self, *names, &block)
       end
       
       def opensolaris_pkg(*names, &block)
-        @installer = Sprinkle::Installers::OpensolarisPkg.new(self, *names, &block)
+        @installers << Sprinkle::Installers::OpensolarisPkg.new(self, *names, &block)
       end
       
       def bsd_port(port, &block)
-        @installer = Sprinkle::Installers::BsdPort.new(self, port, &block)
+        @installers << Sprinkle::Installers::BsdPort.new(self, port, &block)
       end
       
       def mac_port(port, &block)
-        @installer = Sprinkle::Installers::MacPort.new(self, port, &block)
+        @installers << Sprinkle::Installers::MacPort.new(self, port, &block)
       end
 
       def apt(*names, &block)
-        @installer = Sprinkle::Installers::Apt.new(self, *names, &block)
+        @installers << Sprinkle::Installers::Apt.new(self, *names, &block)
       end
 
       def deb(*names, &block)
-        @installer = Sprinkle::Installers::Deb.new(self, *names, &block)
+        @installers << Sprinkle::Installers::Deb.new(self, *names, &block)
       end
 
       def rpm(*names, &block)
-        @installer = Sprinkle::Installers::Rpm.new(self, *names, &block)
+        @installers << Sprinkle::Installers::Rpm.new(self, *names, &block)
       end
 
       def yum(*names, &block)
-        @installer = Sprinkle::Installers::Yum.new(self, *names, &block)
+        @installers << Sprinkle::Installers::Yum.new(self, *names, &block)
       end
 
       def gem(name, options = {}, &block)
         @recommends << :rubygems
-        @installer = Sprinkle::Installers::Gem.new(self, name, options, &block)
+        @installers << Sprinkle::Installers::Gem.new(self, name, options, &block)
       end
 
       def source(source, options = {}, &block)
         @recommends << :build_essential # Ubuntu/Debian
-        @installer = Sprinkle::Installers::Source.new(self, source, options, &block)
+        @installers << Sprinkle::Installers::Source.new(self, source, options, &block)
       end
       
       def binary(source, options = {}, &block)
-        @installer = Sprinkle::Installers::Binary.new(self, source, options, &block)
+        @installers << Sprinkle::Installers::Binary.new(self, source, options, &block)
       end
       
       def rake(name, options = {}, &block)
-        @installer = Sprinkle::Installers::Rake.new(self, name, options, &block)        
+        @installers << Sprinkle::Installers::Rake.new(self, name, options, &block)
       end    
       
       def noop(&block)
-        @installer = Sprinkle::Installers::Noop.new(self, name, options, &block)        
+        @installers << Sprinkle::Installers::Noop.new(self, name, options, &block)
       end
       
       def push_text(text, path, options = {}, &block)
-        @installer = Sprinkle::Installers::PushText.new(self, text, path, options, &block)
+        @installers << Sprinkle::Installers::PushText.new(self, text, path, options, &block)
       end
 
-			def transfer(source, destination, options = {}, &block)
-				@installer = Sprinkle::Installers::Transfer.new(self, source, destination, options, &block)
+      def transfer(source, destination, options = {}, &block)
+        @installers << Sprinkle::Installers::Transfer.new(self, source, destination, options, &block)
       end
 
       def verify(description = '', &block)
@@ -207,8 +208,10 @@ module Sprinkle
           end
         end
 
-        @installer.defaults(deployment)
-        @installer.process(roles)
+        @installers.each do |installer|
+          installer.defaults(deployment)
+          installer.process(roles)
+        end
         
         process_verifications(deployment, roles)
       end
@@ -295,7 +298,7 @@ module Sprinkle
         end
 
         def meta_package?
-          @installer == nil
+          @installers.blank?
         end
     end
   end

@@ -22,7 +22,7 @@ describe Sprinkle::Package do
         end
       end
       
-      pre_count = pkg.installer.instance_variable_get(:@pre)[:install].length
+      pre_count = pkg.installers.first.instance_variable_get(:@pre)[:install].length
     }.should change { pre_count }.by(1)
 CODE
   end
@@ -66,7 +66,7 @@ CODE
       pkg = package @name do
         gem 'rails'
       end
-      pkg.installer.should_not be_nil
+      pkg.installers.should_not be_empty
     end
 
     it 'should optionally accept dependencies' do
@@ -123,7 +123,7 @@ CODE
         apt %w( deb1 deb2 )
       end
       pkg.should respond_to(:apt)
-      pkg.installer.class.should == Sprinkle::Installers::Apt
+      pkg.installers.first.class.should == Sprinkle::Installers::Apt
     end
 
     it 'should optionally accept an rpm installer' do
@@ -131,7 +131,7 @@ CODE
         rpm %w( rpm1 rpm2 )
       end
       pkg.should respond_to(:rpm)
-      pkg.installer.class.should == Sprinkle::Installers::Rpm
+      pkg.installers.first.class.should == Sprinkle::Installers::Rpm
     end
 
     it 'should optionally accept a gem installer' do
@@ -139,7 +139,7 @@ CODE
         gem 'gem'
       end
       pkg.should respond_to(:gem)
-      pkg.installer.class.should == Sprinkle::Installers::Gem
+      pkg.installers.first.class.should == Sprinkle::Installers::Gem
     end
 
     it 'should optionally accept a source installer' do
@@ -147,9 +147,19 @@ CODE
         source 'archive'
       end
       pkg.should respond_to(:source)
-      pkg.installer.class.should == Sprinkle::Installers::Source
+      pkg.installers.first.class.should == Sprinkle::Installers::Source
     end
 
+    it 'should allow multiple installer steps to be defined and respect order' do
+      pkg = package @name do
+        source 'archive'
+        gem 'momoney'
+      end
+
+      pkg.installers.length.should == 2
+      pkg.installers[0].class.should == Sprinkle::Installers::Source
+      pkg.installers[1].class.should == Sprinkle::Installers::Gem
+    end
   end
 
   describe 'with a source installer' do
@@ -159,7 +169,7 @@ CODE
         source 'archive' do; end
       end
       pkg.should respond_to(:source)
-      pkg.installer.class.should == Sprinkle::Installers::Source
+      pkg.installers.first.class.should == Sprinkle::Installers::Source
     end
     
     it 'should forward block to installer superclass' do
@@ -214,7 +224,7 @@ CODE
     describe 'with an installer' do
 
       before do
-        @package.installer = @installer
+        @package.installers = [ @installer ]
       end
 
       it 'should configure itself against the deployment context' do
@@ -242,7 +252,7 @@ CODE
     describe 'with verifications' do
       before do
         @pkg = create_package_with_blank_verify(3)
-        @pkg.installer = @installer
+        @pkg.installers = [ @installer ]
         @installer.stub!(:defaults)
         @installer.stub!(:process)
       end
@@ -303,7 +313,7 @@ CODE
       @roles = [ :app, :db ]
       @installer = mock(Sprinkle::Installers::Installer, :defaults => true, :process => true)
       @pkg = create_package_with_blank_verify(3)
-      @pkg.installer = @installer
+      @pkg.installers = [ @installer ]
       @installer.stub!(:defaults)
       @installer.stub!(:process)
       @logger = mock(ActiveSupport::BufferedLogger, :debug => true, :debug? => true)
