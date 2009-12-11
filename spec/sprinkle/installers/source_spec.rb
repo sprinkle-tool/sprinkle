@@ -347,5 +347,25 @@ describe Sprinkle::Installers::Source do
     end
 
   end
+  
+  describe 'base dir calculation' do
+    
+    %w( tar tar.gz tgz tar.bz2 tb2 zip ).each do |archive|
+      
+      it "should recognize #{archive} style archives" do
+        @installer.source = "blah.#{archive}"
+        @installer.send(:base_dir).should == 'blah'
+      end
+      
+    end
+    
+    # def base_dir #:nodoc:
+    #   if archive_name.split('/').last =~ /(.*)\.(tar\.gz|tgz|tar\.bz2|tar|tb2)/
+    #     return $1
+    #   end
+    #   raise "Unknown base path for source archive: #{@source}, please update code knowledge"
+    # end    
+    
+  end
 
 end

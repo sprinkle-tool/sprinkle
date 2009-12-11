@@ -179,7 +179,7 @@ module Sprinkle
         end
 
         def base_dir #:nodoc:
-          if archive_name.split('/').last =~ /(.*)\.(tar\.gz|tgz|tar\.bz2|tar|tb2)/
+          if archive_name.split('/').last =~ /(.*)\.(tar\.gz|tgz|tar\.bz2|tar|tb2|zip)/
             return $1
           end
           raise "Unknown base path for source archive: #{@source}, please update code knowledge"
