@@ -22,7 +22,11 @@ module Sprinkle
       def user(user)
         @options[:user] = user
       end
-      
+
+      def password(password)
+        @options[:password] = password
+      end
+
       def process(name, commands, roles, suppress_and_return_failures = false)
         return process_with_gateway(name, commands, roles) if gateway_defined?
         process_direct(name, commands, roles)
@@ -71,7 +75,7 @@ module Sprinkle
               execute_on_connection(commands, ssh)
             end
           else # direct SSH connection
-            Net::SSH.start(host, @options[:user]) do |ssh|
+            Net::SSH.start(host, @options[:user], :password => options[:password]) do |ssh|
               execute_on_connection(commands, ssh)
             end
           end
