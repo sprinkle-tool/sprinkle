@@ -75,7 +75,7 @@ module Sprinkle
               execute_on_connection(commands, ssh)
             end
           else # direct SSH connection
-            Net::SSH.start(host, @options[:user], :password => options[:password]) do |ssh|
+            Net::SSH.start(host, @options[:user], :password => @options[:password]) do |ssh|
               execute_on_connection(commands, ssh)
             end
           end
