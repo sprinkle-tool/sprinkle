@@ -167,6 +167,10 @@ module Sprinkle
         @installer = Sprinkle::Installers::Source.new(self, source, options, &block)
       end
       
+      def binary(source, options = {}, &block)
+        @installer = Sprinkle::Installers::Binary.new(self, source, options, &block)
+      end
+      
       def rake(name, options = {}, &block)
         @installer = Sprinkle::Installers::Rake.new(self, name, options, &block)        
       end    
