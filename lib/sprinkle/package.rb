@@ -126,6 +126,10 @@ module Sprinkle
         @installers << Sprinkle::Installers::FreebsdPkg.new(self, *names, &block)
       end
       
+      def freebsd_portinstall(port, &block)
+        @installers << Sprinkle::Installers::FreebsdPortinstall.new(self, port, &block)
+      end
+
       def openbsd_pkg(*names, &block)
         @installers << Sprinkle::Installers::OpenbsdPkg.new(self, *names, &block)
       end
