@@ -3,8 +3,8 @@ module Sprinkle
     # = Source Package Installer
     #
     # The source package installer installs software from source.
-    # It handles downloading, extracting, configuring, building, 
-    # and installing software. 
+    # It handles downloading, extracting, configuring, building,
+    # and installing software.
     #
     # == Configuration Options
     #
@@ -22,7 +22,7 @@ module Sprinkle
     # * <b>configure</b> - Configure is the stage which the ./configure script is run.
     # * <b>build</b> - Build is the stage in which `make` is called.
     # * <b>install</b> - Install is the stage which `make install` is called.
-    # 
+    #
     # == Example Usage
     #
     # First, a simple package, no configuration:
@@ -63,7 +63,7 @@ module Sprinkle
     #   end
     #
     # As you can see, setting options is as simple as creating a
-    # block and calling the option as a method with the value as 
+    # block and calling the option as a method with the value as
     # its parameter.
 
     class Source < Installer
@@ -162,7 +162,7 @@ module Sprinkle
           when /tar$/
             'tar xf'
           when /zip$/
-            'unzip'
+            'unzip -o'
           else
             raise "Unknown source archive format: #{archive_name}"
           end
