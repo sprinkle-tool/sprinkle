@@ -22,7 +22,7 @@ module Sprinkle
           when :smart
             "smart install #{@packages.join(' ')} -y 2>&1 | tee -a /var/log/smart-sprinkle"
           when :yum
-            "yum install #{@packages.join(' ')} -y 2>&1 | tee -a /var/log/yum-sprinkle"  
+            "yum install #{@packages.join(' ')} -y 2>&1 | tee -a /var/log/yum-sprinkle"
           else
             raise "Unknown InstallPackage.installer"
         end
@@ -63,11 +63,11 @@ module Sprinkle
   module Package
     class Package
       def install_package(*names, &block)
-        @installer = Sprinkle::Installers::InstallPackage.new(self, names, &block)
+        @installers << Sprinkle::Installers::InstallPackage.new(self, names, &block)
       end
 
       def uninstall_package(*names, &block)
-        @installer = Sprinkle::Installers::UninstallPackage.new(self, names, &block)
+        @installers << Sprinkle::Installers::UninstallPackage.new(self, names, &block)
       end
 
 
