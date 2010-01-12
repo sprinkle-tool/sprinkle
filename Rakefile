@@ -4,12 +4,12 @@ require 'rake'
 begin
   require 'jeweler'
   Jeweler::Tasks.new do |gem|
-    gem.name = "powcloud-sprinkle"
+    gem.name = "sprinkle"
     gem.summary = "Ruby DSL based software provisioning tool"
     gem.description = "Ruby DSL based software provisioning tool"
-    gem.email = "drush@powcloud.com"
+    gem.email = "crafterm@redartisan.com"
     gem.rubyforge_project = 'sprinkle'
-    gem.homepage = "http://github.com/powcloud/sprinkle"
+    gem.homepage = "http://github.com/crafterm/sprinkle"
     gem.authors = ["Marcus Crafter"]
     gem.add_development_dependency "rspec", ">= 1.2.9"
     gem.add_dependency('activesupport', '>= 2.0.2')
