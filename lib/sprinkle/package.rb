@@ -162,6 +162,10 @@ module Sprinkle
         @installers << Sprinkle::Installers::Yum.new(self, *names, &block)
       end
 
+      def zypper(*names, &block)
+        @installers << Sprinkle::Installers::Zypper.new(self, *names, &block)
+      end
+
       def gem(name, options = {}, &block)
         @recommends << :rubygems
         @installers << Sprinkle::Installers::Gem.new(self, name, options, &block)
@@ -198,7 +202,7 @@ module Sprinkle
       
       def process(deployment, roles)
         return if meta_package?
-
+        
         # Run a pre-test to see if the software is already installed. If so,
         # we can skip it, unless we have the force option turned on!
         unless @verifications.empty? || Sprinkle::OPTIONS[:force]
