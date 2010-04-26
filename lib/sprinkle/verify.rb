@@ -6,7 +6,7 @@ module Sprinkle
   # block fails, Sprinkle will stop the script gracefully, raising the error.
   # 
   # In addition to checking post install if it was successfully, verification
-  # blocks are also ran before an install to see if a package is <em>already</em>
+  # blocks are also run before an install to see if a package is <em>already</em>
   # installed. If this is the case, the package is skipped and Sprinkle continues
   # with the next package. This behavior can be overriden by setting the -f flag on
   # the sprinkle script or setting Sprinkle::OPTIONS[:force] to true if you're
