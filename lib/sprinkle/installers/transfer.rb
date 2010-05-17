@@ -72,7 +72,8 @@ module Sprinkle
     #
 		# If you pass the option :render => true, this tells transfer that the source file
 		# is an ERB template to be rendered locally before being transferred (you can declare
-		# variables in the package scope). When render is true, recursive is turned off.
+		# variables in the package scope). When render is true, recursive is turned off. Note
+		# you can also explicitly pass locals in to render with the :locals option.
 		#   
 		#   package :nginx_conf do
 		#     nginx_port = 8080
@@ -118,7 +119,7 @@ module Sprinkle
 			
 			def render_template_file(path, context, prefix)
 				template = File.read(path)
-				tempfile = render_template(template, binding(), @package.name)
+				tempfile = render_template(template, context, @package.name)
 				tempfile
 			end
 			
@@ -139,8 +140,21 @@ module Sprinkle
 					
 					recursive = @options[:recursive]
 					
-					if options[:render] 
-						tempfile = render_template_file(@source, binding(), @package.name)
+					if options[:render]
+					  if options[:locals]
+					    context = {}
+					    options[:locals].each_pair do |k,v|
+					      if v.respond_to?(:call)
+					        context[k] = v.call
+					      else
+					        context[k] = v
+					      end
+					    end
+					  else
+					    context = binding()
+					  end
+					  
+						tempfile = render_template_file(@source, context, @package.name)
 						sourcepath = tempfile.path
 						logger.info "Rendering template #{@source} to temporary file #{sourcepath}"
 						recursive = false
