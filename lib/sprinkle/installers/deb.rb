@@ -24,7 +24,10 @@ module Sprinkle
       protected
 
         def install_commands #:nodoc:
-          "wget -cq --directory-prefix=/tmp #{@packages.join(' ')}; dpkg -i #{@packages.collect{|p| "/tmp/#{package_name(p)}"}.join(" ")}"
+          [
+					"wget -cq --directory-prefix=/tmp #{@packages.join(' ')}", 
+					"dpkg -i #{@packages.collect{|p| "/tmp/#{package_name(p)}"}.join(" ")}"
+					]
         end
         
       private
