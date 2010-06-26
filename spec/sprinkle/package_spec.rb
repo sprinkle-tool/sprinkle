@@ -160,6 +160,14 @@ CODE
       pkg.installers[0].class.should == Sprinkle::Installers::Source
       pkg.installers[1].class.should == Sprinkle::Installers::Gem
     end
+
+		it 'should optionally accept a runner installer' do
+			pkg = package @name do
+				runner 'obscure_installer_by_custom_cmd'
+			end
+			pkg.should respond_to(:runner)
+			pkg.installers.first.class.should == Sprinkle::Installers::Runner
+		end
   end
 
   describe 'with a source installer' do
