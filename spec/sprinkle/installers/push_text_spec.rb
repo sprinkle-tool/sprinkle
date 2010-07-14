@@ -32,11 +32,11 @@ describe Sprinkle::Installers::PushText do
     end
 
     it 'should invoke the push text installer for all specified packages' do
-      @install_commands.should == %q[echo -e 'another-hair-brained-idea' |tee -a /dev/mind/late-night]
+      @install_commands.should == %q[/bin/echo -e 'another-hair-brained-idea' |tee -a /dev/mind/late-night]
     end
 
     it 'should automatically insert pre/post commands for the specified package' do
-      @installer.send(:install_sequence).should == [ 'op1', "echo -e 'another-hair-brained-idea' |tee -a /dev/mind/late-night", 'op2' ]
+      @installer.send(:install_sequence).should == [ 'op1', "/bin/echo -e 'another-hair-brained-idea' |tee -a /dev/mind/late-night", 'op2' ]
     end
 
   end
@@ -48,7 +48,7 @@ describe Sprinkle::Installers::PushText do
     end
     
     it "should invoke the push installer with sudo" do
-      @install_commands.should == %q[echo -e 'a special user' |sudo tee -a /dev/mind/the-day-after]
+      @install_commands.should == %q[/bin/echo -e 'a special user' |sudo tee -a /dev/mind/the-day-after]
     end
   end
   
@@ -59,7 +59,7 @@ describe Sprinkle::Installers::PushText do
     end
     
     it "should correctly encode the single quote character" do
-      @install_commands.should == %q[echo -e 'I'\''m a string with a single quote' |tee -a /dev/mind/the-day-after]
+      @install_commands.should == %q[/bin/echo -e 'I'\''m a string with a single quote' |tee -a /dev/mind/the-day-after]
     end
   end
 
