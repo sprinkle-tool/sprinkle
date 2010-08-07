@@ -52,7 +52,7 @@ module Sprinkle
         begin
           t.invoke
           return true
-        rescue ::Vlad::CommandFailedError => e
+        rescue ::Rake::CommandFailedError => e
           return false if suppress_and_return_failures
           
           # Reraise error if we're not suppressing it
@@ -65,7 +65,7 @@ module Sprinkle
         begin
 					rsync source, destination
           return true
-        rescue ::Vlad::CommandFailedError => e
+        rescue ::Rake::CommandFailedError => e
           return false if suppress_and_return_failures
           
           # Reraise error if we're not suppressing it
