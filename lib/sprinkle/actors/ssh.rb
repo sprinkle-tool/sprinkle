@@ -30,7 +30,7 @@ module Sprinkle
       def process(name, commands, roles, suppress_and_return_failures = false)
         return process_with_gateway(name, commands, roles) if gateway_defined?
         r = process_direct(name, commands, roles)
-        logger.debug "process returning #{r}"
+        logger.debug green "process returning #{r}"
         return r
       end
 
@@ -52,7 +52,6 @@ module Sprinkle
         def process_direct(name, commands, roles)
           res = []
           Array(roles).each { |role| res << execute_on_role(commands, role) }
-          logger.debug("prodirect ret #{res.inspect}")
           !(res.include? false)
         end
         
@@ -70,7 +69,6 @@ module Sprinkle
           hosts = @options[:roles][role]
           res = []
           Array(hosts).each { |host| res << execute_on_host(commands, host, gateway) }
-          logger.debug "ex on r returns #{res.inspect}"
           !(res.include? false)
         end
 
@@ -81,20 +79,19 @@ module Sprinkle
         
         def execute_on_host(commands, host, gateway = nil)
           res = nil
+          logger.debug(blue "executing #{commands.inspect} on #{host}.")
           if gateway # SSH connection via gateway
             gateway.ssh(host, @options[:user]) do |ssh|
               res = execute_on_connection(commands, ssh)
+              ssh.loop
             end
           else # direct SSH connection
             Net::SSH.start(host, @options[:user], :password => @options[:password]) do |ssh|
-              logger.debug(blue "executing #{commands.inspect} on #{host}.")
               res = execute_on_connection(commands, ssh)
               ssh.loop
             end
           end
-          r = res.detect{|x| x!=0}.nil?
-          logger.debug("ex on #{host}: #{r}")
-          r
+          res.detect{|x| x!=0}.nil?
         end
 
         def execute_on_connection(commands, session)

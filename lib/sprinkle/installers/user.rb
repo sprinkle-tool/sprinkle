@@ -8,7 +8,7 @@ module Sprinkle
       end
       protected 
       def install_commands
-        "bash -c '/usr/sbin/adduser #{@options[:flags]} #{@username}"
+        "adduser #{@options[:flags]} #{@username}"
       end
     end
   end

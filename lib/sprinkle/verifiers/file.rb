@@ -22,12 +22,12 @@ module Sprinkle
         @commands << "grep '#{text}' #{path}"
       end
       def user_present(username) 
-        @commands << %Q{grep -q -e  \'^#{username}:x\' /etc/passwd}
+        @commands << %Q{grep -q -e  \'^#{username}:x\' /etc/passwd && test -d ~#{username}}
       end
       def matches_local(localfile, remotefile, mode=nil)
-        raise "couldn't find local file #{localfile}" unless ::File.exists?(localfile)
+        raise "Couldn't find local file #{localfile}" unless ::File.exists?(localfile)
         local = `md5 #{localfile}`.split.last
-        @commands << %{bash -c '[ "X$(md5sum #{remotefile}|cut -d\\  -f 1)" = "X#{local}" ]'}
+        @commands << %{[ "X$(md5sum #{remotefile}|cut -d\\  -f 1)" = "X#{local}" ]}
       end
     end
   end

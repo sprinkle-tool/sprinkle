@@ -14,7 +14,7 @@ module Sprinkle
       # Checks to make sure <tt>process</tt> is a process running
       # on the remote server.
       def has_process(process)
-        @commands << "ps aux | grep '#{process}' | grep -v grep"
+        @commands << "ps -C #{process}"
       end
     end
   end
