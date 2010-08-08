@@ -121,6 +121,9 @@ module Sprinkle
         @installers = []
         self.instance_eval &block
       end
+      def add_user(username, options={},  &block)
+        @installers<<Sprinkle::Installers::User.new(self, username, options, &block)
+      end
 
       def freebsd_pkg(*names, &block)
         @installers << Sprinkle::Installers::FreebsdPkg.new(self, *names, &block)
