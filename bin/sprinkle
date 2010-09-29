@@ -73,6 +73,10 @@ def powder_cloud(options)
   Sprinkle::OPTIONS[:cloud] = OPTIONS[:cloud] || false
 end
 
+def verbosity(options)
+  Sprinkle::OPTIONS[:verbose] = OPTIONS[:verbose] || false
+end
+
 def log_level(options)
   Object.logger.level = ActiveSupport::BufferedLogger::Severity::DEBUG if options[:verbose]
 end
@@ -86,5 +90,6 @@ force_mode(OPTIONS)
 operation_mode(OPTIONS)
 powder_cloud(OPTIONS)
 log_level(OPTIONS)
+verbosity(OPTIONS)
 
 Sprinkle::Script.sprinkle File.read(powder), powder
