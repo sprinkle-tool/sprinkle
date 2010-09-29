@@ -36,7 +36,7 @@ module Sprinkle
         when /tar$/
           'tar xf'
         when /zip$/
-          'unzip'
+          'unzip -o'
         else
           raise "Unknown binary archive format: #{archive_name}"
         end
