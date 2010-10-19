@@ -203,6 +203,10 @@ module Sprinkle
         @installers << Sprinkle::Installers::Transfer.new(self, source, destination, options, &block)
       end
 
+			def runner(cmd)
+				@installers << Sprinkle::Installers::Runner.new(self, cmd)
+			end
+
       def verify(description = '', &block)
         @verifications << Sprinkle::Verify.new(self, description, &block)
       end  
