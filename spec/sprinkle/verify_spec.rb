@@ -82,7 +82,7 @@ describe Sprinkle::Verify do
     end
 
     it 'should test the process list to find a process' do
-      @verification.commands.should include("ps aux | grep 'httpd' | grep -v grep")
+      @verification.commands.should include("ps -C httpd")
     end
 
     it 'should check if ruby can include a, b, c' do
