@@ -29,7 +29,7 @@ module Sprinkle
       protected
 
         def install_commands #:nodoc:
-          "yum install #{@packages.join(' ')} -y"
+          "bash -c 'yum install #{@packages.join(' ')} -y'"
         end
 
     end

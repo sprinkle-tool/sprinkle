@@ -82,7 +82,8 @@ module Sprinkle
         # command sequence construction (eg. source based installer).
         def install_sequence
           commands = pre_commands(:install) + [ install_commands ] + post_commands(:install)
-          commands.flatten
+#	  commands.flatten
+          commands.flatten.join(' && ')
         end
 
         # A concrete installer (subclass of this virtual class) must override this method
