@@ -77,7 +77,8 @@ module Sprinkle
       protected
 
         def install_sequence #:nodoc:
-          prepare + download + extract + configure + build + install
+         commands = prepare + download + extract + configure + build + install
+	 commands.flatten.join(' && ')
         end
 
         %w( prepare download extract configure build install ).each do |stage|
