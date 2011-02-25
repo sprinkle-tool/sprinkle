@@ -69,4 +69,5 @@ describe Sprinkle::Installers::Apt do
     end
     
   end
+
 end
