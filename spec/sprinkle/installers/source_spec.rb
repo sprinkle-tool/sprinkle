@@ -37,6 +37,29 @@ describe Sprinkle::Installers::Source do
     Sprinkle::Installers::Source.new(@package, source, &block)
   end
 
+  def create_context
+    source = 'ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.6-p111.tar.gz'
+
+    deployment = deployment do
+      delivery :capistrano
+      source do
+        prefix   '/prefix/directory'
+        archives '/archives/directory'
+        builds   '/builds/directory'
+      end
+    end
+
+    installer = create_source source do
+      prefix   '/prefix/directory'
+      archives '/archives/directory'
+      builds   '/builds/directory'
+    end
+
+    installer.defaults(@deployment)
+    
+    [source, deployment, installer]
+  end
+
   describe 'when created' do
 
     it 'should accept a source archive name to install' do
@@ -44,6 +67,61 @@ describe Sprinkle::Installers::Source do
     end
 
   end
+  
+  describe "installer#prepare" do
+    before do
+      @source, @deployment, @installer = create_context
+    end
+    
+    it "should return mkdir command to create the prefix directory" do
+      @installer.send(:prepare)[0].should == 'mkdir -p /prefix/directory'
+    end
+    it "should return mkdir command to create the builds directory" do
+      @installer.send(:prepare)[1].should == 'mkdir -p /builds/directory'
+    end
+    it "should return mkdir command to create the archives directory" do
+      @installer.send(:prepare)[2].should == 'mkdir -p /archives/directory'
+    end
+  end
+  
+  describe "installer#configure_commands" do
+    before do
+      @source, @deployment, @installer = create_context
+    end
+    
+    it "should use the command prefix" do
+      @installer.send(:configure_commands).first.should =~ /--prefix=\/prefix\/directory/
+    end
+  end  
+
+  describe "installer#download_commands" do
+    before do
+      @source, @deployment, @installer = create_context
+    end
+    
+    it "should use the archives folder" do
+      @installer.send(:download_commands).first.should =~ /--directory-prefix='\/archives\/directory'/
+    end
+
+    it "should use the archives folder when the file already exists" do
+      File.stub!(:exist?).and_return(true)
+      @installer.send(:download_commands).first.should =~ / \/archives\/directory\//
+    end
+  end  
+
+  describe "installer#extract_commands" do
+    before do
+      @source, @deployment, @installer = create_context
+    end
+    
+    it "should use the builds folder" do
+      @installer.send(:extract_commands).first.should =~ /cd \/builds\/directory/
+    end
+
+    it "should use the archives folder" do
+      @installer.send(:extract_commands).first.should =~ /\/archives\/directory\//
+    end
+  end  
 
   describe 'before installation' do
 
@@ -70,7 +148,7 @@ describe Sprinkle::Installers::Source do
 
   end
 
-  describe  'customized configuration' do
+  describe 'customized configuration' do
 
     it 'should support specification of "enable" options' do
       @installer.enable.first.should == %w( headers ssl deflate so )
@@ -103,7 +181,6 @@ describe Sprinkle::Installers::Source do
     it 'should support customized install area' do
       @installer.builds.first.should == '/usr/local/builds'
     end
-
   end
 
   describe 'during gnu source archive style installation' do
@@ -116,7 +193,6 @@ describe Sprinkle::Installers::Source do
          'mkdir -p /usr/local/archives'
         ]
       )
-
     end
 
     it 'should download the source archive' do
