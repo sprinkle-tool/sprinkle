@@ -18,7 +18,7 @@ module Sprinkle
     def method_missing(sym, *args, &block)
       unless args.empty? # mutate if not set
         @options ||= {}
-        @options[sym] = *args unless @options[sym]
+        @options[sym] = args unless @options[sym]
       end
 
       @options[sym] || @package.send(sym, *args, &block) # try the parents options if unknown

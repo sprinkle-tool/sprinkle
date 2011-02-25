@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path("../../spec_helper", File.dirname(__FILE__))
 
 describe Sprinkle::Installers::Installer do
   include Sprinkle::Deployment
@@ -41,13 +41,13 @@ describe Sprinkle::Installers::Installer do
 
       it 'should accept an optional block to customize installers defaults' do
         @installer = create_installer do; prefix '/usr/local'; end
-        @installer.prefix.should == '/usr/local'
+        @installer.prefix.first.should == '/usr/local'
       end
 
       it 'should override any deployment level defaults' do
         @installer = create_installer do; prefix '/usr/local'; end
         @installer.defaults(@deployment)
-        @installer.prefix.should == '/usr/local'
+        @installer.prefix.first.should == '/usr/local'
       end
     end
   end

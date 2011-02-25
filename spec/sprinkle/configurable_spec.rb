@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.expand_path("../spec_helper", File.dirname(__FILE__))
 
 describe Sprinkle::Configurable do
   module MyPrefix
@@ -32,7 +32,7 @@ describe Sprinkle::Configurable do
     @configurable.instance_eval do
       hsv 'gts'
     end
-    @configurable.hsv.should == 'gts'
+    @configurable.hsv.first.should == 'gts'
   end
   
   it 'should allow the delivery instance variable to be accessed' do
