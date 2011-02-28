@@ -4,7 +4,9 @@ describe Sprinkle::Installers::Source do
   include Sprinkle::Deployment
 
   before do
-    @source = 'ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.6-p111.tar.gz'
+    @filename = "ruby-1.8.6-p111"
+    @tarball = "#{@filename}.tar.gz"
+    @source = "ftp://ftp.ruby-lang.org/pub/ruby/1.8/#{@tarball}"
 
     @deployment = deployment do
       delivery :capistrano
@@ -24,7 +26,7 @@ describe Sprinkle::Installers::Source do
       disable %w( cache proxy rewrite )
 
       with %w( debug extras )
-      without %w( fancyisms )
+      without %w( fancyisms pandas )
 
       option %w( foo bar baz )
     end
@@ -34,30 +36,8 @@ describe Sprinkle::Installers::Source do
 
   def create_source(source, version = nil, &block)
     @package = mock(Sprinkle::Package, :name => 'package', :version => version)
-    Sprinkle::Installers::Source.new(@package, source, &block)
-  end
-
-  def create_context
-    source = 'ftp://ftp.ruby-lang.org/pub/ruby/1.8/ruby-1.8.6-p111.tar.gz'
-
-    deployment = deployment do
-      delivery :capistrano
-      source do
-        prefix   '/prefix/directory'
-        archives '/archives/directory'
-        builds   '/builds/directory'
-      end
-    end
-
-    installer = create_source source do
-      prefix   '/prefix/directory'
-      archives '/archives/directory'
-      builds   '/builds/directory'
-    end
-
-    installer.defaults(@deployment)
     
-    [source, deployment, installer]
+    Sprinkle::Installers::Source.new(@package, source, &block)
   end
 
   describe 'when created' do
@@ -67,61 +47,6 @@ describe Sprinkle::Installers::Source do
     end
 
   end
-  
-  describe "installer#prepare" do
-    before do
-      @source, @deployment, @installer = create_context
-    end
-    
-    it "should return mkdir command to create the prefix directory" do
-      @installer.send(:prepare)[0].should == 'mkdir -p /prefix/directory'
-    end
-    it "should return mkdir command to create the builds directory" do
-      @installer.send(:prepare)[1].should == 'mkdir -p /builds/directory'
-    end
-    it "should return mkdir command to create the archives directory" do
-      @installer.send(:prepare)[2].should == 'mkdir -p /archives/directory'
-    end
-  end
-  
-  describe "installer#configure_commands" do
-    before do
-      @source, @deployment, @installer = create_context
-    end
-    
-    it "should use the command prefix" do
-      @installer.send(:configure_commands).first.should =~ /--prefix=\/prefix\/directory/
-    end
-  end  
-
-  describe "installer#download_commands" do
-    before do
-      @source, @deployment, @installer = create_context
-    end
-    
-    it "should use the archives folder" do
-      @installer.send(:download_commands).first.should =~ /--directory-prefix='\/archives\/directory'/
-    end
-
-    it "should use the archives folder when the file already exists" do
-      File.stub!(:exist?).and_return(true)
-      @installer.send(:download_commands).first.should =~ / \/archives\/directory\//
-    end
-  end  
-
-  describe "installer#extract_commands" do
-    before do
-      @source, @deployment, @installer = create_context
-    end
-    
-    it "should use the builds folder" do
-      @installer.send(:extract_commands).first.should =~ /cd \/builds\/directory/
-    end
-
-    it "should use the archives folder" do
-      @installer.send(:extract_commands).first.should =~ /\/archives\/directory\//
-    end
-  end  
 
   describe 'before installation' do
 
@@ -163,7 +88,7 @@ describe Sprinkle::Installers::Source do
     end
 
     it 'should support specification of "without" options' do
-      @installer.without.first.should == %w( fancyisms )
+      @installer.without.first.should == %w( fancyisms pandas )
     end
 
     it 'should support specification of "option" options' do
@@ -186,61 +111,86 @@ describe Sprinkle::Installers::Source do
   describe 'during gnu source archive style installation' do
 
     it 'should prepare the build, installation and source archives area' do
-      @installer.should_receive(:prepare).and_return(
-        [
+      @installer.should_receive(:prepare).and_return []
+    end
+    
+    it "should prepare the build, installation and source archives area with correct paths" do
+      @installer.send(:prepare).should == 
+      [
          'mkdir -p /usr/local',
          'mkdir -p /usr/local/builds',
-         'mkdir -p /usr/local/archives'
-        ]
-      )
+         'mkdir -p /usr/local/archives' 
+      ]
+    end
+    
+    it 'should download the source archive' do
+      @installer.should_receive(:download).and_return []
     end
 
-    it 'should download the source archive' do
-      @installer.should_receive(:download).and_return(
+    it 'should download the source archive to the correct path' do
+      @installer.send(:download).should == 
         [
          "wget -cq --directory-prefix='/usr/local/archives' #{@source}"
         ]
-      )
+    end
+    
+    it 'should extract the source archive' do
+      @installer.should_receive(:extract).and_return []
     end
 
-    it 'should extract the source archive' do
-      @installer.should_receive(:extract).and_return(
+    it 'should extract the source to the correct path' do
+      @installer.send(:extract).should ==
         [
-         "bash -c 'cd /usr/local/builds && tar xzf /usr/local/archives/ruby-1.8.6-p111.tar.gz"
+         "bash -c 'cd /usr/local/builds && tar xzf /usr/local/archives/ruby-1.8.6-p111.tar.gz'"
         ]
-      )
     end
 
     it 'should configure the source' do
+      @installer.should_receive(:configure).and_return []
+    end
+    
+    it 'should configure the source in the correct path and with the correct prefix and options' do
       enable  = %w( headers ssl deflate so ).inject([]) { |m, value| m << "--enable-#{value}"; m }
       disable = %w( cache proxy rewrite ).inject([]) { |m, value| m << "--disable-#{value}"; m }
 
       with    = %w( debug extras ).inject([]) { |m, value| m << "--with-#{value}"; m }
-      without = %w( fancyisms ).inject([]) { |m, value| m << "--without-#{value}"; m }
+      without = %w( fancyisms pandas ).inject([]) { |m, value| m << "--without-#{value}"; m }
 
-      options = "#{enable.join(' ')} #{disable.join(' ')} #{with.join(' ')} #{without.join(' ')}"
+      option = %w( foo bar baz ).inject([]) { |m, value| m << "--#{value}"; m }
 
-      @installer.should_receive(:build).and_return(
-        [
-         "bash -c 'cd /usr/local/builds && ./configure --prefix=/usr/local #{options} > #{@package.name}-configure.log 2>&1'"
-        ]
-      )
+      configure_command = @installer.send(:configure).first
+      
+      configure_command.should =~ %r{^bash -c 'cd /usr/local/builds/#{@filename} && ./configure --prefix=/usr/local}
+      configure_command.should =~ %r{ > #{@package.name}-configure.log 2>&1'$}
+      
+      # order of options is arbitrary in ruby 1.8 !
+      configure_command.should =~ /#{enable.join(' ')}/
+      configure_command.should =~ /#{disable.join(' ')}/
+      configure_command.should =~ /#{with.join(' ')}/
+      configure_command.should =~ /#{without.join(' ')}/
+      configure_command.should =~ /#{option.join(' ')}/
     end
-
+    
     it 'should build the source' do
-      @installer.should_receive(:build).and_return(
+      @installer.should_receive(:build).and_return []
+    end
+    
+    it 'should build the source in the correct build path' do
+      @installer.send(:build).should ==
         [
-         "bash -c 'cd /usr/local/builds && make > #{@package.name}-build.log 2>&1'"
+         "bash -c 'cd /usr/local/builds/#{@filename} && make > #{@package.name}-build.log 2>&1'"
         ]
-      )
     end
 
     it 'should install the source' do
-      @installer.should_receive(:install).and_return(
+      @installer.should_receive(:install).and_return []
+    end
+
+    it 'should install the source from the correct build path' do
+      @installer.send(:install).should ==
         [
-         "bash -c 'cd /usr/local/builds && make install > #{@package.name}-install.log 2>&1'"
+         "bash -c 'cd /usr/local/builds/#{@filename} && make install > #{@package.name}-install.log 2>&1'"
         ]
-      )
     end
 
     describe 'with a custom archive definition' do

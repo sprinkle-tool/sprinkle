@@ -119,8 +119,8 @@ module Sprinkle
             :option  => '-',
           }
 
-          extras.inject(command) { |m, (k, v)| m << create_options(k, v) if options[k]; m }
-
+          extras.inject(command) { |m, (k, v)|  m << create_options(k, v) if options[k]; m }
+          
           [ command << " > #{@package.name}-configure.log 2>&1'" ]
         end
 
@@ -154,7 +154,7 @@ module Sprinkle
       private
 
         def create_options(key, prefix) #:nodoc:
-          @options[key].inject(' ') { |m, option| m << "#{prefix}-#{option} "; m }
+          @options[key].first.inject('') { |m, option| m << "#{prefix}-#{option} "; m }
         end
 
         def extract_command #:nodoc:
