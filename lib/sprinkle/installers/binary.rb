@@ -18,13 +18,13 @@ module Sprinkle
         raise 'No installation area defined' unless @options[:prefix]
         raise 'No archive download area defined' unless @options[:archives]
 
-        [ "mkdir -p #{@options[:prefix]}",
-          "mkdir -p #{@options[:archives]}" ]
+        [ "mkdir -p #{@options[:prefix].first}",
+          "mkdir -p #{@options[:archives].first}" ]
       end
 
       def install_commands #:nodoc:
-        commands = [ "bash -c 'wget -cq --directory-prefix=#{@options[:archives]} #{@binary_archive}'" ]
-        commands << "bash -c 'cd #{@options[:prefix]} && #{extract_command} #{@options[:archives]}/#{@binary_archive.split("/").last}'"
+        commands = [ "bash -c 'wget -cq --directory-prefix=#{@options[:archives].first} #{@binary_archive}'" ]
+        commands << "bash -c 'cd #{@options[:prefix].first} && #{extract_command} #{@options[:archives].first}/#{@binary_archive.split("/").last}'"
       end
 
       def extract_command(archive_name = @binary_archive.split("/").last)

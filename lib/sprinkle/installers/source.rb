@@ -91,27 +91,27 @@ module Sprinkle
           raise 'No build area defined' unless @options[:builds]
           raise 'No source download area defined' unless @options[:archives]
 
-          [ "mkdir -p #{@options[:prefix]}",
-            "mkdir -p #{@options[:builds]}",
-            "mkdir -p #{@options[:archives]}" ]
+          [ "mkdir -p #{@options[:prefix].first}",
+            "mkdir -p #{@options[:builds].first}",
+            "mkdir -p #{@options[:archives].first}" ]
         end
 
         def download_commands #:nodoc:
           if File.exist? @source
-            [ "cp #{@source} #{@options[:archives]}/#{archive_name}" ]
+            [ "cp #{@source} #{@options[:archives].first}/#{archive_name}" ]
           else
-            [ "wget -cq --directory-prefix='#{@options[:archives]}' #{@source}" ]
+            [ "wget -cq --directory-prefix='#{@options[:archives].first}' #{@source}" ]
           end
         end
 
         def extract_commands #:nodoc:
-          [ "bash -c 'cd #{@options[:builds]} && #{extract_command} #{@options[:archives]}/#{archive_name}'" ]
+          [ "bash -c 'cd #{@options[:builds].first} && #{extract_command} #{@options[:archives].first}/#{archive_name}'" ]
         end
 
         def configure_commands #:nodoc:
           return [] if custom_install?
 
-          command = "bash -c 'cd #{build_dir} && ./configure --prefix=#{@options[:prefix]} "
+          command = "bash -c 'cd #{build_dir} && ./configure --prefix=#{@options[:prefix].first} "
 
           extras = {
             :enable  => '--enable', :disable => '--disable',
@@ -119,8 +119,8 @@ module Sprinkle
             :option  => '-',
           }
 
-          extras.inject(command) { |m, (k, v)| m << create_options(k, v) if options[k]; m }
-
+          extras.inject(command) { |m, (k, v)|  m << create_options(k, v) if options[k]; m }
+          
           [ command << " > #{@package.name}-configure.log 2>&1'" ]
         end
 
@@ -154,7 +154,7 @@ module Sprinkle
       private
 
         def create_options(key, prefix) #:nodoc:
-          @options[key].inject(' ') { |m, option| m << "#{prefix}-#{option} "; m }
+          @options[key].first.inject('') { |m, option| m << "#{prefix}-#{option} "; m }
         end
 
         def extract_command #:nodoc:
@@ -179,7 +179,7 @@ module Sprinkle
         end
 
         def build_dir #:nodoc:
-          "#{@options[:builds]}/#{options[:custom_dir] || base_dir}"
+          "#{@options[:builds].first}/#{options[:custom_dir] || base_dir}"
         end
 
         def base_dir #:nodoc:

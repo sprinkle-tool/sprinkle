@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path("../../spec_helper", File.dirname(__FILE__))
 
 describe Sprinkle::Installers::OpensolarisPkg do
 
@@ -42,7 +42,9 @@ describe Sprinkle::Installers::OpensolarisPkg do
       @installer.send(:install_sequence).should == [ 'op1', 'pkg install ruby', 'op2' ]
     end
 
-    it 'should install a specific version if defined'
+    it 'should install a specific version if defined' do
+      pending
+    end
 
   end
 

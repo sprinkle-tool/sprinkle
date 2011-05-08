@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.expand_path("../spec_helper", File.dirname(__FILE__))
 
 describe Sprinkle::Policy do
   include Sprinkle::Policy
@@ -81,9 +81,15 @@ describe Sprinkle::Policy do
 
     describe 'containing package dependencies with versions' do
 
-      it 'should be invalid if the specified package does not exist'
-      it 'should ignore any packages of the same name that have other versions'
-      it 'should select the correct package version when applying'
+      it 'should be invalid if the specified package does not exist' do
+        pending
+      end
+      it 'should ignore any packages of the same name that have other versions' do
+        pending
+      end
+      it 'should select the correct package version when applying' do
+        pending
+      end
 
     end
 
