@@ -22,14 +22,14 @@ module Sprinkle
     class Rake < Installer
       def initialize(parent, commands, options = {}, &block) #:nodoc:
         super parent, options, &block
-        @commands = commands.to_a
+        @commands = commands
       end
 
       protected
 
         def install_commands #:nodoc:
           file = @options[:rakefile] ? "-f #{@options[:rakefile]} " : ""
-          "rake #{file}#{@commands.join(' ')}"
+          "rake #{file}#{@commands}"
         end
 
     end
