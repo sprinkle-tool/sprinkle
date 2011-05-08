@@ -4,3 +4,4 @@ pkg
 .idea
 .*.swp
 sprinkle.gemspec
+coverage/*
