@@ -11,7 +11,7 @@ begin
     gem.rubyforge_project = 'sprinkle'
     gem.homepage = "http://github.com/crafterm/sprinkle"
     gem.authors = ["Marcus Crafter"]
-    gem.add_development_dependency "rspec", ">= 1.2.9"
+    gem.add_development_dependency("rspec", "~> 1.3")
     gem.add_dependency('activesupport', '>= 2.0.2')
     gem.add_dependency('highline', '>= 1.4.0')
     gem.add_dependency('capistrano', '>= 2.5.5')
