@@ -29,5 +29,6 @@ Chris Gaffney          (http://github.com/gaffneyc)
 Maxmpz                 (http://github.com/maxmpz)
 Geoff Garside          (http://geoffgarside.co.uk/)
 Oliver Kiessler        (http://inceedo.com)
+Nick Plante            (http://blog.zerosum.org)
 
 The transfer installer contains a piece of exception reporting code copied from the Chef library (http://wiki.opscode.com/display/chef/Home)
