@@ -4,10 +4,11 @@ module Sprinkle
       attr_accessor :packages
 
       def initialize(parent, *packages, &block)
+        super parent, options, &block
+
+        packages = [packages] unless packages.is_a?(Array)
         packages.flatten!
 
-
-        super parent, options, &block
 
         @packages = packages
       end
@@ -15,7 +16,7 @@ module Sprinkle
       protected
 
       def install_commands
-        "pacman -Sy --no-confirm #{@packages.join(' ')}"  
+        "pacman -Sy #{@packages.join(' ')} --no-confirm"  
       end
     end
   end
