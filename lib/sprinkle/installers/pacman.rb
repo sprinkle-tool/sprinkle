@@ -16,7 +16,7 @@ module Sprinkle
       protected
 
       def install_commands
-        "pacman -Sy #{@packages.join(' ')} --no-confirm"  
+        "pacman -Sy #{@packages.join(' ')} --no-confirm --needed"  
       end
     end
   end
