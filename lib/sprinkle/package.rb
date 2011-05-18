@@ -210,6 +210,10 @@ module Sprinkle
       def verify(description = '', &block)
         @verifications << Sprinkle::Verify.new(self, description, &block)
       end  
+
+      def pacman(*names, &block)
+        @installers << Sprinkle::Installers::Pacman.new(self, *names, &block)
+      end
       
       def process(deployment, roles)
         return if meta_package?
