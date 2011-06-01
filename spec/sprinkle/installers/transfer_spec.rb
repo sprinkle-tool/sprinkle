@@ -35,16 +35,18 @@ describe Sprinkle::Installers::Transfer do
     before do
       @installer = create_transfer @source, @destination do
         pre :install, 'op1'
-        post :install, 'op2'
+        pre :install, 'op2'
+        post :install, 'op3'
+        post :install, 'op4'
       end
 
 			@delivery = @installer.delivery
     end
 
 		it "should call the pre and post install commands around the file transfer" do
-			@delivery.should_receive(:process).with(@package.name, 'op1', @roles).once.ordered.and_return
+			@delivery.should_receive(:process).with(@package.name, ['op1', 'op2'], @roles).once.ordered.and_return
       @delivery.should_receive(:transfer).ordered.and_return
-			@delivery.should_receive(:process).with(@package.name, 'op2', @roles).once.ordered.and_return
+			@delivery.should_receive(:process).with(@package.name, ['op3', 'op4'], @roles).once.ordered.and_return
 		end	
 		
 		it "should call transfer with recursive defaulted to nil" do
