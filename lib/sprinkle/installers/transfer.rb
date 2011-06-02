@@ -133,8 +133,7 @@ module Sprinkle
         unless Sprinkle::OPTIONS[:testing]
 					pre = pre_commands(:install)
 					unless pre.empty?
-						sequence = pre
-            sequence = [pre] unless sequence.is_a? Array
+						sequence = pre.is_a?(Array) ? pre : [pre]
 						logger.info "#{@package.name} pre-transfer commands: #{sequence} for roles: #{roles}\n"
 						@delivery.process @package.name, sequence, roles
 					end
@@ -168,8 +167,7 @@ module Sprinkle
 					
 					post = post_commands(:install)
 					unless post.empty?
-						sequence = post
-            sequence = [post] unless sequence.is_a? Array
+						sequence = post.is_a?(Array) ? post : [post]
 						logger.info "#{@package.name} post-transfer commands: #{sequence} for roles: #{roles}\n"
 						@delivery.process @package.name, sequence, roles
 					end
