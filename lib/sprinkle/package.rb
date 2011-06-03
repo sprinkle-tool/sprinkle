@@ -153,6 +153,10 @@ module Sprinkle
         @installers << Sprinkle::Installers::Apt.new(self, *names, &block)
       end
 
+      def aptitude(*names, &block)
+        @installers << Sprinkle::Installers::Aptitude.new(self, *names, &block)
+      end
+
       def deb(*names, &block)
         @installers << Sprinkle::Installers::Deb.new(self, *names, &block)
       end
