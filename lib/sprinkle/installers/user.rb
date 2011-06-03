@@ -8,7 +8,7 @@ module Sprinkle
       end
       protected 
       def install_commands
-        "adduser #{@options[:flags]} #{@username}"
+        "useradd #{@options[:flags]} #{@username}"
       end
     end
   end
