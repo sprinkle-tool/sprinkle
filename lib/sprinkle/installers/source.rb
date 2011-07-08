@@ -100,7 +100,7 @@ module Sprinkle
           if File.exist? @source
             [ "cp #{@source} #{@options[:archives].first}/#{archive_name}" ]
           else
-            [ "wget -cq --directory-prefix='#{@options[:archives].first}' #{@source}" ]
+            [ "wget -cq #{@source} -O #{@options[:archives].first}/#{archive_name}" ]
           end
         end
 
