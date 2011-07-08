@@ -173,7 +173,7 @@ module Sprinkle
         end
 
         def archive_name #:nodoc:
-          name = @options[:custom_archive] || @source.split('/').last
+          name = (@options[:custom_archive] || @source.split('/')).last
           raise "Unable to determine archive name for source: #{source}, please update code knowledge" unless name
           name
         end
