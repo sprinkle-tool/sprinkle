@@ -26,8 +26,12 @@ module Sprinkle
       end
       def matches_local(localfile, remotefile, mode=nil)
         raise "Couldn't find local file #{localfile}" unless ::File.exists?(localfile)
-        local = `md5sum #{localfile}`.split.first
+	local = `#{md5_sum} #{localfile}`.split.first
         @commands << %{[ "X$(md5sum #{remotefile}|cut -d\\  -f 1)" = "X#{local}" ]}
+      end
+      # Get md5 sum in deffierent OSs
+      def md5_sum
+	`uname`.chomp == 'Linux' ? 'md5sum' : 'md5'
       end
     end
   end
