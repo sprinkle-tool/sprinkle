@@ -6,6 +6,7 @@
 * <http://github.com/trevorturk/sprinkle-packages>
 * <http://www.vimeo.com/2888665>
 * <http://redartisan.lighthouseapp.com/projects/25275-sprinkle/tickets>
+* <http://maxim.github.com/sprinkle-cheatsheet>
 
 ## DESCRIPTION:
 
