@@ -42,9 +42,9 @@ describe Sprinkle::Installers::Transfer do
     end
 
 		it "should call the pre and post install commands around the file transfer" do
-			@delivery.should_receive(:process).with(@package.name, 'op1', @roles).once.ordered.and_return
+			@delivery.should_receive(:process).with(@package.name, ['op1'], @roles).once.ordered.and_return
       @delivery.should_receive(:transfer).ordered.and_return
-			@delivery.should_receive(:process).with(@package.name, 'op2', @roles).once.ordered.and_return
+			@delivery.should_receive(:process).with(@package.name, ['op2'], @roles).once.ordered.and_return
 		end	
 		
 		it "should call transfer with recursive defaulted to nil" do
