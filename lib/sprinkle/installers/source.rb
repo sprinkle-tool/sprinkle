@@ -120,7 +120,7 @@ module Sprinkle
           }
 
           extras.inject(command) { |m, (k, v)|  m << create_options(k, v) if options[k]; m }
-          
+
           [ command << " > #{@package.name}-configure.log 2>&1'" ]
         end
 
@@ -174,7 +174,10 @@ module Sprinkle
 
         def archive_name #:nodoc:
           name = @source.split('/').last
-          name = options[:custom_archive].join if options[:custom_archive]
+          if options[:custom_archive]
+            name = options[:custom_archive]
+            name = name.join if name.is_a? Array
+          end
           raise "Unable to determine archive name for source: #{source}, please update code knowledge" unless name
           name
         end

@@ -36,7 +36,7 @@ describe Sprinkle::Installers::Source do
 
   def create_source(source, version = nil, &block)
     @package = mock(Sprinkle::Package, :name => 'package', :version => version)
-    
+
     Sprinkle::Installers::Source.new(@package, source, &block)
   end
 
@@ -113,27 +113,27 @@ describe Sprinkle::Installers::Source do
     it 'should prepare the build, installation and source archives area' do
       @installer.should_receive(:prepare).and_return []
     end
-    
+
     it "should prepare the build, installation and source archives area with correct paths" do
-      @installer.send(:prepare).should == 
+      @installer.send(:prepare).should ==
       [
          'mkdir -p /usr/local',
          'mkdir -p /usr/local/builds',
-         'mkdir -p /usr/local/archives' 
+         'mkdir -p /usr/local/archives'
       ]
     end
-    
+
     it 'should download the source archive' do
       @installer.should_receive(:download).and_return []
     end
 
     it 'should download the source archive to the correct path' do
-      @installer.send(:download).should == 
+      @installer.send(:download).should ==
         [
-         "wget -cq --directory-prefix='/usr/local/archives' #{@source}"
+         "wget -cq -O '/usr/local/archives/#{@source.split('/').last}' #{@source}"
         ]
     end
-    
+
     it 'should extract the source archive' do
       @installer.should_receive(:extract).and_return []
     end
@@ -148,7 +148,7 @@ describe Sprinkle::Installers::Source do
     it 'should configure the source' do
       @installer.should_receive(:configure).and_return []
     end
-    
+
     it 'should configure the source in the correct path and with the correct prefix and options' do
       enable  = %w( headers ssl deflate so ).inject([]) { |m, value| m << "--enable-#{value}"; m }
       disable = %w( cache proxy rewrite ).inject([]) { |m, value| m << "--disable-#{value}"; m }
@@ -159,10 +159,10 @@ describe Sprinkle::Installers::Source do
       option = %w( foo bar baz ).inject([]) { |m, value| m << "--#{value}"; m }
 
       configure_command = @installer.send(:configure).first
-      
+
       configure_command.should =~ %r{^bash -c 'cd /usr/local/builds/#{@filename} && ./configure --prefix=/usr/local}
       configure_command.should =~ %r{ > #{@package.name}-configure.log 2>&1'$}
-      
+
       # order of options is arbitrary in ruby 1.8 !
       configure_command.should =~ /#{enable.join(' ')}/
       configure_command.should =~ /#{disable.join(' ')}/
@@ -170,11 +170,11 @@ describe Sprinkle::Installers::Source do
       configure_command.should =~ /#{without.join(' ')}/
       configure_command.should =~ /#{option.join(' ')}/
     end
-    
+
     it 'should build the source' do
       @installer.should_receive(:build).and_return []
     end
-    
+
     it 'should build the source in the correct build path' do
       @installer.send(:build).should ==
         [
