@@ -107,7 +107,7 @@ module Sprinkle
           raise TemplateError.new(e, template, context)
         end
 
-        final_tempfile = Tempfile.new(prefix)
+        final_tempfile = Tempfile.new(prefix.to_s)
         final_tempfile.print(output)
         final_tempfile.close
 				final_tempfile
