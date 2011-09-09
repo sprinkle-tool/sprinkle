@@ -100,7 +100,7 @@ module Sprinkle
           if File.exist? @source
             [ "cp #{@source} #{@options[:archives].first}/#{archive_name}" ]
           else
-            [ "wget -cq --directory-prefix='#{@options[:archives].first}' #{@source}" ]
+            [ "wget -cq -O '#{@options[:archives].first}/#{archive_name}' #{@source}" ]
           end
         end
 
@@ -173,7 +173,8 @@ module Sprinkle
         end
 
         def archive_name #:nodoc:
-          name = @options[:custom_archive] || @source.split('/').last
+          name = @source.split('/').last
+          name = options[:custom_archive].join if options[:custom_archive]
           raise "Unable to determine archive name for source: #{source}, please update code knowledge" unless name
           name
         end
