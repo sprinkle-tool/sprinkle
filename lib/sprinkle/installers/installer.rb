@@ -6,7 +6,7 @@ module Sprinkle
     #
     # = Pre/Post Installation Hooks
     # 
-    # With all intallation methods you have the ability to specify multiple
+    # With all installation methods you have the ability to specify multiple
     # pre/post installation hooks. This gives you the ability to specify
     # commands to run before and after an installation takes place. All 
     # commands by default are sudo'd so there is no need to include "sudo"
