@@ -135,7 +135,7 @@ module Sprinkle
           unless pre.empty?
             sequence = pre; sequence = sequence.join('; ') if sequence.is_a? Array
             logger.info "#{@package.name} pre-transfer commands: #{sequence} for roles: #{roles}\n"
-            @delivery.process @package.name, sequence, roles
+            @delivery.process @package.name, pre, roles
           end
 
           recursive = @options[:recursive]
@@ -169,7 +169,7 @@ module Sprinkle
           unless post.empty?
             sequence = post; sequence = sequence.join('; ') if sequence.is_a? Array
             logger.info "#{@package.name} post-transfer commands: #{sequence} for roles: #{roles}\n"
-            @delivery.process @package.name, sequence, roles
+            @delivery.process @package.name, post, roles
           end
         end
       end

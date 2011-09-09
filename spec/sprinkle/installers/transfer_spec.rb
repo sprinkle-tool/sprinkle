@@ -44,9 +44,9 @@ describe Sprinkle::Installers::Transfer do
       end
 
       it "should call the pre and post install commands around the file transfer" do
-        @delivery.should_receive(:process).with(@package.name, 'op1', @roles).and_return
+        @delivery.should_receive(:process).with(@package.name, ['op1'], @roles).and_return
         @delivery.should_receive(:transfer).and_return
-        @delivery.should_receive(:process).with(@package.name, 'op2', @roles).and_return
+        @delivery.should_receive(:process).with(@package.name, ['op2'], @roles).and_return
       end
 
       it "should call transfer with recursive defaulted to nil" do
@@ -67,9 +67,9 @@ describe Sprinkle::Installers::Transfer do
       end
 
       it "should call the pre and post install commands around the file transfer" do
-        @delivery.should_receive(:process).with(@package.name, 'op1; op1-1', @roles).and_return
+        @delivery.should_receive(:process).with(@package.name, ['op1', 'op1-1'], @roles).and_return
         @delivery.should_receive(:transfer).and_return
-        @delivery.should_receive(:process).with(@package.name, 'op2; op2-1', @roles).and_return
+        @delivery.should_receive(:process).with(@package.name, ['op2', 'op2-1'], @roles).and_return
       end
 
     end
