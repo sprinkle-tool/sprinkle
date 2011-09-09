@@ -4,17 +4,18 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{sprinkle}
-  s.version = "0.3.4"
+  s.name = "sprinkle"
+  s.version = "0.3.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
-  s.authors = [%q{Marcus Crafter}]
-  s.date = %q{2011-08-24}
-  s.description = %q{Ruby DSL based software provisioning tool}
-  s.email = %q{crafterm@redartisan.com}
-  s.executables = [%q{sprinkle}]
+  s.authors = ["Marcus Crafter"]
+  s.date = "2011-09-09"
+  s.description = "Ruby DSL based software provisioning tool"
+  s.email = "crafterm@redartisan.com"
+  s.executables = ["sprinkle"]
   s.extra_rdoc_files = [
-    "README.markdown"
+    "README.markdown",
+    "TODO"
   ]
   s.files = [
     "CREDITS",
@@ -94,6 +95,7 @@ Gem::Specification.new do |s|
     "lib/sprinkle/verifiers/rpm.rb",
     "lib/sprinkle/verifiers/ruby.rb",
     "lib/sprinkle/verifiers/symlink.rb",
+    "lib/sprinkle/verifiers/user.rb",
     "lib/sprinkle/verify.rb",
     "script/console",
     "script/destroy",
@@ -130,13 +132,14 @@ Gem::Specification.new do |s|
     "spec/sprinkle/policy_spec.rb",
     "spec/sprinkle/script_spec.rb",
     "spec/sprinkle/sprinkle_spec.rb",
-    "spec/sprinkle/verify_spec.rb"
+    "spec/sprinkle/verify_spec.rb",
+    "sprinkle.gemspec"
   ]
-  s.homepage = %q{http://github.com/crafterm/sprinkle}
-  s.require_paths = [%q{lib}]
-  s.rubyforge_project = %q{sprinkle}
-  s.rubygems_version = %q{1.8.6}
-  s.summary = %q{Ruby DSL based software provisioning tool}
+  s.homepage = "http://github.com/crafterm/sprinkle"
+  s.require_paths = ["lib"]
+  s.rubyforge_project = "sprinkle"
+  s.rubygems_version = "1.8.10"
+  s.summary = "Ruby DSL based software provisioning tool"
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
