@@ -187,6 +187,10 @@ module Sprinkle
         @installers << Sprinkle::Installers::Rake.new(self, name, options, &block)
       end    
       
+      def thor(name, options = {}, &block)
+        @installers << Sprinkle::Installers::Thor.new(self, name, options, &block)
+      end  
+     
       def noop(&block)
         @installers << Sprinkle::Installers::Noop.new(self, name, options, &block)
       end
