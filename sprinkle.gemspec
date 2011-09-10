@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "sprinkle"
-  s.version = "0.3.5"
+  s.version = "0.3.6"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Marcus Crafter"]
-  s.date = "2011-09-09"
+  s.date = "2011-09-10"
   s.description = "Ruby DSL based software provisioning tool"
   s.email = "crafterm@redartisan.com"
   s.executables = ["sprinkle"]
@@ -79,6 +79,7 @@ Gem::Specification.new do |s|
     "lib/sprinkle/installers/runner.rb",
     "lib/sprinkle/installers/smart.rb",
     "lib/sprinkle/installers/source.rb",
+    "lib/sprinkle/installers/thor.rb",
     "lib/sprinkle/installers/transfer.rb",
     "lib/sprinkle/installers/user.rb",
     "lib/sprinkle/installers/yum.rb",
@@ -125,6 +126,7 @@ Gem::Specification.new do |s|
     "spec/sprinkle/installers/rpm_spec.rb",
     "spec/sprinkle/installers/runner_spec.rb",
     "spec/sprinkle/installers/source_spec.rb",
+    "spec/sprinkle/installers/thor_spec.rb",
     "spec/sprinkle/installers/transfer_spec.rb",
     "spec/sprinkle/installers/yum_spec.rb",
     "spec/sprinkle/installers/zypper_spec.rb",
