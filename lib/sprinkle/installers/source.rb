@@ -149,7 +149,8 @@ module Sprinkle
         # dress is overriden from the base Sprinkle::Installers::Installer class so that the command changes
         # directory to the build directory first. Also, the result of the command is logged.
         def dress(commands, stage)
-          commands.collect { |command| "bash -c 'cd #{build_dir} && #{command} >> #{@package.name}-#{stage}.log 2>&1'" }
+	  commands = [commands] if commands.is_a? String
+	  commands.map { |command| "bash -c 'cd #{build_dir} && #{command} >> #{@package.name}-#{stage}.log 2>&1'" }
         end
 
       private
