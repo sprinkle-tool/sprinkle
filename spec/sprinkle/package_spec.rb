@@ -141,13 +141,29 @@ CODE
       pkg.should respond_to(:gem)
       pkg.installers.first.class.should == Sprinkle::Installers::Gem
     end
-
+    
+    it 'should optionally accept an group installer' do
+      pkg = package @name do
+        add_group 'bob'
+      end
+      pkg.should respond_to(:add_group)
+      pkg.installers.first.class.should == Sprinkle::Installers::Group
+    end
+    
     it 'should optionally accept a source installer' do
       pkg = package @name do
         source 'archive'
       end
       pkg.should respond_to(:source)
       pkg.installers.first.class.should == Sprinkle::Installers::Source
+    end
+    
+    it 'should optionally accept an user installer' do
+      pkg = package @name do
+        add_user 'bob'
+      end
+      pkg.should respond_to(:add_user)
+      pkg.installers.first.class.should == Sprinkle::Installers::User
     end
 
     it 'should allow multiple installer steps to be defined and respect order' do

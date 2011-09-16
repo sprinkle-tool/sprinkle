@@ -22,7 +22,7 @@ module Sprinkle
         @commands << "grep '#{text}' #{path}"
       end
       def user_present(username) 
-        @commands << %Q{grep -q -e  \'^#{username}:x\' /etc/passwd && test -d ~#{username}}
+        has_user username
       end
       def matches_local(localfile, remotefile, mode=nil)
         raise "Couldn't find local file #{localfile}" unless ::File.exists?(localfile)
