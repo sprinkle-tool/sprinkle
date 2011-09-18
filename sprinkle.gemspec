@@ -5,11 +5,11 @@
 
 Gem::Specification.new do |s|
   s.name = "sprinkle"
-  s.version = "0.3.6"
+  s.version = "0.4.0"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Marcus Crafter"]
-  s.date = "2011-09-10"
+  s.date = "2011-09-18"
   s.description = "Ruby DSL based software provisioning tool"
   s.email = "crafterm@redartisan.com"
   s.executables = ["sprinkle"]
@@ -65,10 +65,10 @@ Gem::Specification.new do |s|
     "lib/sprinkle/installers/freebsd_pkg.rb",
     "lib/sprinkle/installers/freebsd_portinstall.rb",
     "lib/sprinkle/installers/gem.rb",
+    "lib/sprinkle/installers/group.rb",
     "lib/sprinkle/installers/install_package.rb",
     "lib/sprinkle/installers/installer.rb",
     "lib/sprinkle/installers/mac_port.rb",
-    "lib/sprinkle/installers/noop.rb",
     "lib/sprinkle/installers/openbsd_pkg.rb",
     "lib/sprinkle/installers/opensolaris_pkg.rb",
     "lib/sprinkle/installers/pacman.rb",
@@ -96,7 +96,7 @@ Gem::Specification.new do |s|
     "lib/sprinkle/verifiers/rpm.rb",
     "lib/sprinkle/verifiers/ruby.rb",
     "lib/sprinkle/verifiers/symlink.rb",
-    "lib/sprinkle/verifiers/user.rb",
+    "lib/sprinkle/verifiers/users_groups.rb",
     "lib/sprinkle/verify.rb",
     "script/console",
     "script/destroy",
@@ -117,7 +117,6 @@ Gem::Specification.new do |s|
     "spec/sprinkle/installers/gem_spec.rb",
     "spec/sprinkle/installers/installer_spec.rb",
     "spec/sprinkle/installers/mac_port_spec.rb",
-    "spec/sprinkle/installers/noop_spec.rb",
     "spec/sprinkle/installers/openbsd_pkg_spec.rb",
     "spec/sprinkle/installers/opensolaris_pkg_spec.rb",
     "spec/sprinkle/installers/push_text_spec.rb",
