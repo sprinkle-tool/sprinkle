@@ -85,23 +85,22 @@ module Sprinkle
       end
       
       def verify(verifier, roles, opts = {}) #:nodoc:
-        # issue all the verification steps in a single SSH connection
+        @verifier = verifier
+        # issue all the verification steps in a single SSH command
         commands=[verifier.commands.join(" && ")]
         process(verifier.package.name, commands, roles, 
           :suppress_and_return_failures => true)
+      ensure
+        @verifier = nil
       end
       
       def install(installer, roles, opts = {}) #:nodoc:
+        @installer = installer
         process(installer.package.name, installer.install_sequence, roles)
       rescue SSHCommandFailure => e
-        raise Sprinkle::Actors::RemoteCommandFailure.new(installer,e.details)
-      end
-      
-      def transfer(name, source, destination, roles, opts={}) #:nodoc:
-        opts.reverse_merge!(:recursive => true)
-        Array(roles).each do |role| 
-          transfer_to_role(source, destination, role, opts)
-        end
+        raise Sprinkle::Actors::RemoteCommandFailure.new(installer, e.details, e)
+      ensure
+        @installer = nil
       end
 
       protected
@@ -125,12 +124,21 @@ module Sprinkle
         
         def prepared_commands
           return commands unless @options[:use_sudo]
-          commands.map { |command| command.match(/^sudo/) ? command : "sudo #{command}" }
+          commands.map do |command| 
+            next command if command.is_a?(Symbol)
+            command.match(/^sudo/) ? command : "sudo #{command}"
+          end
         end
         
         def execute_on_host(commands,host) #:nodoc:
+          session = ssh_session(host)
           prepared_commands.each do |cmd|
-            res = ssh(host, cmd)
+            if cmd == :TRANSFER
+              transfer_to_host(@installer.sourcepath, @installer.destination, session, 
+                :recursive => @installer.options[:recursive])
+              next
+            end
+            res = ssh(session, cmd)
             if res[:code] != 0 
               if @suppress
                 return false
@@ -144,8 +152,10 @@ module Sprinkle
           true
         end
         
-        def ssh(host, cmd) #:nodoc:
-          with_session(host) { |session| return channel_runner(session, cmd) }
+        def ssh(host, cmd, opts={}) #:nodoc:
+          logger.debug "ssh: #{cmd}"
+          session = host.is_a?(Net::SSH::Connection::Session) ? host : ssh_session(host)
+          channel_runner(session, cmd)
         end
         
         def channel_runner(session, command) #:nodoc:
@@ -188,19 +198,25 @@ module Sprinkle
         end
         
         def transfer_to_host(source, destination, host, opts={}) #:nodoc:
-          with_session(host) do |session|
-            scp = Net::SCP.new(session)
-            scp.upload! source, destination, :recursive => opts[:recursive]
-          end
+          logger.debug "upload: #{destination}"
+          session = host.is_a?(Net::SSH::Connection::Session) ? host : ssh_session(host)
+          scp = Net::SCP.new(session)
+          scp.upload! source, destination, :recursive => opts[:recursive], :chunk_size => 32.kilobytes
+        rescue RuntimeError => e
+          if e.message =~ /Permission denied/
+            raise TransferFailure.no_permission(@installer,e)
+          else
+            raise e
+          end          
         end
         
-        def with_session(host, &block) #:nodoc:
+        def ssh_session(host)
           if @gateway
-            gateway.ssh(host, @options[:user]) { |ssh| yield(ssh) }
+            gateway.ssh(host, @options[:user])
           else
-            Net::SSH.start(host, @options[:user],:password => @options[:password]) { |ssh| yield(ssh) }
+            Net::SSH.start(host, @options[:user],:password => @options[:password])
           end
-        end
+        end        
         
         private
         def color(code, s)

@@ -84,16 +84,22 @@ module Sprinkle
     # directories or changing permissions), you can use the pre/post :install directives
     # and they will be run.
     class Transfer < Installer
-      attr_accessor :source, :destination #:nodoc:
+      attr_accessor :source, :destination, :sourcepath #:nodoc:
 
       def initialize(parent, source, destination, options={}, &block) #:nodoc:
         super parent, options, &block
         @source = source
         @destination = destination
+        # perform the transfer in two steps if we're using sudo
+        if options[:sudo]
+          final = @destination
+          @destination = "/tmp/sprinkle_#{File.basename(@destination)}"
+          post :install, "sudo mv #{@destination} #{final}"
+        end
       end
 
       def install_commands
-        nil
+        :TRANSFER
       end
 
       def self.render_template(template, context, prefix)
@@ -126,52 +132,34 @@ module Sprinkle
       def process(roles) #:nodoc:
         assert_delivery
 
-        if logger.debug?
-          logger.debug "transfer: #{@source} -> #{@destination} for roles: #{roles}\n"
-        end
+        logger.debug "transfer: #{@source} -> #{@destination} for roles: #{roles}\n"
 
-        unless Sprinkle::OPTIONS[:testing]
-          pre = pre_commands(:install)
-          unless pre.empty?
-            sequence = pre; sequence = sequence.join('; ') if sequence.is_a? Array
-            logger.info "#{@package.name} pre-transfer commands: #{sequence} for roles: #{roles}\n"
-            @delivery.process @package.name, [pre].flatten, roles
-          end
+        return if Sprinkle::OPTIONS[:testing]
 
-          recursive = @options[:recursive]
-
-          if options[:render]
-            if options[:locals]
-              context = {}
-              options[:locals].each_pair do |k,v|
-                if v.respond_to?(:call)
-                  context[k] = v.call
-                else
-                  context[k] = v
-                end
+        if options[:render]
+          if options[:locals]
+            context = {}
+            options[:locals].each_pair do |k,v|
+              if v.respond_to?(:call)
+                context[k] = v.call
+              else
+                context[k] = v
               end
-            else
-              context = binding()
             end
-
-            tempfile = render_template_file(@source, context, @package.name)
-            sourcepath = tempfile.path
-            logger.info "Rendering template #{@source} to temporary file #{sourcepath}"
-            recursive = false
           else
-            sourcepath = @source
+            context = binding()
           end
 
-          logger.info "--> Transferring #{sourcepath} to #{@destination} for roles: #{roles}"
-          @delivery.transfer(@package.name, sourcepath, @destination, roles, recursive)
-
-          post = post_commands(:install)
-          unless post.empty?
-            sequence = post; sequence = sequence.join('; ') if sequence.is_a? Array
-            logger.info "#{@package.name} post-transfer commands: #{sequence} for roles: #{roles}\n"
-            @delivery.process @package.name, [post].flatten, roles
-          end
+          tempfile = render_template_file(@source, context, @package.name)
+          @sourcepath = tempfile.path
+          logger.info "Rendering template #{@source} to temporary file #{sourcepath}"
+          recursive = false
+        else
+          @sourcepath = @source
         end
+
+        logger.info "--> Transferring #{sourcepath} to #{@destination} for roles: #{roles}"
+        @delivery.install(self, roles, :recursive => @options[:recursive])
       end
     end
   end
