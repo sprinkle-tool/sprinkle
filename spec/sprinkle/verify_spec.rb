@@ -90,7 +90,7 @@ describe Sprinkle::Verify do
     end
 
     it 'should check that a ruby gem is installed' do
-      @verification.commands.should include("sudo gem list 'rails' --installed --version '2.1.0' > /dev/null")
+      @verification.commands.should include("gem list 'rails' --installed --version '2.1.0' > /dev/null")
     end
 
     it 'should check that an RPM is installed' do
