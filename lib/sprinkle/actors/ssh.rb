@@ -164,7 +164,7 @@ module Sprinkle
               if res[:code] == 0
                 logger.debug(green 'success')
               else
-                logger.debug(red('failed (%d).'%exit_code))
+                logger.debug(red('failed (%d).'%res[:code]))
               end
             end
 

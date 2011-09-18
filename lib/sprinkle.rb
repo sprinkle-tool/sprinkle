@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'active_support'
+require 'active_support/all'
 
 # Use active supports auto load mechanism
 require 'active_support/version'
