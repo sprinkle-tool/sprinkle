@@ -75,7 +75,6 @@ module Sprinkle
         end
 
         unless Sprinkle::OPTIONS[:testing]
-          check_for_variables
           logger.info "--> Installing #{package.name} for roles: #{roles}"
           @delivery.install(self, roles, :per_host => per_host?)
         end
@@ -91,7 +90,7 @@ module Sprinkle
       protected
       
         def log(t, level=:info)
-          logger.send(level, replace_variables(t))
+          logger.send(level, t)
         end
 
         # A concrete installer (subclass of this virtual class) must override this method
