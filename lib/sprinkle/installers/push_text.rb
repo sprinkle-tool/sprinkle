@@ -2,9 +2,7 @@ module Sprinkle
   module Installers
     # Beware, strange "installer" coming your way.
     #
-    # = Text configuration installer
-    #
-    # This installer pushes simple configuration into a file.
+    # This push text installer pushes simple configuration into a file.
     # 
     # == Example Usage
     #
@@ -22,8 +20,15 @@ module Sprinkle
     #   end
     #
     # A special verify step exists for this very installer
-    # its known as file_contains, it will test that a file indeed
+    # its known as +file_contains+, it will test that a file indeed
     # contains a substring that you send it.
+    #
+    #   package :magic_beans do
+    #     push_text 'magic_beans', '/etc/apache2/apache2.conf'
+    #     verify do
+    #       file_contains '/etc/apache2/apache2.conf', 'magic_beans'
+    #     end
+    #   end
     #
     class PushText < Installer
       attr_accessor :text, :path #:nodoc:

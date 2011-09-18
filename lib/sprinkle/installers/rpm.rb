@@ -20,9 +20,9 @@ module Sprinkle
     class Rpm < Installer
       attr_accessor :packages #:nodoc:
 
-      def initialize(parent, packages, &block) #:nodoc:
+      def initialize(parent, *packages, &block) #:nodoc:
         super parent, &block
-        packages = [packages] unless packages.is_a? Array
+        packages = [*packages].flatten
         @packages = packages
       end
 

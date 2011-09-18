@@ -1,7 +1,5 @@
 module Sprinkle
   module Installers
-    # = Deb Package Installer
-    #
     # The Deb installer installs deb packages sourced from a remote URL
     # 
     # == Example Usage

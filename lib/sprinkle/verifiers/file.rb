@@ -18,6 +18,10 @@ module Sprinkle
         @commands << "test -f #{path}"
       end
       
+      def no_file(path)
+        @commands << "test ! -f #{path}"
+      end
+      
       def file_contains(path, text)
         @commands << "grep '#{text}' #{path}"
       end

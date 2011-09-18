@@ -1,8 +1,6 @@
 module Sprinkle
   module Installers
-    # = OpenBSD Package Installer
-    #
-    # The Pkg package installer installs OpenBSD packages.
+    # The OpenBSD package installer installs OpenBSD packages.
     # 
     # == Example Usage
     #

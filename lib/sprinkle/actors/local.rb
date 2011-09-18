@@ -22,7 +22,7 @@ module Sprinkle
       end
       
       def verify(verifier, roles, opts = {}) #:nodoc:
-        process(installer.package.name, verifier.commands, roles)
+        process(verifier.package.name, verifier.commands, roles)
       end
       
       def transfer(name, source, destination, roles, opts ={}) #:nodoc:

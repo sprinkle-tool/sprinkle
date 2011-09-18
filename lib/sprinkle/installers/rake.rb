@@ -1,7 +1,5 @@
 module Sprinkle
   module Installers
-    # = Rake Installer
-    #
     # This installer runs a rake command.
     # 
     # == Example Usage

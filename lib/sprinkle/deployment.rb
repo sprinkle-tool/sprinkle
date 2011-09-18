@@ -52,7 +52,9 @@ module Sprinkle
       # the actor. For more information on what configuration options are
       # available, view the corresponding Sprinkle::Actors page.
       def delivery(type, &block) #:doc:
-        @style = ("Sprinkle::Actors::" + type.to_s.titleize).constantize.new &block
+        type=type.to_s.titleize
+        type="SSH" if type=="Ssh"
+        @style = ("Sprinkle::Actors::" + type).constantize.new &block
       end
 
       def method_missing(sym, *args, &block) #:nodoc:

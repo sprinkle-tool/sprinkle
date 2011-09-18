@@ -25,13 +25,13 @@ module Sprinkle
     #       gateway "work.sshgateway.com"
     #     end
     #   end
-    class Ssh
+    class SSH
       attr_accessor :options #:nodoc:
       
       class SSHCommandFailure < StandardError #:nodoc:
         attr_accessor :details
       end 
-
+      
       def initialize(options = {}, &block) #:nodoc:
         @options = options.update(:user => 'root')
         @roles = {}
@@ -85,7 +85,9 @@ module Sprinkle
       end
       
       def verify(verifier, roles, opts = {}) #:nodoc:
-        process(verifier.package.name, verifier.commands, roles, 
+        # issue all the verification steps in a single SSH connection
+        commands=[verifier.commands.join(" && ")]
+        process(verifier.package.name, commands, roles, 
           :suppress_and_return_failures => true)
       end
       

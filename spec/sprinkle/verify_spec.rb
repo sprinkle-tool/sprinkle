@@ -157,12 +157,12 @@ describe Sprinkle::Verify do
       end
 
       it 'should call process on the delivery with the correct parameters' do
-        @delivery.should_receive(:process).with(@name, @verification.commands, [:app], true).once.and_return(true)
+        @delivery.should_receive(:verify).with(@verification, [:app]).once.and_return(true)
         @verification.process([:app])
       end
 
       it 'should raise Sprinkle::VerificationFailed exception when commands fail' do
-        @delivery.should_receive(:process).once.and_return(false)
+        @delivery.should_receive(:verify).once.and_return(false)
         lambda { @verification.process([:app]) }.should raise_error(Sprinkle::VerificationFailed) do |error|
           error.package.should eql(@package)
           error.description.should eql('moo')

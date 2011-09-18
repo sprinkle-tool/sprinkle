@@ -258,7 +258,7 @@ describe Sprinkle::Actors::Capistrano do
     end
 
     after do
-      @cap.transfer @name, @source, @dest, @roles, false
+      @cap.transfer @name, @source, @dest, @roles, :recursive => false
     end
   end
 

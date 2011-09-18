@@ -1,7 +1,5 @@
 module Sprinkle
   module Installers
-    # = Apt Package Installer
-    #
     # The Apt package installer uses the +apt-get+ command to install
     # packages. The apt installer has only one option which can be
     # modified which is the +dependencies_only+ option. When this is
@@ -20,7 +18,9 @@ module Sprinkle
     # Second, only build the magic_beans dependencies:
     #
     #   package :magic_beans_depends do
-    #     apt 'magic_beans_package' { dependencies_only true }
+    #     apt 'magic_beans_package' do
+    #       dependencies_only true 
+    #     end
     #   end
     #
     # As you can see, setting options is as simple as creating a

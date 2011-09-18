@@ -7,7 +7,7 @@ describe Sprinkle::Installers::Installer do
     @package = mock(Sprinkle::Package, :name => 'package')
     @empty = Proc.new { }
     @sequence = ['op1', 'op2']
-    @delivery = mock(Sprinkle::Deployment, :process => true)
+    @delivery = mock(Sprinkle::Deployment, :process => true, :install => true)
     @installer = create_installer
     @installer.delivery = @delivery
     @roles = []
@@ -84,7 +84,7 @@ describe Sprinkle::Installers::Installer do
 
     describe 'when in production' do
       it 'should invoke the delivery mechanism to process the install sequence' do
-        @delivery.should_receive(:process).with(@package.name, @sequence, @roles)
+        @delivery.should_receive(:install).with(@installer, @roles, :per_host => nil)
       end
     end
     
@@ -130,12 +130,12 @@ describe Sprinkle::Installers::Installer do
           @installer.send(:install_sequence).should == [ "a", "b", "c", 'installer' ]
         end
       end
-      describe "blocks as commands" do
+      describe "arrays as commands" do
         before(:each) do
           @array = ["a", "b"]
           @installer = create_installer_with_pre_command(@array)
         end
-        it "should be able to store a block if it's the pre command" do
+        it "should be able to store an array if it's the pre command" do
           @installer.send(:install_sequence).should == [ @array, 'installer' ].flatten
         end
       end
