@@ -17,14 +17,7 @@ module Sprinkle
     #   package :magic_beans do
     #     rpm %w(magic_beans magic_sauce)
     #   end
-    class Rpm < Installer
-      attr_accessor :packages #:nodoc:
-
-      def initialize(parent, *packages, &block) #:nodoc:
-        super parent, &block
-        packages = [*packages].flatten
-        @packages = packages
-      end
+    class Rpm < PackageInstaller
 
       protected
 

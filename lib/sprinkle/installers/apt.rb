@@ -26,25 +26,18 @@ module Sprinkle
     # As you can see, setting options is as simple as creating a
     # block and calling the option as a method with the value as 
     # its parameter.
-    class Apt < Installer
-      attr_accessor :packages #:nodoc:
-
+    class Apt < PackageInstaller
       def initialize(parent, *packages, &block) #:nodoc:
-        packages.flatten!
-        
-        options = { :dependencies_only => false }
-        options.update(packages.pop) if packages.last.is_a?(Hash)
-        
-        super parent, options, &block
-        
-        @packages = packages
+        super parent, *packages, &block
+        @options.reverse_merge!(:dependencies_only => false)
       end
 
       protected
 
         def install_commands #:nodoc:
           command = @options[:dependencies_only] ? 'build-dep' : 'install'
-          "env DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive apt-get --force-yes -qyu #{command} #{@packages.join(' ')}"
+          noninteractive = "env DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive"
+          "#{noninteractive} apt-get --force-yes -qyu #{command} #{@packages.join(' ')}"
         end
 
     end

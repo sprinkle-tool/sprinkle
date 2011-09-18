@@ -13,8 +13,14 @@ describe Sprinkle::Installers::Runner do
 	describe 'when created' do
 		it 'should accept a single cmd to run' do
 			@installer = create_runner 'teste'
-			@installer.cmd.should == 'teste'
+			@installer.cmds.should == ['teste']
 		end
+		
+		it 'should accept an array of commands to run' do
+			@installer = create_runner ['teste', 'world']
+			@installer.cmds.should == ['teste', 'world']
+			@installer.install_sequence.should == ['teste', 'world']
+	  end
 	end
 
 	describe 'during execution' do
@@ -25,7 +31,7 @@ describe Sprinkle::Installers::Runner do
 		end
 
 		it 'should run the given command for all specified packages' do
-			@install_commands.should == 'teste'
+			@install_commands.should == ['teste']
 		end
 	end
 end

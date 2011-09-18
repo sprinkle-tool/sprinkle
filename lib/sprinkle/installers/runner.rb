@@ -1,26 +1,34 @@
 module Sprinkle
-	module Installers
-	  # The runner installer is great for running a single command.
-	  #
-	  # == Example Usage
+  module Installers
+    # The runner installer is great for running a simple command.
+    #
+    # == Example Usage
     #
     #   package :magic_beans do
     #     runner "make world"
     #   end
     #
-		class Runner < Installer
-			attr_accessor :cmd #:nodoc:
+    # You can also pass multiple commands as arguments or an array.
+    #
+    #   package :magic_beans do
+    #     runner "make world", "destroy world"
+    #     runner [ "make world", "destroy world" ]
+    #   end
+    #
+    class Runner < Installer
+      attr_accessor :cmds #:nodoc:
 
-			def initialize(parent, cmd = nil , &block) #:nodoc:
-				super parent, {}, &block
-				@cmd = cmd 
-			end
-			
-			protected
-				
-				def install_commands #:nodoc:
-					@cmd
-				end
-		end
-	end
+      def initialize(parent, *cmds , &block) #:nodoc:
+        super parent, {}, &block
+        @cmds = [*cmds].flatten
+        raise "you need to specify a command" if cmds.nil?
+      end
+      
+      protected
+        
+        def install_commands #:nodoc:
+          @cmds
+        end
+    end
+  end
 end

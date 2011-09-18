@@ -22,14 +22,7 @@ module Sprinkle
     #
     #   set :sudo, 'pfexec'
     #   set :sudo_prompt, ''
-    class OpensolarisPkg < Installer
-      attr_accessor :packages #:nodoc:
-
-      def initialize(parent, packages, &block) #:nodoc:
-        super parent, &block
-        packages = [packages] unless packages.is_a? Array
-        @packages = packages
-      end
+    class OpensolarisPkg < PackageInstaller
 
       protected
 

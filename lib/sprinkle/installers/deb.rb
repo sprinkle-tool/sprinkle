@@ -10,14 +10,7 @@ module Sprinkle
     #     deb 'http://debs.example.com/magic_beans.deb'
     #   end
     #
-    class Deb < Installer
-      attr_accessor :packages #:nodoc:
-
-      def initialize(parent, packages, &block) #:nodoc:
-        super parent, &block
-        packages = [packages] unless packages.is_a? Array
-        @packages = packages
-      end
+    class Deb < PackageInstaller
 
       protected
 

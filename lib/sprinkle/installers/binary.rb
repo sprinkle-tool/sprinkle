@@ -15,7 +15,6 @@ module Sprinkle
     class Binary < Installer
       def initialize(parent, binary_archive, options = {}, &block) #:nodoc:
         @binary_archive = binary_archive
-        @options = options
         super parent, options, &block
       end
 
