@@ -1,14 +1,14 @@
 module Sprinkle
   module Installers
-    class User < Installer
-      def initialize(package, username, options, &block)
+    class Group < Installer
+      def initialize(package, groupname, options, &block)
         super package, &block
-        @username = username
+        @groupname = groupname
         @options = options
       end
       protected 
       def install_commands
-        "adduser #{@options[:flags]} #{@username}"
+        "addgroup #{@options[:flags]} #{@groupname}"
       end
     end
   end

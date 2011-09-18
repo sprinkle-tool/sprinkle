@@ -14,6 +14,18 @@ describe Sprinkle::Verify do
 
         # Check a directory exists
         has_directory 'mydir'
+        
+        # Check for a user
+        has_user "bob"
+        
+        # Check for user with old API
+        user_present "someuser"
+        
+        # Check for user in a group
+        has_user "alf", :in_group => "alien"
+        
+        # Check for a group
+        has_group "bobgroup"
 
         # Check a symlink exists
         has_symlink 'mypointer'
@@ -63,6 +75,22 @@ describe Sprinkle::Verify do
 
     it 'should do a "test -d" on the has_directory check' do
       @verification.commands.should include('test -d mydir')
+    end
+    
+    it 'should use id to check for user in group' do
+      @verification.commands.should include("id -G alf | xargs -n1 echo | grep alien")
+    end
+    
+    it 'should use id to check for user' do
+      @verification.commands.should include('id bob')
+    end
+    
+    it 'should use id to check for user via user_present' do
+      @verification.commands.should include('id someuser')
+    end
+
+    it 'should use id to check for group' do
+      @verification.commands.should include('id -g bobgroup')
     end
 
     it 'should do a "test -L" to check something is a symbolic link' do
