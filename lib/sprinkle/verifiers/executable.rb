@@ -37,7 +37,7 @@ module Sprinkle
       # defaults to "-v").
       def has_executable_with_version(path, version, get_version = '-v')
         if path.include?('/')
-          @commands << "[ -x #{path} -a -n \"`#{path} #{get_version} 2> /dev/null | egrep -e \\\"#{version}\\\"`\" ]"
+          @commands << "[ -x #{path} -a -n \"`#{path} #{get_version} 2>&1 | egrep -e \\\"#{version}\\\"`\" ]"
         else
           @commands << "[ -n \"`echo \\`which #{path}\\``\" -a -n \"`\\`which #{path}\\` #{get_version} 2>&1 | egrep -e \\\"#{version}\\\"`\" ]"
         end
