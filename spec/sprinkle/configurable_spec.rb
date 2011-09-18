@@ -11,6 +11,7 @@ describe Sprinkle::Configurable do
     @configurable = MyPrefix::Configurable.new
     @default = Proc.new { }
     @defaults = { :configurable => @default }
+    @deployment = Object.new
     @deployment.stub!(:defaults).and_return(@defaults)
     @deployment.stub!(:style)
   end
