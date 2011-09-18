@@ -141,6 +141,18 @@ CODE
       pkg.should respond_to(:gem)
       pkg.installers.first.class.should == Sprinkle::Installers::Gem
     end
+    
+    it 'should optionally accept a noop installer' do
+      pkg = package @name do
+        noop do
+        end
+      end
+      pkg.should respond_to(:noop)
+      pkg.installers.first.class.should == Sprinkle::Installers::Runner
+      @installer = pkg.installers.first
+      @install_commands = @installer.send :install_commands
+      @install_commands.should == 'echo noop'
+    end
 
     it 'should optionally accept a source installer' do
       pkg = package @name do

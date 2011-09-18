@@ -192,7 +192,7 @@ module Sprinkle
       end  
      
       def noop(&block)
-        @installers << Sprinkle::Installers::Noop.new(self, name, options, &block)
+        @installers << Sprinkle::Installers::Runner.new(self, "echo noop", &block)
       end
       
       def push_text(text, path, options = {}, &block)
@@ -207,8 +207,8 @@ module Sprinkle
         @installers << Sprinkle::Installers::Transfer.new(self, source, destination, options, &block)
       end
 
-			def runner(cmd)
-				@installers << Sprinkle::Installers::Runner.new(self, cmd)
+			def runner(cmd, &block)
+				@installers << Sprinkle::Installers::Runner.new(self, cmd, &block)
 			end
 
       def verify(description = '', &block)
