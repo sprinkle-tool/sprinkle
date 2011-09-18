@@ -45,11 +45,11 @@ module Sprinkle
 
       def initialize(package, options = {}, &block) #:nodoc:
         @package = package
-        @options = options
+        @options = options || {}
         @pre = {}; @post = {}
         self.instance_eval(&block) if block
       end
-
+            
       def pre(stage, *commands)
         @pre[stage] ||= []
         @pre[stage] += commands
@@ -62,6 +62,10 @@ module Sprinkle
         @post[stage] += [yield] if block_given?
       end
 
+      # Called right before an installer is exected, can be used for logging
+      # and announcing what is about to happen
+      def announce; end
+
       def process(roles) #:nodoc:
         assert_delivery
 
@@ -71,18 +75,23 @@ module Sprinkle
         end
 
         unless Sprinkle::OPTIONS[:testing]
+          check_for_variables
           logger.info "--> Installing #{package.name} for roles: #{roles}"
-          @delivery.process(@package.name, install_sequence, roles)
+          @delivery.install(self, roles, :per_host => per_host?)
         end
       end
 
-      protected
         # More complicated installers that have different stages, and require pre/post commands
         # within stages can override install_sequence and take complete control of the install
         # command sequence construction (eg. source based installer).
         def install_sequence
           commands = pre_commands(:install) + [ install_commands ] + post_commands(:install)
-          commands.flatten
+        end
+        
+      protected
+      
+        def log(t, level=:info)
+          logger.send(level, replace_variables(t))
         end
 
         # A concrete installer (subclass of this virtual class) must override this method

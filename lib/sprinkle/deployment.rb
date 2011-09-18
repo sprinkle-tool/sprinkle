@@ -67,6 +67,12 @@ module Sprinkle
         POLICIES.each do |policy|
           policy.process(self)
         end
+      rescue Sprinkle::Actors::RemoteCommandFailure => e
+        e.print_summary
+        exit
+      ensure
+        # do any cleanup our actor may need to close network sockets, etc
+        @style.teardown if @style.respond_to?(:teardown)        
       end
     end
   end

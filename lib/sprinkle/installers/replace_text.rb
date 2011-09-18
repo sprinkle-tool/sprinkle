@@ -32,11 +32,14 @@ module Sprinkle
         @text = text
         @path = path
       end
+      
+      def announce
+        log "--> Replace '#{@regex}' with '#{@text}' in file #{@path}"
+      end
 
       protected
-
+      
         def install_commands #:nodoc:
-          logger.info "--> Replace '#{@regex}' with '#{@text}' in file #{@path}"
           "#{'sudo ' if option?(:sudo)}sed -i 's/#{@regex.gsub("'", "'\\\\''").gsub("/", "\\\\/").gsub("\n", '\n')}/#{@text.gsub("'", "'\\\\''").gsub("/", "\\\\/").gsub("\n", '\n')}/g' #{@path}"
         end
 

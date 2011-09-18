@@ -1,9 +1,9 @@
+require 'vlad'
+
 module Sprinkle
   module Actors
-    # = Vlad Delivery Method
-    #
-    # Vlad is one of the delivery method options available out of the
-    # box with Sprinkle. If you have the vlad the deployer gem install, you 
+    # The Vlad actor is one of the delivery method options available out of the
+    # box with Sprinkle. If you have the vlad the deployer gem installed, you 
     # may use this delivery. The only configuration option available, and 
     # which is mandatory to include is +script+. An example:
     #
@@ -17,7 +17,6 @@ module Sprinkle
     # These recipes are mainly to set variables such as :user, :password, and to 
     # set the app domain which will be sprinkled.
     class Vlad
-      require 'vlad'
       attr_accessor :loaded_recipes #:nodoc:
 
       def initialize(&block) #:nodoc:
@@ -40,11 +39,9 @@ module Sprinkle
         @loaded_recipes << name
       end
 
-      def process(name, commands, roles, suppress_and_return_failures = false) #:nodoc:
+      def process(name, commands, roles, opts ={}) #:nodoc:
         commands = Array(commands)
-        if use_sudo
-          commands = commands.map{|x| "sudo #{x}"}
-        end
+        commands = commands.map{|x| "sudo #{x}"} if use_sudo
         commands = commands.join(' && ')
         puts "executing #{commands}"
         t = remote_task(task_sym(name), :roles => roles) { run commands }
@@ -53,7 +50,7 @@ module Sprinkle
           t.invoke
           return true
         rescue ::Rake::CommandFailedError => e
-          return false if suppress_and_return_failures
+          return false if opts[:suppress_and_return_failures]
           
           # Reraise error if we're not suppressing it
           raise
@@ -61,12 +58,12 @@ module Sprinkle
       end
 
 			# Sorry, all transfers are recursive
-      def transfer(name, source, destination, roles, recursive = true, suppress_and_return_failures = false) #:nodoc:
+      def transfer(name, source, destination, roles, opts={}) #:nodoc:
         begin
 					rsync source, destination
           return true
         rescue ::Rake::CommandFailedError => e
-          return false if suppress_and_return_failures
+          return false if opts[:suppress_and_return_failures]
           
           # Reraise error if we're not suppressing it
           raise

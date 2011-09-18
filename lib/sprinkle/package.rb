@@ -215,7 +215,7 @@ module Sprinkle
         @installers << Sprinkle::Installers::Transfer.new(self, source, destination, options, &block)
       end
 
-			def runner(cmd, &block)
+			def runner(cmd = nil, &block)
 				@installers << Sprinkle::Installers::Runner.new(self, cmd, &block)
 			end
 

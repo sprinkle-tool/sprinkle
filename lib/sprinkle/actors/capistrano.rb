@@ -2,16 +2,15 @@ require 'capistrano/cli'
 
 module Sprinkle
   module Actors
-    # = Capistrano Delivery Method
+    # The Capistrano actor uses Capistrano to define your roles and deliver 
+    # commands to your remote servers.  You'll need the capistrano gem installed.
     #
-    # Capistrano is one of the delivery method options available out of the
-    # box with Sprinkle. If you have the capistrano gem install, you may use
-    # this delivery. The only configuration option available, and which is 
-    # mandatory to include is +recipes+. An example:
+    # The only configuration option is to specify a recipe.
     #
     #   deployment do
     #     delivery :capistrano do
-    #       recipes 'deploy'
+    #       recipe 'deploy'
+    #       recipe 'more'
     #     end
     #   end
     #
@@ -47,17 +46,32 @@ module Sprinkle
       #
       #   deployment do
       #     delivery :capistrano do
-      #       recipes 'deploy'
-      #       recipes 'magic_beans'
+      #       recipe 'deploy'
+      #       recipes 'magic_beans', 'normal_beans'
       #     end
       #   end
-      def recipes(script)
+      def recipe(scripts)
         @loaded_recipes ||= []
-        @config.load script
-        @loaded_recipes << script
+        Array(scripts).each do |script|
+          @config.load script
+          @loaded_recipes << script        
+        end
+      end
+      
+      def recipes(scripts) #:nodoc:
+        recipe(scripts)
+      end
+      
+      def install(installer, roles, opts = {}) #:nodoc:
+        process(installer.package.name, installer.install_sequence, roles)
+      end
+      
+      def verify(verifier, roles, opts = {}) #:nodoc:
+        process(verifier.package.name, verifier.commands, roles, 
+          :suppress_and_return_failures => true)
       end
 
-      def process(name, commands, roles, suppress_and_return_failures = false) #:nodoc:
+      def process(name, commands, roles, opts = {}) #:nodoc:
         define_task(name, roles) do
           via = fetch(:run_method, :sudo)
           commands.each do |command|
@@ -69,23 +83,24 @@ module Sprinkle
           run(name)
           return true
         rescue ::Capistrano::CommandError => e
-          return false if suppress_and_return_failures
+          return false if opts[:suppress_and_return_failures]
           
           # Reraise error if we're not suppressing it
           raise
         end
       end
 
-      def transfer(name, source, destination, roles, recursive = true, suppress_and_return_failures = false)
+      def transfer(name, source, destination, roles, opts={}) #:nodoc:
+        opts.reverse_merge!(:recursive => true)
         define_task(name, roles) do
-          upload source, destination, :via => :scp, :recursive => recursive
+          upload source, destination, :via => :scp, :recursive => opts[:recursive]
         end
         
         begin
           run(name)
           return true
         rescue ::Capistrano::CommandError => e
-          return false if suppress_and_return_failures
+          return false if opts[:suppress_and_return_failures]
           
           # Reraise error if we're not suppressing it
           raise
