@@ -69,10 +69,10 @@ module Sprinkle
         POLICIES.each do |policy|
           policy.process(self)
         end
-      rescue Sprinkle::Actors::RemoteCommandFailure => e
+      rescue Sprinkle::Errors::RemoteCommandFailure => e
         e.print_summary
         exit
-      rescue Sprinkle::Actors::TransferFailure => e
+      rescue Sprinkle::Errors::TransferFailure => e
         e.print_summary
         exit
       ensure

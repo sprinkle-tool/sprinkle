@@ -38,36 +38,58 @@ module Sprinkle
         require name
         @loaded_recipes << name
       end
-
+      
+      def install(installer, roles, opts={})
+        @installer=installer
+        if installer.install_sequence.include?(:TRANSFER)
+          process_with_transfer(installer.package.name, installer.install_sequence, roles, opts)
+        else
+          process(installer.package.name, installer.install_sequence, roles, opts)
+        end
+      # recast our rake error to the common sprinkle error type
+      rescue ::Rake::CommandFailedError => e
+        raise Sprinkle::Errors::RemoteCommandFailure.new(installer, {}, e)
+      ensure 
+        @installer = nil
+      end
+      
+      def verify(verifier, roles, opts={})
+        process(verifier.package.name, commands, roles, 
+          :suppress_and_return_failures => true)
+      end
+      
+      protected
+      
       def process(name, commands, roles, opts ={}) #:nodoc:
-        commands = Array(commands)
         commands = commands.map{|x| "sudo #{x}"} if use_sudo
         commands = commands.join(' && ')
         puts "executing #{commands}"
-        t = remote_task(task_sym(name), :roles => roles) { run commands }
-        
-        begin
-          t.invoke
-          return true
-        rescue ::Rake::CommandFailedError => e
-          return false if opts[:suppress_and_return_failures]
-          
-          # Reraise error if we're not suppressing it
-          raise
-        end
+        task = remote_task(task_sym(name), :roles => roles) { run commands }
+        invoke(task)
       end
-
-			# Sorry, all transfers are recursive
-      def transfer(name, source, destination, roles, opts={}) #:nodoc:
-        begin
-					rsync source, destination
-          return true
-        rescue ::Rake::CommandFailedError => e
-          return false if opts[:suppress_and_return_failures]
-          
-          # Reraise error if we're not suppressing it
-          raise
+      
+      def process_with_transfer(name, commands, roles, opts ={}) #:nodoc:
+        raise "cant do non recursive file transfers, sorry" if opts[:recursive] == false
+        commands = commands.map{|x| x == :TRANSFER : x ? "sudo #{x}" } if use_sudo
+        i = commands.index(:TRANSFER)
+        before = commands.first(i).join(" && ")
+        after = commands.last(commands.size-i+1).join(" && ")
+        inst = @installer
+        task = remote_task(task_sym(name), :roles => roles) do
+          run before unless before.empty?
+          rsync inst.sourcepath, inst.destination
+          run after unless after.empty?
         end
+        invoke(task)
+      end
+      
+      def invoke(t)
+        t.invoke
+        return true
+      rescue ::Rake::CommandFailedError => e
+        return false if opts[:suppress_and_return_failures]
+        # Reraise error if we're not suppressing it
+        raise e        
       end
 
       private

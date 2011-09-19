@@ -98,7 +98,7 @@ module Sprinkle
         @installer = installer
         process(installer.package.name, installer.install_sequence, roles)
       rescue SSHCommandFailure => e
-        raise Sprinkle::Actors::RemoteCommandFailure.new(installer, e.details, e)
+        raise Sprinkle::Errors::RemoteCommandFailure.new(installer, e.details, e)
       ensure
         @installer = nil
       end

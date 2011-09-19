@@ -1,5 +1,5 @@
 module Sprinkle
-  module Actors
+  module Errors
     
     class RemoteCommandFailure < PrettyFailure #:nodoc:
       

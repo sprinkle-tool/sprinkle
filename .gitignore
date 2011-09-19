@@ -4,3 +4,4 @@ pkg
 .idea
 .*.swp
 coverage/*
+rdoc

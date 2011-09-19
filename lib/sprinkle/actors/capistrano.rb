@@ -63,7 +63,12 @@ module Sprinkle
       end
       
       def install(installer, roles, opts = {}) #:nodoc:
+        @installer = installer
         process(installer.package.name, installer.install_sequence, roles)
+      rescue ::Capistrano::CommandError => e
+        raise Sprinkle::Errors::RemoteCommandFailure.new(installer, {}, e)
+      ensure
+        @installer = nil
       end
       
       def verify(verifier, roles, opts = {}) #:nodoc:
@@ -72,28 +77,18 @@ module Sprinkle
       end
 
       def process(name, commands, roles, opts = {}) #:nodoc:
+        inst=@installer
         define_task(name, roles) do
           via = fetch(:run_method, :sudo)
           commands.each do |command|
-            invoke_command command, :via => via
+            if command == :TRANSFER
+              opts.reverse_merge!(:recursive => true)
+              upload inst.sourcepath, inst.destination, :via => :scp, 
+                :recursive => opts[:recursive]
+            else
+              invoke_command command, :via => via
+            end
           end
-        end
-        
-        begin
-          run(name)
-          return true
-        rescue ::Capistrano::CommandError => e
-          return false if opts[:suppress_and_return_failures]
-          
-          # Reraise error if we're not suppressing it
-          raise
-        end
-      end
-
-      def transfer(name, source, destination, roles, opts={}) #:nodoc:
-        opts.reverse_merge!(:recursive => true)
-        define_task(name, roles) do
-          upload source, destination, :via => :scp, :recursive => opts[:recursive]
         end
         
         begin
