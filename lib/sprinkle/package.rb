@@ -198,6 +198,10 @@ module Sprinkle
         install Sprinkle::Installers::ReplaceText.new(self, regex, text, path, options, &block)
       end
       
+      def reconnect(options, &block)
+        install Sprinkle::Installers::Reconnect.new(self, options, &block)
+      end
+      
       def transfer(source, destination, options = {}, &block)
         install Sprinkle::Installers::Transfer.new(self, source, destination, options, &block)
       end

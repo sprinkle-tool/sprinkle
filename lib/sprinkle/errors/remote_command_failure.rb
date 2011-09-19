@@ -6,7 +6,10 @@ module Sprinkle
       def print_summary
         summary
         log "Command", @details[:command]
-        log "STDERR", @details[:error]
+        # capistrano returns this
+        log "Hosts", @details[:hosts] if @details[:hosts]
+        # ssh actor returns error and stdout outputs
+        log "STDERR", @details[:error] unless @details[:stderr].blank?
         log "STDOUT", @details[:stdout] unless @details[:stdout].blank?
       end
       

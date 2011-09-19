@@ -66,7 +66,7 @@ module Sprinkle
         @installer = installer
         process(installer.package.name, installer.install_sequence, roles)
       rescue ::Capistrano::CommandError => e
-        raise Sprinkle::Errors::RemoteCommandFailure.new(installer, {}, e)
+        raise_error(e)
       ensure
         @installer = nil
       end
@@ -75,7 +75,7 @@ module Sprinkle
         process(verifier.package.name, verifier.commands, roles, 
           :suppress_and_return_failures => true)
       end
-
+            
       def process(name, commands, roles, opts = {}) #:nodoc:
         inst=@installer
         define_task(name, roles) do
@@ -85,24 +85,31 @@ module Sprinkle
               opts.reverse_merge!(:recursive => true)
               upload inst.sourcepath, inst.destination, :via => :scp, 
                 :recursive => opts[:recursive]
+            elsif command == :RECONNECT
+              teardown_connections_to(sessions.keys)
             else
               invoke_command command, :via => via
             end
           end
         end
-        
-        begin
-          run(name)
-          return true
-        rescue ::Capistrano::CommandError => e
-          return false if opts[:suppress_and_return_failures]
-          
-          # Reraise error if we're not suppressing it
-          raise
-        end
+        run_task(name)
       end
 			
       private
+      
+        def raise_error(e)
+          details={:command => e.message, :code => "??", :hosts => e.hosts}
+          raise Sprinkle::Errors::RemoteCommandFailure.new(@installer, details, e)
+        end
+      
+        def run_task(task, opts={})
+          run(task)
+          return true
+        rescue ::Capistrano::CommandError => e
+          return false if opts[:suppress_and_return_failures]
+          # Reraise error if we're not suppressing it
+          raise
+        end
 
         # REVISIT: can we set the description somehow?
         def define_task(name, roles, &block)

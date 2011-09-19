@@ -98,12 +98,16 @@ module Sprinkle
         @installer = installer
         process(installer.package.name, installer.install_sequence, roles)
       rescue SSHCommandFailure => e
-        raise Sprinkle::Errors::RemoteCommandFailure.new(installer, e.details, e)
+        raise_error(e)
       ensure
         @installer = nil
       end
 
       protected
+      
+        def raise_error(e)
+          raise Sprinkle::Errors::RemoteCommandFailure.new(@installer, e.details, e)
+        end
       
         def process(name, commands, roles, opts = {}) #:nodoc:
           opts.reverse_merge!(:suppress_and_return_failures => false)
@@ -136,6 +140,10 @@ module Sprinkle
             if cmd == :TRANSFER
               transfer_to_host(@installer.sourcepath, @installer.destination, session, 
                 :recursive => @installer.options[:recursive])
+              next
+            elsif cmd == :RECONNECT
+              session.close # disconnenct
+              session = ssh_session(host) # reconnect
               next
             end
             res = ssh(session, cmd)
