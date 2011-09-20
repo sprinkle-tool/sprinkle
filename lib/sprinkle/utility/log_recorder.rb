@@ -1,7 +1,6 @@
 module Sprinkle
   module Utility
-    
-    class LogRecorder
+    class LogRecorder #:nodoc:
       
       attr_accessor :err, :out, :command, :code
       
@@ -16,6 +15,7 @@ module Sprinkle
         end
       end
       
+      # hash suitable to pass into a pretty failure details hash
       def hash
         {:error => err, :stdout => out, :command => command, :code => code}
       end
