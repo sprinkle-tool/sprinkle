@@ -136,6 +136,7 @@ module Sprinkle
         
         def execute_on_host(commands,host) #:nodoc:
           session = ssh_session(host)
+          @log_recorder = Sprinkle::Utility::LogRecorder.new
           prepared_commands.each do |cmd|
             if cmd == :TRANSFER
               transfer_to_host(@installer.sourcepath, @installer.destination, session, 
@@ -146,13 +147,14 @@ module Sprinkle
               session = ssh_session(host) # reconnect
               next
             end
+            @log_recorder.reset cmd
             res = ssh(session, cmd)
-            if res[:code] != 0 
+            if res != 0 
               if @suppress
                 return false
               else
                 fail=SSHCommandFailure.new
-                fail.details=res
+                fail.details = @log_recorder.hash.merge(:hosts => host)
                 raise fail, "#{cmd} failed with error code #{res[:code]}"
               end
             end
@@ -167,24 +169,23 @@ module Sprinkle
         end
         
         def channel_runner(session, command) #:nodoc:
-          res = {:error => "", :stdout => "", :command => command}
           session.open_channel do |channel|
             channel.on_data do |ch, data|
-              res[:stdout] << data
+              @log_recorder.log :out, data
               logger.debug yellow("stdout said-->\n#{data}\n")
             end
             channel.on_extended_data do |ch, type, data|
               next unless type == 1  # only handle stderr
-              res[:error] << data
+              @log_recorder.log :err, data
               logger.debug red("stderr said -->\n#{data}\n")
             end
 
             channel.on_request("exit-status") do |ch, data|
-              res[:code] = data.read_long
-              if res[:code] == 0
+              @log_recorder.code = data.read_long
+              if @log_recorder.code == 0
                 logger.debug(green 'success')
               else
-                logger.debug(red('failed (%d).'%res[:code]))
+                logger.debug(red('failed (%d).' % @log_recorder.code))
               end
             end
 
@@ -194,10 +195,11 @@ module Sprinkle
 
             channel.exec command  do  |ch, status|
               logger.error("couldn't run remote command #{cmd}") unless status
+              @log_recorder.code = -1
             end
           end
           session.loop
-          res
+          @log_recorder.code
         end
         
         def transfer_to_role(source, destination, role, opts={}) #:nodoc:

@@ -78,6 +78,7 @@ module Sprinkle
             
       def process(name, commands, roles, opts = {}) #:nodoc:
         inst=@installer
+        @log_recorder = log_recorder = Sprinkle::Utility::LogRecorder.new
         define_task(name, roles) do
           via = fetch(:run_method, :sudo)
           commands.each do |command|
@@ -88,7 +89,12 @@ module Sprinkle
             elsif command == :RECONNECT
               teardown_connections_to(sessions.keys)
             else
-              invoke_command command, :via => via
+              # this reset the log
+              log_recorder.reset command
+              invoke_command(command, {:via => via}) do |c,s,d| 
+                # record the stream and data
+                log_recorder.log(s, d)
+              end
             end
           end
         end
@@ -96,9 +102,12 @@ module Sprinkle
       end
 			
       private
-      
+            
         def raise_error(e)
-          details={:command => e.message, :code => "??", :hosts => e.hosts}
+          details={:command => @log_recorder.command, :code => "??", 
+            :message => e.message,
+            :hosts => e.hosts,
+            :error => @log_recorder.err, :stdout => @log_recorder.out}
           raise Sprinkle::Errors::RemoteCommandFailure.new(@installer, details, e)
         end
       
