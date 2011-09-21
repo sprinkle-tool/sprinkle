@@ -72,7 +72,12 @@ module Sprinkle
         @post[stage] += commands
         @post[stage] += [yield] if block_given?
       end
-
+      
+      def per_host?
+        return false
+        @per_host
+      end
+      
       # Called right before an installer is exected, can be used for logging
       # and announcing what is about to happen
       def announce; end
