@@ -98,7 +98,7 @@ module Sprinkle
             end
           end
         end
-        run_task(name)
+        run_task(name, opts)
       end
 			
       private
