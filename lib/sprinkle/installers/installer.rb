@@ -1,4 +1,8 @@
 module Sprinkle
+  # Installers are where the bulk of the work in Sprinkle happens.  Installers are
+  # the building blocks of packages.  Typically each unique type of install
+  # command has it's own installer class.
+  # 
   module Installers
     # The base class which all installers must subclass, this class makes
     # sure all installers share some general features, which are outlined
@@ -8,9 +12,16 @@ module Sprinkle
     # 
     # With all installation methods you have the ability to specify multiple
     # pre/post installation hooks. This gives you the ability to specify
-    # commands to run before and after an installation takes place. All 
-    # commands by default are sudo'd so there is no need to include "sudo"
-    # in the command itself. There are three ways to specify a pre/post hook.
+    # commands to run before and after an installation takes place. 
+    # There are three ways to specify a pre/post hook.
+    
+    # Note about sudo:
+    # When using the Capistrano actor all commands by default are run using
+    # sudo (unless your Capfile includes "set :use_sudo, false").  If you wish 
+    # to use sudo periodically with "set :user_sudo, false" or with an actor 
+    # other than Capistrano then you can just append it to your command. Some 
+    # installers (transfer) also support a :sudo option, so check each 
+    # installer for details.
     # 
     # First, a single command:
     #
