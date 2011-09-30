@@ -122,7 +122,11 @@ module Sprinkle
         self.instance_eval &block
       end
       def add_user(username, options={},  &block)
-        @installers<<Sprinkle::Installers::User.new(self, username, options, &block)
+        @installers << Sprinkle::Installers::User.new(self, username, options, &block)
+      end
+
+      def add_group(group, options={},  &block)
+        @installers << Sprinkle::Installers::Group.new(self, group, options, &block)
       end
 
       def freebsd_pkg(*names, &block)
@@ -191,8 +195,12 @@ module Sprinkle
         @installers << Sprinkle::Installers::Rake.new(self, name, options, &block)
       end    
       
+      def thor(name, options = {}, &block)
+        @installers << Sprinkle::Installers::Thor.new(self, name, options, &block)
+      end  
+     
       def noop(&block)
-        @installers << Sprinkle::Installers::Noop.new(self, name, options, &block)
+        @installers << Sprinkle::Installers::Runner.new(self, "echo noop", &block)
       end
       
       def push_text(text, path, options = {}, &block)
@@ -207,13 +215,17 @@ module Sprinkle
         @installers << Sprinkle::Installers::Transfer.new(self, source, destination, options, &block)
       end
 
-			def runner(cmd)
-				@installers << Sprinkle::Installers::Runner.new(self, cmd)
+			def runner(cmd, &block)
+				@installers << Sprinkle::Installers::Runner.new(self, cmd, &block)
 			end
 
       def verify(description = '', &block)
         @verifications << Sprinkle::Verify.new(self, description, &block)
       end  
+
+      def pacman(*names, &block)
+        @installers << Sprinkle::Installers::Pacman.new(self, *names, &block)
+      end
       
       def process(deployment, roles)
         return if meta_package?

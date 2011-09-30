@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../spec_helper'
+require File.expand_path("../spec_helper", File.dirname(__FILE__))
 
 describe Sprinkle::Verify do
   before do
@@ -14,6 +14,18 @@ describe Sprinkle::Verify do
 
         # Check a directory exists
         has_directory 'mydir'
+        
+        # Check for a user
+        has_user "bob"
+        
+        # Check for user with old API
+        user_present "someuser"
+        
+        # Check for user in a group
+        has_user "alf", :in_group => "alien"
+        
+        # Check for a group
+        has_group "bobgroup"
 
         # Check a symlink exists
         has_symlink 'mypointer'
@@ -64,6 +76,22 @@ describe Sprinkle::Verify do
     it 'should do a "test -d" on the has_directory check' do
       @verification.commands.should include('test -d mydir')
     end
+    
+    it 'should use id to check for user in group' do
+      @verification.commands.should include("id -G alf | xargs -n1 echo | grep alien")
+    end
+    
+    it 'should use id to check for user' do
+      @verification.commands.should include('id bob')
+    end
+    
+    it 'should use id to check for user via user_present' do
+      @verification.commands.should include('id someuser')
+    end
+
+    it 'should use id to check for group' do
+      @verification.commands.should include('id -g bobgroup')
+    end
 
     it 'should do a "test -L" to check something is a symbolic link' do
       @verification.commands.should include('test -L mypointer')
@@ -90,7 +118,7 @@ describe Sprinkle::Verify do
     end
 
     it 'should check that a ruby gem is installed' do
-      @verification.commands.should include("sudo gem list 'rails' --installed --version '2.1.0' > /dev/null")
+      @verification.commands.should include("gem list 'rails' --installed --version '2.1.0' > /dev/null")
     end
 
     it 'should check that an RPM is installed' do

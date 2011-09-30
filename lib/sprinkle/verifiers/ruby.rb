@@ -15,10 +15,10 @@ module Sprinkle
         @commands << "ruby -e \"#{files.join(';')}\""
       end
       
-      # Checks if a gem exists by calling "sudo gem list" and grepping against it.
-      def has_gem(name, version=nil)
-        version = version.nil? ? '' : "--version '#{version}'"
-        @commands << "sudo gem list '#{name}' --installed #{version} > /dev/null"
+      # Checks if a gem exists by calling "gem list" and grepping against it.
+      def has_gem(name, version = nil)
+        version = version ? "--version '#{version}'" : '' 
+        @commands << "gem list '#{name}' --installed #{version} > /dev/null"
       end
     end
   end

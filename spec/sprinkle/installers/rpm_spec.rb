@@ -1,4 +1,4 @@
-require File.dirname(__FILE__) + '/../../spec_helper'
+require File.expand_path("../../spec_helper", File.dirname(__FILE__))
 
 describe Sprinkle::Installers::Rpm do
 
@@ -42,8 +42,12 @@ describe Sprinkle::Installers::Rpm do
       @installer.send(:install_sequence).should == [ 'op1', 'rpm -Uvh ruby', 'op2' ]
     end
 
-    it 'should specify a non interactive mode to the apt installer'
-    it 'should install a specific version if defined'
+    it 'should specify a non interactive mode to the apt installer' do
+      pending
+    end
+    it 'should install a specific version if defined' do
+      pending
+    end
 
   end
 
