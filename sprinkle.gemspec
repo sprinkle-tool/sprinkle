@@ -4,14 +4,15 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = "sprinkle"
-  s.version = "0.4.1"
+  s.name = %q{sprinkle}
+  s.version = "0.4.2"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Marcus Crafter"]
-  s.date = "2011-09-18"
-  s.description = "Ruby DSL based software provisioning tool"
-  s.email = "crafterm@redartisan.com"
+  s.date = %q{2011-10-04}
+  s.default_executable = %q{sprinkle}
+  s.description = %q{Ruby DSL based software provisioning tool}
+  s.email = %q{crafterm@redartisan.com}
   s.executables = ["sprinkle"]
   s.extra_rdoc_files = [
     "README.markdown",
@@ -60,6 +61,7 @@ Gem::Specification.new do |s|
     "lib/sprinkle/extensions/symbol.rb",
     "lib/sprinkle/installers/apt.rb",
     "lib/sprinkle/installers/binary.rb",
+    "lib/sprinkle/installers/brew.rb",
     "lib/sprinkle/installers/bsd_port.rb",
     "lib/sprinkle/installers/deb.rb",
     "lib/sprinkle/installers/freebsd_pkg.rb",
@@ -88,6 +90,7 @@ Gem::Specification.new do |s|
     "lib/sprinkle/policy.rb",
     "lib/sprinkle/script.rb",
     "lib/sprinkle/verifiers/apt.rb",
+    "lib/sprinkle/verifiers/brew.rb",
     "lib/sprinkle/verifiers/directory.rb",
     "lib/sprinkle/verifiers/executable.rb",
     "lib/sprinkle/verifiers/file.rb",
@@ -111,6 +114,7 @@ Gem::Specification.new do |s|
     "spec/sprinkle/extensions/string_spec.rb",
     "spec/sprinkle/installers/apt_spec.rb",
     "spec/sprinkle/installers/binary_spec.rb",
+    "spec/sprinkle/installers/brew_spec.rb",
     "spec/sprinkle/installers/bsd_port_spec.rb",
     "spec/sprinkle/installers/freebsd_pkg_spec.rb",
     "spec/sprinkle/installers/freebsd_portinstall_spec.rb",
@@ -136,11 +140,11 @@ Gem::Specification.new do |s|
     "spec/sprinkle/verify_spec.rb",
     "sprinkle.gemspec"
   ]
-  s.homepage = "http://github.com/crafterm/sprinkle"
+  s.homepage = %q{http://github.com/crafterm/sprinkle}
   s.require_paths = ["lib"]
-  s.rubyforge_project = "sprinkle"
-  s.rubygems_version = "1.8.10"
-  s.summary = "Ruby DSL based software provisioning tool"
+  s.rubyforge_project = %q{sprinkle}
+  s.rubygems_version = %q{1.4.2}
+  s.summary = %q{Ruby DSL based software provisioning tool}
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
