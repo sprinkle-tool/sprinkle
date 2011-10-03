@@ -172,6 +172,10 @@ module Sprinkle
       def zypper(*names, &block)
         @installers << Sprinkle::Installers::Zypper.new(self, *names, &block)
       end
+      
+      def brew(*names, &block)
+        @installers << Sprinkle::Installers::Brew.new(self, *names, &block)
+      end
 
       def gem(name, options = {}, &block)
         @recommends << :rubygems
