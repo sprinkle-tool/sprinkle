@@ -15,8 +15,7 @@ Gem::Specification.new do |s|
   s.email = %q{crafterm@redartisan.com}
   s.executables = ["sprinkle"]
   s.extra_rdoc_files = [
-    "README.markdown",
-    "TODO"
+    "README.markdown"
   ]
   s.files = [
     "CREDITS",
