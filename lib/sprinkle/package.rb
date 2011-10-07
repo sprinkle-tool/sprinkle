@@ -187,6 +187,10 @@ module Sprinkle
         @installers << Sprinkle::Installers::Source.new(self, source, options, &block)
       end
       
+      def user(name, options = {}, &block)
+        @installers << Sprinkle::Installers::User.new(self, name, options, &block)
+      end
+      
       def binary(source, options = {}, &block)
         @installers << Sprinkle::Installers::Binary.new(self, source, options, &block)
       end
