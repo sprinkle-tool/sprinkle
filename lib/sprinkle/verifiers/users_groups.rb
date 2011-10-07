@@ -18,7 +18,7 @@ module Sprinkle
       # Tests that the user exists
       def has_user(user, opts = {})
         if opts[:in_group]
-          @commands << "id -G #{user} | xargs -n1 echo | grep #{opts[:in_group]}"
+          @commands << "id -nG #{user} | xargs -n1 echo | grep #{opts[:in_group]}"
         else
           @commands << "id #{user}"
         end
@@ -26,7 +26,7 @@ module Sprinkle
       
       # Tests that the group exists
       def has_group(group)
-        @commands << "id -g #{group}"
+        @commands << "getent group #{group}"
       end
     end
   end
