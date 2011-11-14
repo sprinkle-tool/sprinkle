@@ -26,7 +26,7 @@ module Sprinkle
       
       # Tests that the group exists
       def has_group(group)
-        @commands << "id -g #{group}"
+        @commands << "egrep -i '^#{group}:' /etc/group"
       end
     end
   end
