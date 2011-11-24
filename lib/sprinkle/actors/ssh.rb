@@ -89,6 +89,7 @@ module Sprinkle
             threads << Thread.new(host_to_run) do |host|
               transfer_to_host(source, destination, host, gateway)
             end
+            threads.each {|t| t.join}
           end
         end
         
