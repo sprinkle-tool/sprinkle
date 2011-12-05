@@ -169,8 +169,12 @@ module Sprinkle
         @installers << Sprinkle::Installers::Rpm.new(self, *names, &block)
       end
 
+      def set_yum_options(options = [])
+        @yum_options = *options
+      end
+
       def yum(*names, &block)
-        @installers << Sprinkle::Installers::Yum.new(self, *names, &block)
+        @installers << Sprinkle::Installers::Yum.new(self, *names, @yum_options, &block)
       end
 
       def zypper(*names, &block)
