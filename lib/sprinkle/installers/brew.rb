@@ -12,21 +12,12 @@ module Sprinkle
     #     brew 'magic_beans_package'
     #   end
     #
-    class Brew < Installer
-      attr_accessor :formulas #:nodoc:
-
-      def initialize(parent, *formulas, &block) #:nodoc:
-        formulas.flatten!
-        
-        super parent, &block
-        
-        @formulas = formulas
-      end
+    class Brew < PackageInstaller
 
       protected
 
         def install_commands #:nodoc:
-          "brew install #{@formulas.join(' ')}"
+          "brew install #{@packages.join(' ')}"
         end
 
     end
