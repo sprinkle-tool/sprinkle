@@ -150,7 +150,8 @@ module Sprinkle
         # directory to the build directory first. Also, the result of the command is logged.
         def dress(commands, stage)
 	  commands = [commands] if commands.is_a? String
-	  commands.map { |command| "bash -c 'cd #{build_dir} && #{command} >> #{@package.name}-#{stage}.log 2>&1'" }
+#	  commands.map { |command| "bash -c 'cd #{build_dir} && #{command} >> #{@package.name}-#{stage}.log 2>&1'" }
+	  commands.map { |command| "bash -c '#{command} >> #{@package.name}-#{stage}.log 2>&1'" }
         end
 
       private
