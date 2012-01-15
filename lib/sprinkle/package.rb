@@ -219,11 +219,13 @@ module Sprinkle
       end
       
       def transfer(source, destination, options = {}, &block)
+        options.merge!(:binding => binding())
         install Sprinkle::Installers::Transfer.new(self, source, destination, options, &block)
       end
 
       def runner(*cmds, &block)
-        install Sprinkle::Installers::Runner.new(self, cmds, &block)
+        options = cmds.extract_options!
+        install Sprinkle::Installers::Runner.new(self, cmds, options, &block)
       end
 
       def verify(description = '', &block)

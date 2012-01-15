@@ -87,15 +87,30 @@ module Sprinkle
       attr_accessor :source, :destination, :sourcepath #:nodoc:
 
       def initialize(parent, source, destination, options={}, &block) #:nodoc:
-        super parent, options, &block
         @source = source
         @destination = destination
+        super parent, options, &block
+        @binding = options[:binding]
         # perform the transfer in two steps if we're using sudo
         if sudo?
           final = @destination
           @destination = "/tmp/sprinkle_#{File.basename(@destination)}"
-          post :install, "sudo mv #{@destination} #{final}"
+          post :install, "#{sudo_cmd}mv #{@destination} #{final}"
         end
+        owner(options[:owner]) if options[:owner]
+        mode(optinos[:mode]) if options[:mode]
+
+        options[:recursive]=false if options[:render]
+      end
+      
+      def owner(owner)
+        @owner = owner
+        post :install, "#{sudo_cmd}chown #{owner} #{destination}"
+      end
+      
+      def mode(mode)
+        @mode = mode
+        post :install, "#{sudo_cmd}chmod #{mode} #{destination}"
       end
 
       def install_commands
@@ -147,7 +162,8 @@ module Sprinkle
               end
             end
           else
-            context = binding()
+            # context = binding()
+            context = @binding
           end
 
           tempfile = render_template_file(@source, context, @package.name)
