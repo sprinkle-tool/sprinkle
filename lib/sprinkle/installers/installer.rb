@@ -61,6 +61,20 @@ module Sprinkle
         self.instance_eval(&block) if block
       end
       
+      class << self
+        def subclasses
+          @subclasses ||= []
+        end
+        
+        def api(&block)
+          Sprinkle::Package::Package.class_eval &block
+        end
+
+        def inherited(base)
+          subclasses << base
+        end
+      end
+            
       def sudo_cmd
         "sudo " if sudo?
       end

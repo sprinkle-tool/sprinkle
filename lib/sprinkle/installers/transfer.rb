@@ -85,6 +85,13 @@ module Sprinkle
     # and they will be run.
     class Transfer < Installer
       attr_accessor :source, :destination, :sourcepath #:nodoc:
+      
+      api do
+        def transfer(source, destination, options = {}, &block)
+          options.merge!(:binding => binding())
+          install Sprinkle::Installers::Transfer.new(self, source, destination, options, &block)
+        end
+      end
 
       def initialize(parent, source, destination, options={}, &block) #:nodoc:
         @source = source
@@ -98,7 +105,7 @@ module Sprinkle
           post :install, "#{sudo_cmd}mv #{@destination} #{final}"
         end
         owner(options[:owner]) if options[:owner]
-        mode(optinos[:mode]) if options[:mode]
+        mode(options[:mode]) if options[:mode]
 
         options[:recursive]=false if options[:render]
       end

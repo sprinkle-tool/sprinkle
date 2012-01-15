@@ -18,6 +18,13 @@ module Sprinkle
     #   end
      
     class Rake < Installer
+      
+      api do
+        def rake(name, options = {}, &block)
+          install Sprinkle::Installers::Rake.new(self, name, options, &block)
+        end    
+      end
+      
       def initialize(parent, commands, options = {}, &block) #:nodoc:
         super parent, options, &block
         @commands = commands

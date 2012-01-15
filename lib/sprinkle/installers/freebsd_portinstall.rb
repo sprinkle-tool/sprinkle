@@ -19,9 +19,15 @@ module Sprinkle
     #
     class FreebsdPortinstall < Installer
       attr_accessor :port #:nodoc:
+      
+      api do
+        def freebsd_portinstall(port, options={}, &block)
+          install Sprinkle::Installers::FreebsdPortinstall.new(self, port, options, &block)
+        end
+      end
 
-      def initialize(parent, port, &block) #:nodoc:
-        super parent, &block
+      def initialize(parent, port, options={}, &block) #:nodoc:
+        super parent, options, &block
         @port = port
       end
 

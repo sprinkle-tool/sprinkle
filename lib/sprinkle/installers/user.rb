@@ -8,6 +8,13 @@ module Sprinkle
     #     adduser 'admin', :flags => "--disabled-password"
     #   end
     class User < Installer
+      
+      api do
+        def add_user(username, options={},  &block)
+          install Sprinkle::Installers::User.new(self, username, options, &block)
+        end
+      end
+      
       def initialize(package, username, options = {}, &block) #:nodoc:
         super package, options, &block
         @username = username

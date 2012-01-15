@@ -32,6 +32,12 @@ module Sprinkle
     #
     class PushText < Installer
       attr_accessor :text, :path #:nodoc:
+      
+      api do
+        def push_text(text, path, options = {}, &block)
+          install Sprinkle::Installers::PushText.new(self, text, path, options, &block)
+        end
+      end
 
       def initialize(parent, text, path, options={}, &block) #:nodoc:
         super parent, options, &block

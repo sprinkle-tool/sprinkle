@@ -16,8 +16,15 @@ module Sprinkle
     #   end
     #
     class Runner < Installer
+      
+      api do
+        def runner(*cmds, &block)
+          options = cmds.extract_options!
+          install Sprinkle::Installers::Runner.new(self, cmds, options, &block)
+        end
+      end
+      
       attr_accessor :cmds #:nodoc:
-
       def initialize(parent, cmds, options = {}, &block) #:nodoc:
         super parent, options, &block
         @cmds = [*cmds].flatten

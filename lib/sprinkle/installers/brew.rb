@@ -14,6 +14,13 @@ module Sprinkle
     #
     class Brew < PackageInstaller
 
+      api do
+        def brew(*names, &block)
+          @recommends << :homebrew
+          install Sprinkle::Installers::Brew.new(self, *names, &block)
+        end
+      end
+
       protected
 
         def install_commands #:nodoc:

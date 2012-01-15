@@ -20,6 +20,13 @@ module Sprinkle
     #   end
      
     class Thor < Installer
+      
+      api do
+        def thor(name, options = {}, &block)
+          install Sprinkle::Installers::Thor.new(self, name, options, &block)
+        end  
+      end
+      
       def initialize(parent, commands, options = {}, &block) #:nodoc:
         super parent, options, &block
         @commands = commands

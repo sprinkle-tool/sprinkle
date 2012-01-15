@@ -25,6 +25,12 @@ module Sprinkle
     #
     class ReplaceText < Installer
       attr_accessor :regex, :text, :path #:nodoc:
+      
+      api do
+        def replace_text(regex, text, path, options={}, &block)
+          install Sprinkle::Installers::ReplaceText.new(self, regex, text, path, options, &block)
+        end
+      end
 
       def initialize(parent, regex, text, path, options={}, &block) #:nodoc:
         super parent, options, &block

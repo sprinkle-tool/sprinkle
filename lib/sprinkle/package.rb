@@ -121,13 +121,13 @@ module Sprinkle
         @installers = []
         self.instance_eval &block
       end
-
-      def add_user(username, options={},  &block)
-        @installers << Sprinkle::Installers::User.new(self, username, options, &block)
+      
+      def description(s=nil)
+        s ? @description = s : @description
       end
-
-      def add_group(group, options={},  &block)
-        @installers << Sprinkle::Installers::Group.new(self, group, options, &block)
+      
+      def version(s=nil)
+        s ? @version = s : @version
       end
       
       def sudo?
@@ -151,83 +151,19 @@ module Sprinkle
           @installers << Sprinkle::Installers::#{format.classify}.new(self, *names, &block)
         end"
       end
-      
-      def add_user(username, options={},  &block)
-        install Sprinkle::Installers::User.new(self, username, options, &block)
-      end
-      
-      def add_group(group, options={},  &block)
-        install Sprinkle::Installers::Group.new(self, group, options, &block)
-      end
-      
-      def freebsd_portinstall(port, &block)
-        install Sprinkle::Installers::FreebsdPortinstall.new(self, port, &block)
-      end
 
-      def bsd_port(port, &block)
-        install Sprinkle::Installers::BsdPort.new(self, port, &block)
-      end
-      
-      def mac_port(port, &block)
-        install Sprinkle::Installers::MacPort.new(self, port, &block)
-      end
-      
-      def gem(name, options = {}, &block)
-        @recommends << :rubygems
-        install Sprinkle::Installers::Gem.new(self, name, options, &block)
-      end
-
-      def source(source, options = {}, &block)
-        @recommends << :build_essential # Ubuntu/Debian
-        install Sprinkle::Installers::Source.new(self, source, options, &block)
-      end
-      
-      def binary(source, options = {}, &block)
-        install Sprinkle::Installers::Binary.new(self, source, options, &block)
-      end
-      
-      def rake(name, options = {}, &block)
-        install Sprinkle::Installers::Rake.new(self, name, options, &block)
-      end    
-      
-      def thor(name, options = {}, &block)
-        install Sprinkle::Installers::Thor.new(self, name, options, &block)
-      end  
-     
       def noop(&block)
         install Sprinkle::Installers::Runner.new(self, "echo noop", &block)
       end
-      
-      def npm(package, &block)
-        install Sprinkle::Installers::Npm.new(self, package, &block)
+                  
+      # meta installer
+      # TODO - fix to be atomic
+      def push_file(file, options ={}, &block)
+        raise "need content" unless options[:content]
+        runner "#{"sudo " if sudo?}rm -f #{file}"
+        push_text options[:content], file, options, &block
       end
-      
-      def pear(package, &block)
-        install Sprinkle::Installers::Pear.new(self, package, &block)
-      end
-      
-      def push_text(text, path, options = {}, &block)
-        install Sprinkle::Installers::PushText.new(self, text, path, options, &block)
-      end
-
-      def replace_text(regex, text, path, options={}, &block)
-        install Sprinkle::Installers::ReplaceText.new(self, regex, text, path, options, &block)
-      end
-      
-      def reconnect(options, &block)
-        install Sprinkle::Installers::Reconnect.new(self, options, &block)
-      end
-      
-      def transfer(source, destination, options = {}, &block)
-        options.merge!(:binding => binding())
-        install Sprinkle::Installers::Transfer.new(self, source, destination, options, &block)
-      end
-
-      def runner(*cmds, &block)
-        options = cmds.extract_options!
-        install Sprinkle::Installers::Runner.new(self, cmds, options, &block)
-      end
-
+                  
       def verify(description = '', &block)
         @verifications << Sprinkle::Verify.new(self, description, &block)
       end  

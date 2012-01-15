@@ -18,6 +18,9 @@ end
 Dir[File.dirname(__FILE__) + '/sprinkle/extensions/*.rb'].each { |e| require e }
 # Load up the verifiers so they can register themselves
 Dir[File.dirname(__FILE__) + '/sprinkle/verifiers/*.rb'].each { |e| require e }
+# Load up the installers so they can register themselves
+Dir[File.dirname(__FILE__) + '/sprinkle/installers/*.rb'].each { |e| require e }
+
 
 # Configuration options
 module Sprinkle

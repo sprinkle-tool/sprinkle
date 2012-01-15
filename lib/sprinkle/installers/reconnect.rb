@@ -11,6 +11,12 @@ module Sprinkle
     #     source "http://someurlthatneedstheproxy.com/installer.tar.gz"
     #   end
     class Reconnect < Installer
+      
+      api do
+        def reconnect(options={}, &block)
+          install Sprinkle::Installers::Reconnect.new(self, options, &block)
+        end
+      end
 
       # :RECONNECT is a symbol that the actors understand to mean to drop
       # and reestablish any SSH conncetions they have open
