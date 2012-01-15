@@ -15,11 +15,15 @@ module Sprinkle
       
       # Checks to make sure <tt>path</tt> is a file on the remote server.
       def has_file(path)
-        @commands << "test -f #{path}"
+        test "-f #{path}"
       end
       
       def no_file(path)
-        @commands << "test ! -f #{path}"
+        test "! -f #{path}"
+      end
+      
+      def md5_of_file(path, md5)
+        test "`md5sum #{path} | cut -f1 -d' '` == \"#{md5}\""
       end
       
       def file_contains(path, text)
