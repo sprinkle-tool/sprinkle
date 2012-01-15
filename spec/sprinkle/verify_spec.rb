@@ -18,6 +18,9 @@ describe Sprinkle::Verify do
         # Check a directory exists
         has_directory 'mydir'
         
+        # generic test
+        test "`version` == \"one\""
+        
         # Check for a user
         has_user "bob"
         
@@ -82,6 +85,10 @@ describe Sprinkle::Verify do
 
     it 'should do a "test -d" on the has_directory check' do
       @verification.commands.should include('test -d mydir')
+    end
+    
+    it 'should include the generic test' do
+      @verification.commands.should include("test `version` == \"one\"")
     end
     
     it 'should use id to check for user in group' do
