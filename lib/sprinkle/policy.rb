@@ -51,7 +51,7 @@ module Sprinkle
     end
 
     class Policy #:nodoc:
-      attr_reader :name, :packages
+      attr_reader :name
 
       def initialize(name, metadata = {}, &block)
         raise 'No name provided' unless name
@@ -63,9 +63,12 @@ module Sprinkle
         self.instance_eval(&block)
       end
 
-      def requires(package, options = {})
-        @packages << package
+      # def requires(package, options = {})
+      def requires(package, *args)
+        @packages << [package, args]
       end
+      
+      def packages; @packages.map {|x| x.first }; end
 
       def to_s; name; end
 
@@ -74,12 +77,14 @@ module Sprinkle
 
         cloud_info "--> Cloud hierarchy for policy #{@name}"
 
-        @packages.each do |p|
+        @packages.each do |p, args|
           cloud_info "\nPolicy #{@name} requires package #{p}"
 
           package = Sprinkle::Package::PACKAGES[p]
           raise "Package definition not found for key: #{p}" unless package
           package = select_package(p, package) if package.is_a? Array # handle virtual package selection
+          # get an instance of the package and pass our config options
+          package = package.instance(*args)
 
           tree = package.tree do |parent, child, depth|
             indent = "\t" * depth; cloud_info "#{indent}Package #{parent.name} requires #{child.name}"

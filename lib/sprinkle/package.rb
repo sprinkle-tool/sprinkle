@@ -106,19 +106,23 @@ module Sprinkle
     end
 
     class Package #:nodoc:
-      include ArbitraryOptions
-      attr_accessor :name, :provides, :installers, :dependencies, :recommends, :verifications
+      # include ArbitraryOptions
+      attr_accessor :name, :provides, :installers, :verifications
+      attr_accessor :args, :opts
 
       def initialize(name, metadata = {}, &block)
         raise 'No package name supplied' unless name
 
         @name = name
+        @metadata = metadata
         @provides = metadata[:provides]
         @dependencies = []
         @recommends = []
         @optional = []
         @verifications = []
         @installers = []
+        @block = block
+        # this should probably not be done twice
         self.instance_eval &block
       end
       
@@ -130,6 +134,15 @@ module Sprinkle
         s ? @version = s : @version
       end
       
+      def instance(*args)
+        p=Package.new(name, @metadata) {}
+        p.opts = args.extract_options!
+        p.args = args
+        p.instance_variable_set("@block", @block)
+        p.instance_eval &@block
+        p
+      end
+      
       def sudo?
         @use_sudo
       end
@@ -138,6 +151,14 @@ module Sprinkle
         @use_sudo = flag
       end
             
+      def args
+        @args || []
+      end
+      
+      def opts
+        @opts || {}
+      end
+      
       class ContextError < StandardError #:nodoc:
       end
       
@@ -206,46 +227,61 @@ module Sprinkle
           v.process(roles)
         end
       end
-
+      
+      def dependencies
+        @dependencies.map {|a,b| a }
+      end
+      
       def requires(*packages)
-        @dependencies << packages
-        @dependencies.flatten!
+        opts = packages.extract_options!
+        packages.each do |pack|
+          @dependencies << [pack, opts]
+        end
       end
 
       def recommends(*packages)
-        @recommends << packages
-        @recommends.flatten!
+        opts = packages.extract_options!
+        packages.each do |pack|
+          @recommends << [pack, opts]
+        end
+        @recommends.map {|a,b| a }
       end
 
       def optional(*packages)
-        @optional << packages
-        @optional.flatten!
+        opts = packages.extract_options!
+        packages.each do |pack|
+          @optional << [pack, opts]
+        end
+        @optional.map {|a,b| a }
       end
 
       def tree(depth = 1, &block)
         packages = []
 
-        @recommends.each do |dep|
+        @recommends.each do |dep, config|
           package = PACKAGES[dep]
           next unless package # skip missing recommended packages as they're allowed to not exist
+          package=package.instance(config)
           block.call(self, package, depth) if block
           packages << package.tree(depth + 1, &block)
         end
 
-        @dependencies.each do |dep|
+        @dependencies.each do |dep, config|
           package = PACKAGES[dep]
           package = select_package(dep, package) if package.is_a? Array
           
           raise "Package definition not found for key: #{dep}" unless package
+          package = package.instance(config)
           block.call(self, package, depth) if block
           packages << package.tree(depth + 1, &block)
         end
 
         packages << self
 
-        @optional.each do |dep|
+        @optional.each do |dep, config|
           package = PACKAGES[dep]
           next unless package # skip missing optional packages as they're allow to not exist
+          package = package.instance(config)
           block.call(self, package, depth) if block
           packages << package.tree(depth + 1, &block)
         end
