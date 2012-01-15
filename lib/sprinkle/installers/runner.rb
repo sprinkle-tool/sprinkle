@@ -18,8 +18,8 @@ module Sprinkle
     class Runner < Installer
       attr_accessor :cmds #:nodoc:
 
-      def initialize(parent, *cmds , &block) #:nodoc:
-        super parent, {}, &block
+      def initialize(parent, cmds, options = {}, &block) #:nodoc:
+        super parent, options, &block
         @cmds = [*cmds].flatten
         raise "you need to specify a command" if cmds.nil?
       end
@@ -27,7 +27,9 @@ module Sprinkle
       protected
         
         def install_commands #:nodoc:
-          @cmds
+          sudo_cmd ? 
+            @cmds.map { |cmd| "#{sudo_cmd}#{cmd}"} :
+            @cmds
         end
     end
   end

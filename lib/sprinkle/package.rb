@@ -121,7 +121,23 @@ module Sprinkle
         @installers = []
         self.instance_eval &block
       end
+
+      def add_user(username, options={},  &block)
+        @installers << Sprinkle::Installers::User.new(self, username, options, &block)
+      end
+
+      def add_group(group, options={},  &block)
+        @installers << Sprinkle::Installers::Group.new(self, group, options, &block)
+      end
       
+      def sudo?
+        @use_sudo
+      end
+      
+      def use_sudo(flag=true)
+        @use_sudo = flag
+      end
+            
       class ContextError < StandardError #:nodoc:
       end
       

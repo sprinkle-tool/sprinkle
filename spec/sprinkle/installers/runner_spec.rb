@@ -3,11 +3,12 @@ require File.expand_path("../../spec_helper", File.dirname(__FILE__))
 describe Sprinkle::Installers::Runner do
 
 	before do
-		@package = mock(Sprinkle::Package, :name => 'package')
+		@package = mock(Sprinkle::Package, :name => 'package', :sudo? => false)
 	end
 
-	def create_runner(cmd)
-		Sprinkle::Installers::Runner.new(@package, cmd)
+	def create_runner(*cmds)
+	  options=cmds.extract_options!
+		Sprinkle::Installers::Runner.new(@package, cmds, options)
 	end
 
 	describe 'when created' do
@@ -23,14 +24,23 @@ describe Sprinkle::Installers::Runner do
 	  end
 	end
 
-	describe 'during execution' do
-
-		before do
-			@installer = create_runner 'teste'
-			@install_commands = @installer.send :install_commands
-		end
+	describe 'during installation' do
+		
+		it 'should use sudo if specified locally' do
+		  @installer = create_runner 'teste', :sudo => true
+		  @install_commands = @installer.send :install_commands
+		  @install_commands.should == ['sudo teste']
+	  end
+	  
+	  it "should accept multiple commands" do
+	    @installer = create_runner 'teste', 'test2'
+	    @install_commands = @installer.send :install_commands
+	    @install_commands.should == ['teste','test2']
+    end
 
 		it 'should run the given command for all specified packages' do
+		  @installer = create_runner 'teste'
+			@install_commands = @installer.send :install_commands
 			@install_commands.should == ['teste']
 		end
 	end

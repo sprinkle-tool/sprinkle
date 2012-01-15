@@ -61,9 +61,9 @@ describe Sprinkle::Installers::Installer do
 
   describe 'during installation' do
 
-    it 'should request the install sequence from the concrete class' do
-      @installer.should_receive(:install_sequence).and_return(@sequence)
-    end
+    # it 'should request the install sequence from the concrete class' do
+    #   @installer.should_receive(:install_sequence).and_return(@sequence)
+    # end
 
     describe 'when testing' do
 
@@ -81,10 +81,39 @@ describe Sprinkle::Installers::Installer do
       end
 
     end
+    
+    describe "with sudo from package level" do
+      before do
+        @installer.package = mock(Sprinkle::Package, :name => 'package', :sudo? => true)
+      end
+      
+      it "should know it uses sudo" do
+        @installer.sudo?.should == true
+      end
+      
+      it "should offer up the sudo command" do
+        @installer.sudo_cmd.should =~ /sudo /
+      end      
+    end
+    
+    describe "with sudo" do
+      before do
+        @installer = Sprinkle::Installers::Installer.new @package, :sudo => true
+        @installer.delivery = @delivery
+      end
+      
+      it "should know it uses sudo" do
+        @installer.sudo?.should == true
+      end
+      
+      it "should offer up the sudo command" do
+        @installer.sudo_cmd.should =~ /sudo /
+      end
+    end
 
     describe 'when in production' do
       it 'should invoke the delivery mechanism to process the install sequence' do
-        @delivery.should_receive(:install).with(@installer, @roles, :per_host => nil)
+        @delivery.should_receive(:install).with(@installer, @roles, :per_host => false)
       end
     end
     

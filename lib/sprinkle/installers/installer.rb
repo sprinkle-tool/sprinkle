@@ -60,6 +60,14 @@ module Sprinkle
         @pre = {}; @post = {}
         self.instance_eval(&block) if block
       end
+      
+      def sudo_cmd
+        "sudo " if sudo?
+      end
+      
+      def sudo?
+        options[:sudo] or package.sudo?
+      end
             
       def pre(stage, *commands)
         @pre[stage] ||= []
@@ -101,6 +109,7 @@ module Sprinkle
         # command sequence construction (eg. source based installer).
         def install_sequence
           commands = pre_commands(:install) + [ install_commands ] + post_commands(:install)
+          commands.flatten
         end
         
       protected

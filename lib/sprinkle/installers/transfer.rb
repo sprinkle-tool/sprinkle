@@ -91,7 +91,7 @@ module Sprinkle
         @source = source
         @destination = destination
         # perform the transfer in two steps if we're using sudo
-        if options[:sudo]
+        if sudo?
           final = @destination
           @destination = "/tmp/sprinkle_#{File.basename(@destination)}"
           post :install, "sudo mv #{@destination} #{final}"
