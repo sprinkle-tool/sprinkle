@@ -150,11 +150,10 @@ module Sprinkle
         # directory to the build directory first. Also, the result of the command is logged.
         def dress(commands, stage)
 	  commands = [commands] if commands.is_a? String
-#	  commands.map { |command| "bash -c 'cd #{build_dir} && #{command} >> #{@package.name}-#{stage}.log 2>&1'" }
-	  commands.map { |command| "bash -c '#{command} >> #{@package.name}-#{stage}.log 2>&1'" }
+	  commands.map { |command| "bash -c 'cd #{build_dir} && #{command} >> #{@package.name}-#{stage}.log 2>&1'" }
         end
 
-      private
+     private
 
         def create_options(key, prefix) #:nodoc:
           @options[key].first.inject('') { |m, option| m << "#{prefix}-#{option} "; m }
@@ -186,7 +185,7 @@ module Sprinkle
         end
 
         def build_dir #:nodoc:
-          "#{@options[:builds].first}/#{options[:custom_dir] || base_dir}"
+          "#{@options[:builds].first}/#{options[:custom_dir].first || base_dir}"
         end
 
         def base_dir #:nodoc:
