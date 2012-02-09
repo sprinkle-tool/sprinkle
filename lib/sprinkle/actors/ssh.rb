@@ -1,6 +1,8 @@
 require 'net/ssh/gateway'
 require 'net/scp'
 
+Thread.abort_on_exception = true
+
 module Sprinkle
   module Actors
     class Ssh
@@ -40,7 +42,7 @@ module Sprinkle
       end
 			
       protected
-      
+
         def process_with_gateway(name, commands, roles)
           res = []
           on_gateway do |gateway|
@@ -68,13 +70,27 @@ module Sprinkle
         def execute_on_role(commands, role, gateway = nil)
           hosts = @options[:roles][role]
           res = []
-          Array(hosts).each { |host| res << execute_on_host(commands, host, gateway) }
+#          Array(hosts).each { |host| res << execute_on_host(commands, host, gateway) }
+          threads = []
+          Array(hosts).each do |host_to_run|
+            threads << Thread.new(host_to_run) do |host|
+              res << execute_on_host(commands, host, gateway)
+            end
+          end
+          threads.each {|t| t.join}
           !(res.include? false)
         end
 
         def transfer_to_role(source, destination, role, gateway = nil)
           hosts = @options[:roles][role]
-          Array(hosts).each { |host| transfer_to_host(source, destination, host, gateway) }
+#          Array(hosts).each { |host| transfer_to_host(source, destination, host, gateway) }
+          threads = []
+          Array(hosts).each do |host_to_run|
+            threads << Thread.new(host_to_run) do |host|
+              transfer_to_host(source, destination, host, gateway)
+            end
+            threads.each {|t| t.join}
+          end
         end
         
         def execute_on_host(commands, host, gateway = nil)

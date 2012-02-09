@@ -77,7 +77,8 @@ module Sprinkle
       protected
 
         def install_sequence #:nodoc:
-          prepare + download + extract + configure + build + install
+         commands = prepare + download + extract + configure + build + install
+	 commands.flatten.join(' && ')
         end
 
         %w( prepare download extract configure build install ).each do |stage|
@@ -144,10 +145,11 @@ module Sprinkle
         # dress is overriden from the base Sprinkle::Installers::Installer class so that the command changes
         # directory to the build directory first. Also, the result of the command is logged.
         def dress(commands, stage)
-          commands.collect { |command| "bash -c 'cd #{build_dir} && #{command} >> #{@package.name}-#{stage}.log 2>&1'" }
+      	  commands = [commands] if commands.is_a? String
+      	  commands.map { |command| "bash -c 'cd #{build_dir} && #{command} >> #{@package.name}-#{stage}.log 2>&1'" }
         end
 
-      private
+     private
 
         def create_options(key, prefix) #:nodoc:
           @options[key].first.inject('') { |m, option| m << "#{prefix}-#{option} "; m }
@@ -179,7 +181,7 @@ module Sprinkle
         end
 
         def build_dir #:nodoc:
-          "#{@options[:builds].first}/#{options[:custom_dir] || base_dir}"
+          options[:custom_dir] ? "#{@options[:builds].first}/#{options[:custom_dir].first}" : "#{@options[:builds].first}/#{base_dir}"
         end
 
         def base_dir #:nodoc:

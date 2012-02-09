@@ -1,3 +1,6 @@
+# NOTE
+This is a fork of crafterm/sprinkle master branch patched to use under Ubuntu.
+
 # SPRINKLE
 
 * <http://redartisan.com/2008/5/27/sprinkle-intro>
