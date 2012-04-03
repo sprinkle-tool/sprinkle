@@ -19,7 +19,7 @@ begin
 
     # gem is a Gem::Specification... see http://www.rubygems.org/read/chapter/20 for additional settings
   end
-  Jeweler::GemcutterTasks.new
+  #Jeweler::GemcutterTasks.new #deprecated, use Jeweler::RubyforgeTasks ?
 rescue LoadError
   puts "Jeweler (or a dependency) not available. Install it with: gem install jeweler"
 end
@@ -28,7 +28,8 @@ task "inst" => [:clobber, :build] do
   puts `gem install pkg/sprinkle-*.gem`
 end
 
-task :spec => :check_dependencies
+# Jeweler's check_dependecies no longer exists
+#task :spec => :check_dependencies
 
 desc 'Default: run specs.'
 task :default => :spec
