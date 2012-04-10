@@ -26,7 +26,8 @@ module Sprinkle
       end
       def matches_local(localfile, remotefile, mode=nil)
         raise "Couldn't find local file #{localfile}" unless ::File.exists?(localfile)
-        local = `md5 #{localfile}`.split.last
+        require 'digest/md5'
+        local = Digest::MD5.hexdigest(::File.read(localfile))
         @commands << %{[ "X$(md5sum #{remotefile}|cut -d\\  -f 1)" = "X#{local}" ]}
       end
     end
