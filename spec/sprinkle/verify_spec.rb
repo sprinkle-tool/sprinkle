@@ -12,6 +12,9 @@ describe Sprinkle::Verify do
         # Check that a file contains a substring
         file_contains 'my_file.txt', 'A sunny day on the lower east-side'
 
+        # Checks that a file matches a local file
+        matches_local File.join(File.dirname(__FILE__), '..', 'fixtures', 'my_file.txt'), 'my_file.txt'
+
         # Check a directory exists
         has_directory 'mydir'
         
@@ -71,6 +74,10 @@ describe Sprinkle::Verify do
 
     it 'should do a grep to see if a file contains a text string' do
       @verification.commands.should include("grep 'A sunny day on the lower east-side' my_file.txt")
+    end
+
+    it 'should do a md5sum to see if a file matches local file' do
+      @verification.commands.should include(%{[ "X$(md5sum my_file.txt|cut -d\\  -f 1)" = "Xed20d984b757ad5291963389fc209864" ]})
     end
 
     it 'should do a "test -d" on the has_directory check' do
