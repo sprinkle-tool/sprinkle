@@ -1,8 +1,23 @@
-# NOTE
-This is a fork of crafterm/sprinkle master branch patched to use under Ubuntu.
+# NOTES
+This is a fork of crafterm/sprinkle master branch. Tested under Ubuntu 10.04, 11.10, MacOS 10.7.3 Lion.
+
+0.4.1:
+- Fixed method build_dir at Source Installer;
+- Fixed 'options[:custom_dir]' of source installer correct handling;
+- do not cd at #{build_dir} during 'custom_install' execution at 'source' installer;
+- added options to 'YUM' installer;
+- added multi-threading for SSH actor;
+- added 'has_user'verifier
+- added sys_check method;
+- added 'aptitude' installer;
+- added 'check_equality' verifier;
+- disabled simultaneous creation folders for 'source' installer;
+- disabled running install sequence simultaneously;
+
 
 # SPRINKLE
 
+* <https://github.com/vladimir-low/sprinkle>
 * <http://redartisan.com/2008/5/27/sprinkle-intro>
 * <http://github.com/crafterm/sprinkle>
 * <http://github.com/benschwarz/passenger-stack>
