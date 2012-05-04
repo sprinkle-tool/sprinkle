@@ -23,7 +23,7 @@ module Sprinkle
       end
       
       def md5_of_file(path, md5)
-        test "`md5sum #{path} | cut -f1 -d' '` == \"#{md5}\""
+        test "\"`md5sum #{path} | cut -f1 -d' '`\" = \"#{md5}\""
       end
       
       def file_contains(path, text)
