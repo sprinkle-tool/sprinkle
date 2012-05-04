@@ -44,6 +44,8 @@ BANNER
   opts.separator ""
   opts.on("-s", "--script=PATH", String,
           "Path to a sprinkle script to run") { |v| OPTIONS[:path] = v }
+  opts.on("--only [ROLE]", String,
+          "Only run sprinkle policies for the specified role") { |v| OPTIONS[:only_role] = v }
   opts.on("-t", "--test",
           "Process but don't perform any actions") { |v| OPTIONS[:testing] = v }
   opts.on("-v", "--verbose",
@@ -59,6 +61,12 @@ BANNER
   if MANDATORY_OPTIONS && MANDATORY_OPTIONS.find { |option| OPTIONS[option.to_sym].nil? }
     puts opts; exit
   end
+end
+
+def only_role(options)
+  role=OPTIONS[:only_role]
+  Sprinkle::OPTIONS[:only_role] = role
+  puts "Only running policies for :#{role}"
 end
 
 def force_mode(options)
@@ -91,5 +99,6 @@ operation_mode(OPTIONS)
 powder_cloud(OPTIONS)
 log_level(OPTIONS)
 verbosity(OPTIONS)
+only_role(OPTIONS)
 
 Sprinkle::Script.sprinkle File.read(powder), powder

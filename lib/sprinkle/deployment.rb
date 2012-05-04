@@ -64,9 +64,18 @@ module Sprinkle
       def respond_to?(sym) #:nodoc:
         !!@defaults[sym]
       end
+      
+      def active_policies
+        if role=Sprinkle::OPTIONS[:only_role]
+          role=role.to_sym
+          POLICIES.select {|x| [x.roles].flatten.include?(role) }
+        else
+          POLICIES
+        end
+      end
 
       def process #:nodoc:
-        POLICIES.each do |policy|
+        active_policies.each do |policy|
           policy.process(self)
         end
       rescue Sprinkle::Errors::RemoteCommandFailure => e
