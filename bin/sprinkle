@@ -86,7 +86,8 @@ def verbosity(options)
 end
 
 def log_level(options)
-  Object.logger.level = ActiveSupport::BufferedLogger::Severity::DEBUG if options[:verbose]
+  severity = ActiveSupport::BufferedLogger::Severity
+  Object.logger.level = options[:verbose] ? severity::DEBUG : severity::INFO
 end
 
 require File.dirname(__FILE__) + '/../lib/sprinkle'
