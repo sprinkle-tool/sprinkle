@@ -20,7 +20,10 @@ ARGV.each do |arg|
   ENV[$1] = $2 if arg =~ /^(\w+)=(.*)$/
 end
 
+require File.dirname(__FILE__) + '/../lib/sprinkle/version'
+
 parser = OptionParser.new do |opts|
+  opts.version = Sprinkle::Version
   opts.banner = <<BANNER
 Sprinkle
 ========
