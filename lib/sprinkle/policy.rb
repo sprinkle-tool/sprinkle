@@ -74,6 +74,8 @@ module Sprinkle
 
       def process(deployment)
         all = []
+        
+        logger.info "[#{name}]"
 
         cloud_info "--> Cloud hierarchy for policy #{@name}"
 

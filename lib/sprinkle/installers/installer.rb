@@ -113,7 +113,7 @@ module Sprinkle
         end
 
         unless Sprinkle::OPTIONS[:testing]
-          logger.info "--> Installing #{package.name} for roles: #{roles}"
+          logger.debug "    --> Running #{self.class.name} for roles: #{roles}"
           @delivery.install(self, roles, :per_host => per_host?)
         end
       end

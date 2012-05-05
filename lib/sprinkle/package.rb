@@ -190,6 +190,7 @@ module Sprinkle
       end  
       
       def process(deployment, roles)
+        logger.info "  * #{name}"
         return if meta_package?
         
         # Run a pre-test to see if the software is already installed. If so,
@@ -198,7 +199,7 @@ module Sprinkle
           begin
             process_verifications(deployment, roles, true)
             
-            logger.info "--> #{self.name} already installed for roles: #{roles}"
+            logger.info "    --> already installed for roles: #{roles}"
             return
           rescue Sprinkle::VerificationFailed => e
             # Continue
@@ -211,15 +212,16 @@ module Sprinkle
         end
         
         process_verifications(deployment, roles)
+        logger.info "    --> INSTALLED for roles: #{roles}"
       end
       
       def process_verifications(deployment, roles, pre = false)
         return if @verifications.blank?
         
         if pre
-          logger.info "--> Checking if #{self.name} is already installed for roles: #{roles}"
+          logger.debug "--> Checking if #{self.name} is already installed for roles: #{roles}"
         else
-          logger.info "--> Verifying #{self.name} was properly installed for roles: #{roles}"
+          logger.debug "--> Verifying #{self.name} was properly installed for roles: #{roles}"
         end
         
         @verifications.each do |v|

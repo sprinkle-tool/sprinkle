@@ -91,7 +91,7 @@ module Sprinkle
       end
       
       unless Sprinkle::OPTIONS[:testing]
-        logger.info "#{" " * @options[:padding]}--> Verifying #{description}..."
+        logger.debug "#{" " * @options[:padding]}--> Verifying #{description}..."
         
         unless @delivery.verify(self, roles)
           # Verification failed, halt sprinkling gracefully.
