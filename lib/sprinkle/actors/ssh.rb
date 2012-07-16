@@ -30,11 +30,21 @@ module Sprinkle
       
       class SSHCommandFailure < StandardError #:nodoc:
         attr_accessor :details
-      end 
+      end
+      
+      class SSHConnectionCache
+        def initialize; @cache={}; end
+        def start(host, user, opts={})
+          key="#{host}#{user}#{opts.to_s}"
+          @cache[key] ||= Net::SSH.start(host,user,opts)
+        end
+      end
+      
       
       def initialize(options = {}, &block) #:nodoc:
         @options = options.update(:user => 'root')
         @roles = {}
+        @connection_cache = SSHConnectionCache.new
         self.instance_eval &block if block
         raise "You must define at least a single role." if @roles.empty?
       end
@@ -224,7 +234,7 @@ module Sprinkle
           if @gateway
             gateway.ssh(host, @options[:user])
           else
-            Net::SSH.start(host, @options[:user],:password => @options[:password])
+            @connection_cache.start(host, @options[:user],:password => @options[:password])
           end
         end        
         
