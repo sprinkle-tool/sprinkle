@@ -108,6 +108,7 @@ module Sprinkle
         owner(options[:owner]) if options[:owner]
         mode(options[:mode]) if options[:mode]
 
+        options[:render]=true if source_is_template?
         options[:recursive]=false if options[:render]
       end
       

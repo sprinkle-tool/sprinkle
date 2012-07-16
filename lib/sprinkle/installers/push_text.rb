@@ -41,6 +41,8 @@ module Sprinkle
 
       def initialize(parent, text, path, options={}, &block) #:nodoc:
         super parent, options, &block
+        # by default we would not want to push the same thing over and over
+        options.reverse_merge!(:idempotent => true)
         @text = text
         @path = path
       end
