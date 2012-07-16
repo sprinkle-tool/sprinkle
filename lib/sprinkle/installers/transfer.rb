@@ -96,6 +96,7 @@ module Sprinkle
       def initialize(parent, source, destination, options={}, &block) #:nodoc:
         @source = source
         @destination = destination
+        @orig_destination = destination
         super parent, options, &block
         @binding = options[:binding]
         # perform the transfer in two steps if we're using sudo
@@ -112,12 +113,12 @@ module Sprinkle
       
       def owner(owner)
         @owner = owner
-        post :install, "#{sudo_cmd}chown #{owner} #{destination}"
+        post :install, "#{sudo_cmd}chown #{owner} #{@orig_destination}"
       end
       
       def mode(mode)
         @mode = mode
-        post :install, "#{sudo_cmd}chmod #{mode} #{destination}"
+        post :install, "#{sudo_cmd}chmod #{mode} #{@orig_destination}"
       end
 
       def install_commands
@@ -146,9 +147,13 @@ module Sprinkle
       end
 
       def render_template_file(path, context, prefix)
-        template = File.read(path)
+        template = source_is_template? ? path : File.read(path)
         tempfile = render_template(template, context, @package.name)
         tempfile
+      end
+      
+      def source_is_template?
+        @source.split("\n").size>1
       end
 
       def process(roles) #:nodoc:
@@ -175,13 +180,17 @@ module Sprinkle
 
           tempfile = render_template_file(@source, context, @package.name)
           @sourcepath = tempfile.path
-          logger.info "Rendering template #{@source} to temporary file #{sourcepath}"
+          if source_is_template?
+            logger.debug "Rendering inline template to temporary file #{sourcepath}"
+          else
+            logger.debug "Rendering template #{@source} to temporary file #{sourcepath}"
+          end
           recursive = false
         else
           @sourcepath = @source
         end
 
-        logger.info "--> Transferring #{sourcepath} to #{@destination} for roles: #{roles}"
+        logger.debug "    --> Transferring #{sourcepath} to #{@orig_destination} for roles: #{roles}"
         @delivery.install(self, roles, :recursive => @options[:recursive])
       end
     end
