@@ -51,7 +51,7 @@ module Sprinkle
     end
 
     class Policy #:nodoc:
-      attr_reader :name
+      attr_reader :name, :roles
 
       def initialize(name, metadata = {}, &block)
         raise 'No name provided' unless name
