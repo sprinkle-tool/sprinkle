@@ -64,7 +64,7 @@ module Sprinkle
       
       def install(installer, roles, opts = {}) #:nodoc:
         @installer = installer
-        process(installer.package.name, installer.install_sequence, roles)
+        process(installer.package.name, installer.install_sequence, roles, opts)
       rescue ::Capistrano::CommandError => e
         raise_error(e)
       ensure

@@ -16,11 +16,11 @@ describe Sprinkle::Actors::Local do
       @roles    = %w( app )
       @name     = 'name'
 
-      @local.stub!(:system).and_return
+      @local.stub!(:run_command).and_return(0)
     end
 
     it 'should run the commands on the local system' do
-      @local.should_receive(:system).once.and_return
+      @local.should_receive(:run_command).once.and_return(0)
       @local.install @installer, @roles
     end
 
@@ -34,11 +34,11 @@ describe Sprinkle::Actors::Local do
       @roles    = %w( app )
       @name     = 'name'
 
-      @local.stub!(:system).and_return
+      @local.stub!(:run_command).and_return(0)
     end
 
     it 'should run the commands on the local system' do
-      @local.should_receive(:system).twice.and_return
+      @local.should_receive(:run_command).twice.and_return
       @local.verify @verifier, @roles
     end
     
