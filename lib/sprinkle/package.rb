@@ -300,6 +300,10 @@ module Sprinkle
       end
 
       private
+      
+        def cloud_info(message)
+          logger.info(message) if Sprinkle::OPTIONS[:cloud] or logger.debug?
+        end
 
         def select_package(name, packages)
           if packages.size <= 1
