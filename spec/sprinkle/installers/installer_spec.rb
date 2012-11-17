@@ -62,7 +62,7 @@ describe Sprinkle::Installers::Installer do
   describe 'during installation' do
 
     it 'should request the install sequence from the concrete class' do
-      @installer.should_receive(:install_sequence).and_return(@sequence)
+      @installer.should_receive(:install_sequence).at_least(:once).and_return(@sequence)
     end
 
     describe 'when testing' do
