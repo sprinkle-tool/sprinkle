@@ -4,16 +4,11 @@ describe Sprinkle::Installers::Pear do
 
   before do
     @package = mock(Sprinkle::Package, :name => 'spec')
-  end
-
-  def create_rake(names, options = {}, &block)
-    Sprinkle::Installers::Pear.new(@package, names, options, &block)
+    @installer = Sprinkle::Installers::Pear.new(@package, 'spec')
   end
 
   describe 'during installation' do
-
     it 'should invoke the pear executer for all specified tasks' do
-      @installer = create_pear 'spec'
       @install_commands = @installer.send :install_commands
       @install_commands.should == "pear install --alldeps spec"
     end
