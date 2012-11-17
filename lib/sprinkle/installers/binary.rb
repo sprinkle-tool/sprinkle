@@ -24,10 +24,14 @@ module Sprinkle
 
       def install_commands #:nodoc:
         commands = [ "bash -c 'wget -cq --directory-prefix=#{@options[:archives].first} #{@binary_archive}'" ]
-        commands << "bash -c 'cd #{@options[:prefix].first} && #{extract_command} #{@options[:archives].first}/#{@binary_archive.split("/").last}'"
+        commands << "bash -c \"cd #{@options[:prefix].first} && #{extract_command} '#{@options[:archives].first}/#{archive_name}'\""
       end
 
-      def extract_command(archive_name = @binary_archive.split("/").last)
+      def archive_name
+        @archive_name ||= @binary_archive.split("/").last.gsub('%20', ' ')
+      end
+
+      def extract_command
         case archive_name
         when /(tar.gz)|(tgz)$/
           'tar xzf'
