@@ -226,6 +226,12 @@ module Sprinkle
       def pacman(*names, &block)
         @installers << Sprinkle::Installers::Pacman.new(self, *names, &block)
       end
+
+      def pear(thePackage, &block)
+        installer =  Sprinkle::Installers::Pear.new(self, thePackage, &block)
+        logger.debug("the pear installer is " + installer.to_s)
+        @installers << installer;
+      end
       
       def process(deployment, roles)
         return if meta_package?
