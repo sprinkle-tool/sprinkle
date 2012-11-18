@@ -5,8 +5,11 @@
 * <http://github.com/benschwarz/passenger-stack>
 * <http://github.com/trevorturk/sprinkle-packages>
 * <http://www.vimeo.com/2888665>
-* <http://redartisan.lighthouseapp.com/projects/25275-sprinkle/tickets>
 * <http://maxim.github.com/sprinkle-cheatsheet>
+* <http://github.com/mingalar/sprinkle-packages>
+* <http://github.com/stuartellis/spritz>
+* <http://engineering.gomiso.com/2011/08/26/forget-chef-or-puppet-automate-with-sprinkle/>
+
 
 ## DESCRIPTION:
 
