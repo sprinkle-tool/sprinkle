@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'rake'
 require 'rspec/core/rake_task'
+require 'rdoc/task'
 
 task "inst" => [:clobber, :build] do
   puts `gem install pkg/sprinkle-*.gem`
@@ -22,9 +23,7 @@ RSpec::Core::RakeTask.new(:coverage) do |t|
   t.rcov_opts = ['--exclude', 'spec']
 end
 
-
-require 'rake/rdoctask'
-Rake::RDocTask.new do |rdoc|
+RDoc::Task.new do |rdoc|
   version = File.exist?('VERSION') ? File.read('VERSION') : ""
 
   rdoc.rdoc_dir = 'rdoc'
