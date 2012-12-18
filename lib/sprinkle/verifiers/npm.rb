@@ -13,7 +13,7 @@ module Sprinkle
 
       # Checks to make sure the npm <tt>module</tt> exists on the remote server.
       def has_npm(package)
-        @commands << "npm -g list | grep \"#{package}\""
+        @commands << "npm --global list | grep \"#{package}@\""
       end
 
     end
