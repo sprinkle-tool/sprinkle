@@ -232,6 +232,10 @@ module Sprinkle
         logger.debug("the pear installer is " + installer.to_s)
         @installers << installer;
       end
+
+      def npm(thePackage, &block)
+        @installers << Sprinkle::Installers::Npm.new(self, thePackage, &block);
+      end
       
       def process(deployment, roles)
         return if meta_package?
