@@ -6,7 +6,7 @@ describe Sprinkle::Installers::Pear do
     @package = mock(Sprinkle::Package, :name => 'spec')
   end
 
-  def create_rake(names, options = {}, &block)
+  def create_pear(names, options = {}, &block)
     Sprinkle::Installers::Pear.new(@package, names, options, &block)
   end
 
