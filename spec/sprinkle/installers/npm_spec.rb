@@ -10,7 +10,7 @@ describe Sprinkle::Installers::Npm do
   describe 'during installation' do
     it 'should invoke the npm executer for all specified tasks' do
       @install_commands = @installer.send :install_commands
-      @install_commands.should == "npm  install --global spec"
+      @install_commands.should == "npm install --global spec"
     end
   end
 end
