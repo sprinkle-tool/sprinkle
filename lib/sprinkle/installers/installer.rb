@@ -131,6 +131,11 @@ module Sprinkle
         # command sequence construction (eg. source based installer).
         def install_sequence
           commands = pre_commands(:install) + [ install_commands ] + post_commands(:install)
+
+          if option?(:as_user)
+            commands = ["su -c '#{commands.flatten.join.gsub("'", "'\\\\''")}' -s /bin/sh #{@options[:as_user]}"]
+          end
+
           commands.flatten
         end
         
