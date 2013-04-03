@@ -39,7 +39,22 @@ describe Sprinkle::Installers::PushText do
         @install_commands = @installer.send :install_commands
       end
       it "should grep for existing of the string" do
-        @install_commands.should == %q[grep "^another-hair-brained-idea$" /dev/mind/late-night || /bin/echo -e 'another-hair-brained-idea' |tee -a /dev/mind/late-night]
+        @install_commands.should == %q<grep -qPzo '^another\-hair\-brained\-idea$' /dev/mind/late-night || /bin/echo -e 'another-hair-brained-idea' |tee -a /dev/mind/late-night>
+      end
+    end
+    
+    describe 'with multiline idempotent' do
+      before do
+        mline = <<-MULTI
+^search( [adnor]{2,3} rescue)?$
+^fries( [adnor]{2,3} barbecue)?
+^songs( [adnor]{2,3} autocue)?
+MULTI
+        @installer = create_text mline.strip, '/dev/mind/late-night', :idempotent => true
+        @install_commands = @installer.send :install_commands
+      end
+      it "should grep for existence of the string" do
+        @install_commands.should == %q<grep -qPzo '^\^search\(\ \[adnor\]\{2,3\}\ rescue\)\?\$\n\^fries\(\ \[adnor\]\{2,3\}\ barbecue\)\?\n\^songs\(\ \[adnor\]\{2,3\}\ autocue\)\?$' /dev/mind/late-night || /bin/echo -e '^search( [adnor]{2,3} rescue)?$\n^fries( [adnor]{2,3} barbecue)?\n^songs( [adnor]{2,3} autocue)?' |tee -a /dev/mind/late-night>
       end
     end
     
