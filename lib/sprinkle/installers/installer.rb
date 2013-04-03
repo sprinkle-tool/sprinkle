@@ -136,6 +136,10 @@ module Sprinkle
             commands = ["su -c '#{commands.flatten.join.gsub("'", "'\\\\''")}' -s /bin/sh #{@options[:as_user]}"]
           end
 
+          if option?(:sudo)
+            commands.map!{ |command| "sudo #{command}" }
+          end
+
           commands.flatten
         end
         
