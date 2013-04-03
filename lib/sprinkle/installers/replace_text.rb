@@ -46,7 +46,11 @@ module Sprinkle
       protected
       
         def install_commands #:nodoc:
-          "#{'sudo ' if option?(:sudo)}sed -i 's/#{@regex.gsub("'", "'\\\\''").gsub("/", "\\\\/").gsub("\n", '\n')}/#{@text.gsub("'", "'\\\\''").gsub("/", "\\\\/").gsub("\n", '\n').gsub('&', '\\\&')}/g' #{@path}"
+          "#{'sudo ' if option?(:sudo)}sed -i 's/#{escape_sed_arg(@regex)}/#{escape_sed_arg(@text)}/g' #{@path}"
+        end
+
+        def escape_sed_arg str
+          str.gsub("'", "'\\\\''").gsub("/", "\\\\/").gsub("\n", '\n').gsub('&', '\\\&')
         end
 
     end
