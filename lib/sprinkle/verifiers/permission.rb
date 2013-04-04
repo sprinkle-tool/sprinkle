@@ -8,9 +8,9 @@ module Sprinkle
     #
     #   verify { has_permission '/etc/apache2/apache2.conf', 0644 }
     #
-    #   verify { has_owner '/etc/apache2/apache2.conf', 'noop' }
+    #   verify { belongs_to_user '/etc/apache2/apache2.conf', 'noop' }
     #
-    #   verify { has_owner '/etc/apache2/apache2.conf', 1000 }
+    #   verify { belongs_to_user '/etc/apache2/apache2.conf', 1000 }
     #
     module Permission
       Sprinkle::Verify.register(Sprinkle::Verifiers::Permission)
@@ -19,11 +19,11 @@ module Sprinkle
         @commands << "find #{path} -maxdepth 0 -perm #{permission} | egrep '.*'"
       end
 
-      def belongs_to_owner(path, owner)
-        if owner.is_a?(Integer)
-          @commands << "find #{path} -maxdepth 0 -uid #{owner} | egrep '.*'"
+      def belongs_to_user(path, user)
+        if user.is_a?(Integer)
+          @commands << "find #{path} -maxdepth 0 -uid #{user} | egrep '.*'"
         else
-          @commands << "find #{path} -maxdepth 0 -user #{owner} | egrep '.*'"
+          @commands << "find #{path} -maxdepth 0 -user #{user} | egrep '.*'"
         end
       end
 
