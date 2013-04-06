@@ -2,7 +2,7 @@ module Sprinkle
   module Verifiers
     # = Apt package Verifier
     #
-    # Contains a verifier to check the existance of an Apt package.
+    # Contains a verifier to check the existence of an Apt package.
     # 
     # == Example Usage
     #
