@@ -188,8 +188,7 @@ module Sprinkle
         end
 
         def build_dir #:nodoc:
-          custom_dir = @options[:custom_dir].first if @options[:custom_dir]
-          "#{@options[:builds].first}/#{custom_dir || base_dir}"
+          "#{@options[:builds].first}/#{@options[:custom_dir].first || base_dir}"
         end
 
         def base_dir #:nodoc:
