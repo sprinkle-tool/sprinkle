@@ -3,6 +3,17 @@ require 'net/scp'
 
 module Sprinkle
   module Actors
+    # =  SSH Delivery Method
+    #
+    # Allows for delivering solely via SSH.  An example:
+    #
+    #   deployment do
+    #     delivery :ssh do
+    #       roles :app => '10.0.0.1'
+    #       user 'guy'
+    #       password 'my-password'
+    #     end
+    #   end
     class Ssh
       attr_accessor :options
 
@@ -27,7 +38,18 @@ module Sprinkle
         @options[:password] = password
       end
 
+      # Set this to true to prepend 'sudo' to every command.
+      def use_sudo(value)
+        @options[:use_sudo] = value
+      end
+
       def process(name, commands, roles, suppress_and_return_failures = false)
+        if @options[:use_sudo]
+          commands = commands.map do |command|
+            command.match(/^sudo/) ? command : "sudo #{command}"
+          end
+        end
+
         return process_with_gateway(name, commands, roles) if gateway_defined?
         r = process_direct(name, commands, roles)
         logger.debug green "process returning #{r}"
@@ -38,7 +60,7 @@ module Sprinkle
         return transfer_with_gateway(name, source, destination, roles, recursive) if gateway_defined?
         transfer_direct(name, source, destination, roles, recursive)
       end
-			
+
       protected
       
         def process_with_gateway(name, commands, roles)
