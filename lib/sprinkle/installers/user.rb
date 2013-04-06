@@ -5,13 +5,28 @@ module Sprinkle
     # == Example Usage
     #
     #   package :users do
-    #     adduser 'admin', :flags => "--disabled-password"
+    #     add_user 'admin', :flags => "--disabled-password"
+    #
+    #     verify do
+    #       has_user 'admin', :in_group = "root"
+    #     end
     #   end
+    
     class User < Installer
       
       api do
         def add_user(username, options={},  &block)
           install Sprinkle::Installers::User.new(self, username, options, &block)
+        end
+      end
+      
+      verify_api do
+        def has_user(user, opts = {})
+          if opts[:in_group]
+            @commands << "id -G #{user} | xargs -n1 echo | grep #{opts[:in_group]}"
+          else
+            @commands << "id #{user}"
+          end
         end
       end
       

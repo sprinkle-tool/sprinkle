@@ -11,8 +11,8 @@ module Sprinkle
     # First, a simple installation of the magic_beans package:
     #
     #   package :magic_beans do
-    #     description "Beans beans they're good for your heart..."
     #     apt 'magic_beans_package'
+    #     verify { has_apt 'magic_beans_package' }
     #   end
     #
     # Second, only build the magic_beans dependencies:
@@ -30,6 +30,12 @@ module Sprinkle
       def initialize(parent, *packages, &block) #:nodoc:
         super parent, *packages, &block
         @options.reverse_merge!(:dependencies_only => false)
+      end
+      
+      verify_api do
+        def has_apt(package)
+          @commands << "dpkg --status #{package} | grep \"ok installed\""
+        end
       end
 
       protected

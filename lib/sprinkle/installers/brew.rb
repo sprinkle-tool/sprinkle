@@ -9,7 +9,10 @@ module Sprinkle
     #
     #   package :magic_beans do
     #     description "Beans beans they're good for your heart..."
-    #     brew 'magic_beans_package'
+    #     brew 'ntp'
+    #
+    #     verify { has_brew 'ntp' }
+    #
     #   end
     #
     class Brew < PackageInstaller
@@ -18,6 +21,12 @@ module Sprinkle
         def brew(*names, &block)
           @recommends << :homebrew
           install Sprinkle::Installers::Brew.new(self, *names, &block)
+        end
+      end
+      
+      verify_api do
+        def has_brew(package)
+          @commands << "brew list | grep  #{package}"
         end
       end
 

@@ -69,6 +69,10 @@ module Sprinkle
         def api(&block)
           Sprinkle::Package::Package.class_eval &block
         end
+        
+        def verify_api(&block)
+          Sprinkle::Verify.class_eval &block
+        end
 
         def inherited(base)
           subclasses << base
