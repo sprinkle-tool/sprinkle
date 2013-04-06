@@ -5,7 +5,7 @@ module Sprinkle
 
       def has_package(*packages)
         puts "has_package and has_packages are depreciated"
-        raise "plase use has_yum and friends instead"
+        raise "please use has_yum and friends instead"
       end
 
       alias_method :has_packages, :has_package  
