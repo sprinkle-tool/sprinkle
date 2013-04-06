@@ -10,6 +10,7 @@
   * <http://github.com/stuartellis/spritz>
   * <http://engineering.gomiso.com/2011/08/26/forget-chef-or-puppet-automate-with-sprinkle/>
 
+  [![Build Status](https://travis-ci.org/crafterm/sprinkle.png?branch=master)](https://travis-ci.org/crafterm/sprinkle)
 
 ## DESCRIPTION:
 
