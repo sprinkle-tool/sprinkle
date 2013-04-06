@@ -62,6 +62,15 @@ module Sprinkle
     #     end
     #   end
     #
+    # Fifth, specifying a custom directory where the archive actually is extracted to:
+    #
+    #   package :ruby_build do
+    #     source 'https://github.com/sstephenson/ruby-build/archive/v20130227.tar.gz' do
+    #       custom_dir 'ruby-build-20130227'
+    #       custom_install './install.sh'
+    #     end
+    #   end
+    #
     # As you can see, setting options is as simple as creating a
     # block and calling the option as a method with the value as
     # its parameter.
@@ -179,7 +188,7 @@ module Sprinkle
         end
 
         def build_dir #:nodoc:
-          "#{@options[:builds].first}/#{options[:custom_dir] || base_dir}"
+          "#{@options[:builds].first}/#{@options[:custom_dir].first || base_dir}"
         end
 
         def base_dir #:nodoc:
