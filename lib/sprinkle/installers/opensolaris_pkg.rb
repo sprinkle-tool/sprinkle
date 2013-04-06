@@ -1,8 +1,6 @@
 module Sprinkle
   module Installers
-    # = OpenSolaris Package Installer
-    #
-    # The Pkg package installer installs OpenSolaris packages.
+    # The OpenSolaris package installer installs OpenSolaris packages.
     # 
     # == Example Usage
     #
@@ -21,16 +19,10 @@ module Sprinkle
     # == Note
     # If you are using capistrano as the deployment method
     # you will need to add the following lines to your deploy.rb
-    # set :sudo, 'pfexec'
-    # set :sudo_prompt, ''
-    class OpensolarisPkg < Installer
-      attr_accessor :packages #:nodoc:
-
-      def initialize(parent, packages, &block) #:nodoc:
-        super parent, &block
-        packages = [packages] unless packages.is_a? Array
-        @packages = packages
-      end
+    #
+    #   set :sudo, 'pfexec'
+    #   set :sudo_prompt, ''
+    class OpensolarisPkg < PackageInstaller
 
       protected
 

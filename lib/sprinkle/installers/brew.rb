@@ -9,24 +9,31 @@ module Sprinkle
     #
     #   package :magic_beans do
     #     description "Beans beans they're good for your heart..."
-    #     brew 'magic_beans_package'
+    #     brew 'ntp'
+    #
+    #     verify { has_brew 'ntp' }
+    #
     #   end
     #
-    class Brew < Installer
-      attr_accessor :formulas #:nodoc:
+    class Brew < PackageInstaller
 
-      def initialize(parent, *formulas, &block) #:nodoc:
-        formulas.flatten!
-        
-        super parent, &block
-        
-        @formulas = formulas
+      api do
+        def brew(*names, &block)
+          @recommends << :homebrew
+          install Sprinkle::Installers::Brew.new(self, *names, &block)
+        end
+      end
+      
+      verify_api do
+        def has_brew(package)
+          @commands << "brew list | grep  #{package}"
+        end
       end
 
       protected
 
         def install_commands #:nodoc:
-          "brew install #{@formulas.join(' ')}"
+          "brew install #{@packages.join(' ')}"
         end
 
     end

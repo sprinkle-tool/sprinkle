@@ -1,7 +1,5 @@
 module Sprinkle
   module Installers
-    # = Yum Package Installer
-    #
     # The Yum package installer installs RPM packages.
     # 
     # == Example Usage
@@ -10,20 +8,20 @@ module Sprinkle
     #
     #   package :magic_beans do
     #     yum 'magic_beans'
+    #     verify { has_yum 'magic_beans' }
     #   end
     #
-    # You may also specify multiple rpms as an array:
+    # You may also specify multiple rpms as arguments or an array:
     #
     #   package :magic_beans do
-    #     yum %w(magic_beans magic_sauce)
+    #     yum "magic_beans", "magic_sauce"
     #   end
-    class Yum < Installer
-      attr_accessor :packages #:nodoc:
+    class Yum < PackageInstaller
 
-      def initialize(parent, packages, &block) #:nodoc:
-        super parent, &block
-        packages = [packages] unless packages.is_a? Array
-        @packages = packages
+      verify_api do
+        def has_yum(package)
+          @commands << "yum list installed #{package} | grep ^#{package}"
+        end
       end
 
       protected

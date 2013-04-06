@@ -84,16 +84,46 @@ module Sprinkle
     # directories or changing permissions), you can use the pre/post :install directives
     # and they will be run.
     class Transfer < Installer
-      attr_accessor :source, :destination #:nodoc:
+      attr_accessor :source, :destination, :sourcepath #:nodoc:
+      
+      api do
+        def transfer(source, destination, options = {}, &block)
+          options.merge!(:binding => binding())
+          install Sprinkle::Installers::Transfer.new(self, source, destination, options, &block)
+        end
+      end
 
       def initialize(parent, source, destination, options={}, &block) #:nodoc:
-        super parent, options, &block
         @source = source
         @destination = destination
+        @orig_destination = destination
+        super parent, options, &block
+        @binding = options[:binding]
+        # perform the transfer in two steps if we're using sudo
+        if sudo?
+          final = @destination
+          @destination = "/tmp/sprinkle_#{File.basename(@destination)}"
+          post :install, "#{sudo_cmd}mv #{@destination} #{final}"
+        end
+        owner(options[:owner]) if options[:owner]
+        mode(options[:mode]) if options[:mode]
+
+        options[:render]=true if source_is_template?
+        options[:recursive]=false if options[:render]
+      end
+      
+      def owner(owner)
+        @owner = owner
+        post :install, "#{sudo_cmd}chown #{owner} #{@orig_destination}"
+      end
+      
+      def mode(mode)
+        @mode = mode
+        post :install, "#{sudo_cmd}chmod #{mode} #{@orig_destination}"
       end
 
       def install_commands
-        nil
+        :TRANSFER
       end
 
       def self.render_template(template, context, prefix)
@@ -118,60 +148,51 @@ module Sprinkle
       end
 
       def render_template_file(path, context, prefix)
-        template = File.read(path)
+        template = source_is_template? ? path : File.read(path)
         tempfile = render_template(template, context, @package.name)
         tempfile
+      end
+      
+      def source_is_template?
+        @source.split("\n").size>1
       end
 
       def process(roles) #:nodoc:
         assert_delivery
 
-        if logger.debug?
-          logger.debug "transfer: #{@source} -> #{@destination} for roles: #{roles}\n"
-        end
+        logger.debug "transfer: #{@source} -> #{@destination} for roles: #{roles}\n"
 
-        unless Sprinkle::OPTIONS[:testing]
-          pre = pre_commands(:install)
-          unless pre.empty?
-            sequence = pre; sequence = sequence.join('; ') if sequence.is_a? Array
-            logger.info "#{@package.name} pre-transfer commands: #{sequence} for roles: #{roles}\n"
-            @delivery.process @package.name, [pre].flatten, roles
-          end
+        return if Sprinkle::OPTIONS[:testing]
 
-          recursive = @options[:recursive]
-
-          if options[:render]
-            if options[:locals]
-              context = {}
-              options[:locals].each_pair do |k,v|
-                if v.respond_to?(:call)
-                  context[k] = v.call
-                else
-                  context[k] = v
-                end
+        if options[:render]
+          if options[:locals]
+            context = {}
+            options[:locals].each_pair do |k,v|
+              if v.respond_to?(:call)
+                context[k] = v.call
+              else
+                context[k] = v
               end
-            else
-              context = binding()
             end
-
-            tempfile = render_template_file(@source, context, @package.name)
-            sourcepath = tempfile.path
-            logger.info "Rendering template #{@source} to temporary file #{sourcepath}"
-            recursive = false
           else
-            sourcepath = @source
+            # context = binding()
+            context = @binding
           end
 
-          logger.info "--> Transferring #{sourcepath} to #{@destination} for roles: #{roles}"
-          @delivery.transfer(@package.name, sourcepath, @destination, roles, recursive)
-
-          post = post_commands(:install)
-          unless post.empty?
-            sequence = post; sequence = sequence.join('; ') if sequence.is_a? Array
-            logger.info "#{@package.name} post-transfer commands: #{sequence} for roles: #{roles}\n"
-            @delivery.process @package.name, [post].flatten, roles
+          tempfile = render_template_file(@source, context, @package.name)
+          @sourcepath = tempfile.path
+          if source_is_template?
+            logger.debug "Rendering inline template to temporary file #{sourcepath}"
+          else
+            logger.debug "Rendering template #{@source} to temporary file #{sourcepath}"
           end
+          recursive = false
+        else
+          @sourcepath = @source
         end
+
+        logger.debug "    --> Transferring #{sourcepath} to #{@orig_destination} for roles: #{roles}"
+        @delivery.install(self, roles, :recursive => @options[:recursive])
       end
     end
   end

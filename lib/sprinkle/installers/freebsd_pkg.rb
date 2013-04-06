@@ -1,8 +1,6 @@
 module Sprinkle
   module Installers
-    # = FreeBSD Package Installer
-    #
-    # The Pkg package installer installs FreeBSD packages.
+    # The FreeBSDPkg installer installs FreeBSD packages.
     # 
     # == Example Usage
     #
@@ -17,14 +15,8 @@ module Sprinkle
     #   package :magic_beans do
     #     freebsd_pkg %w(magic_beans magic_sauce)
     #   end
-    class FreebsdPkg < Installer
-      attr_accessor :packages #:nodoc:
-
-      def initialize(parent, packages, &block) #:nodoc:
-        super parent, &block
-        packages = [packages] unless packages.is_a? Array
-        @packages = packages
-      end
+    #
+    class FreebsdPkg < PackageInstaller
 
       protected
 

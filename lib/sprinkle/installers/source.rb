@@ -77,17 +77,24 @@ module Sprinkle
 
     class Source < Installer
       attr_accessor :source #:nodoc:
+      
+      api do
+        def source(source, options = {}, &block)
+          @recommends << :build_essential # Ubuntu/Debian
+          install Sprinkle::Installers::Source.new(self, source, options, &block)
+        end
+      end
 
       def initialize(parent, source, options = {}, &block) #:nodoc:
-        @source = source
         super parent, options, &block
+        @source = source
+      end
+      
+      def install_sequence #:nodoc:
+        prepare + download + extract + configure + build + install
       end
 
       protected
-
-        def install_sequence #:nodoc:
-          prepare + download + extract + configure + build + install
-        end
 
         %w( prepare download extract configure build install ).each do |stage|
           define_method stage do

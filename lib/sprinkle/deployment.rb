@@ -52,7 +52,9 @@ module Sprinkle
       # the actor. For more information on what configuration options are
       # available, view the corresponding Sprinkle::Actors page.
       def delivery(type, &block) #:doc:
-        @style = ("Sprinkle::Actors::" + type.to_s.titleize).constantize.new &block
+        type=type.to_s.titleize
+        type="SSH" if type=="Ssh"
+        @style = ("Sprinkle::Actors::" + type).constantize.new &block
       end
 
       def method_missing(sym, *args, &block) #:nodoc:
@@ -62,11 +64,29 @@ module Sprinkle
       def respond_to?(sym) #:nodoc:
         !!@defaults[sym]
       end
+      
+      def active_policies
+        if role=Sprinkle::OPTIONS[:only_role]
+          role=role.to_sym
+          POLICIES.select {|x| [x.roles].flatten.include?(role) }
+        else
+          POLICIES
+        end
+      end
 
       def process #:nodoc:
-        POLICIES.each do |policy|
+        active_policies.each do |policy|
           policy.process(self)
         end
+      rescue Sprinkle::Errors::RemoteCommandFailure => e
+        e.print_summary
+        exit
+      rescue Sprinkle::Errors::TransferFailure => e
+        e.print_summary
+        exit
+      ensure
+        # do any cleanup our actor may need to close network sockets, etc
+        @style.teardown if @style.respond_to?(:teardown)        
       end
     end
   end

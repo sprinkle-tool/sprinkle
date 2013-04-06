@@ -6,12 +6,27 @@
 #++
 
 module Sprinkle
-  # An actor is a method of command delivery to a remote machine. It is the
-  # layer between sprinkle and the SSH connection to run commands. This gives
-  # you the flexibility to define custom actors, for whatever purpose you need.
+  # An actor is a method of command delivery to a remote machine. Actors are the
+  # layer setting between Sprinkle and the systems you and wanting to apply
+  # policies to.  
   #
-  # 99% of the time, however, the two built-in actors Sprinkle::Actors::Capistrano
-  # and Sprinkle::Actors::Vlad will be enough.
+  # Sprinkle ships with actors for Capistrano, Vlad, localhost and pure SSH.
+  # 99% of the time these should be sufficient but you can always write your 
+  # own actor otherwise. 
+  #
+  # == Writing an actor
+  #
+  # Actors must provide only 3 methods:
+  # 
+  # * install (installer, roles, options)
+  # * verify (verifier, roles, options)
+  # * transfer (source, destination, roles, options)
+  #
+  # Hopefully these methods are kind of fairly obvious.  They should return true
+  # to indicate success and false to indicate failure.
+  # The actual commands you need to execute can be retrived from 
+  # +installer.install_sequence+ and +verifier.commands+.  
+  
   module Actors
   end
 end

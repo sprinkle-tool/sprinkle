@@ -52,6 +52,11 @@ describe Sprinkle::Policy do
       @b = package :b, :provides => :xyz do; end
       @c = package :c, :provides => :abc do; end
       @d = package :d, :provides => :abc do; end
+      
+      @a.stub!(:instance).and_return(@a)
+      @b.stub!(:instance).and_return(@b)
+      @c.stub!(:instance).and_return(@c)
+      @d.stub!(:instance).and_return(@d)
 
       @policy = policy :test, :roles => :app do; requires :a; end
       $terminal.stub!(:choose).and_return(:c) # stub out highline asking questions
@@ -70,6 +75,7 @@ describe Sprinkle::Policy do
       it 'should normalize (ie remove duplicates from) the installation order of all packages including dependencies' do
         @e = package :e do; requires :b; end
         @policy.requires :e
+        @e.stub!(:instance).and_return(@e)
 
         @a.should_receive(:process).once.and_return
         @b.should_receive(:process).once.and_return

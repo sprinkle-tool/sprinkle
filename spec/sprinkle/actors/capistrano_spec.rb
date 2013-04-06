@@ -146,6 +146,9 @@ describe Sprinkle::Actors::Capistrano do
       @cap = create_cap do; recipes 'deploy'; end
       @cap.stub!(:run).and_return
       
+      @package = Package.new(@name) {}
+      @installer = Sprinkle::Installers::Transfer.new(@package, "file.txt","/tmp/file.txt")
+      
       @testing_errors = false
     end
 
@@ -176,7 +179,7 @@ describe Sprinkle::Actors::Capistrano do
     end
 
     after do
-      @cap.transfer @name, @source, @dest, @roles unless @testing_errors
+      @cap.process @package.name, @installer.install_sequence, @roles
     end
   end
 
@@ -221,6 +224,10 @@ describe Sprinkle::Actors::Capistrano do
 
       @cap = create_cap do; recipes 'deploy'; end
       @cap.config.stub!(:upload).and_return
+      
+      @package = Package.new(@name) {}
+      @installer = Sprinkle::Installers::Transfer.new(@package, @source, @dest, :recursive => true)
+      @cap.instance_variable_set("@installer", @installer)
     end
 
     it 'should call upload with the source and destination via :scp' do
@@ -233,7 +240,8 @@ describe Sprinkle::Actors::Capistrano do
     end
 
     after do
-      @cap.transfer @name, @source, @dest, @roles
+      @installer.instance_variable_set("@delivery", @cap)
+      @installer.process(@roles)
     end
   end
 
@@ -246,6 +254,10 @@ describe Sprinkle::Actors::Capistrano do
 
       @cap = create_cap do; recipes 'deploy'; end
       @cap.config.stub!(:upload).and_return
+      
+      @package = Package.new(@name) {}
+      @installer = Sprinkle::Installers::Transfer.new(@package, @source,@dest, :recursive => false)
+      @cap.instance_variable_set("@installer", @installer)
     end
 
     it 'should call upload with the source and destination via :scp' do
@@ -258,7 +270,8 @@ describe Sprinkle::Actors::Capistrano do
     end
 
     after do
-      @cap.transfer @name, @source, @dest, @roles, false
+      @installer.instance_variable_set("@delivery", @cap)
+      @installer.process(@roles)
     end
   end
 

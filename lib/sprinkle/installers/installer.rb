@@ -1,4 +1,8 @@
 module Sprinkle
+  # Installers are where the bulk of the work in Sprinkle happens.  Installers are
+  # the building blocks of packages.  Typically each unique type of install
+  # command has it's own installer class.
+  # 
   module Installers
     # The base class which all installers must subclass, this class makes
     # sure all installers share some general features, which are outlined
@@ -8,9 +12,16 @@ module Sprinkle
     # 
     # With all installation methods you have the ability to specify multiple
     # pre/post installation hooks. This gives you the ability to specify
-    # commands to run before and after an installation takes place. All 
-    # commands by default are sudo'd so there is no need to include "sudo"
-    # in the command itself. There are three ways to specify a pre/post hook.
+    # commands to run before and after an installation takes place. 
+    # There are three ways to specify a pre/post hook.
+    
+    # Note about sudo:
+    # When using the Capistrano actor all commands by default are run using
+    # sudo (unless your Capfile includes "set :use_sudo, false").  If you wish 
+    # to use sudo periodically with "set :user_sudo, false" or with an actor 
+    # other than Capistrano then you can just append it to your command. Some 
+    # installers (transfer) also support a :sudo option, so check each 
+    # installer for details.
     # 
     # First, a single command:
     #
@@ -45,11 +56,37 @@ module Sprinkle
 
       def initialize(package, options = {}, &block) #:nodoc:
         @package = package
-        @options = options
+        @options = options || {}
         @pre = {}; @post = {}
         self.instance_eval(&block) if block
       end
+      
+      class << self
+        def subclasses
+          @subclasses ||= []
+        end
+        
+        def api(&block)
+          Sprinkle::Package::Package.class_eval &block
+        end
+        
+        def verify_api(&block)
+          Sprinkle::Verify.class_eval &block
+        end
 
+        def inherited(base)
+          subclasses << base
+        end
+      end
+            
+      def sudo_cmd
+        "sudo " if sudo?
+      end
+      
+      def sudo?
+        options[:sudo] or package.sudo?
+      end
+            
       def pre(stage, *commands)
         @pre[stage] ||= []
         @pre[stage] += commands
@@ -61,6 +98,15 @@ module Sprinkle
         @post[stage] += commands
         @post[stage] += [yield] if block_given?
       end
+      
+      def per_host?
+        return false
+        @per_host
+      end
+      
+      # Called right before an installer is exected, can be used for logging
+      # and announcing what is about to happen
+      def announce; end
 
       def process(roles) #:nodoc:
         assert_delivery
@@ -71,18 +117,23 @@ module Sprinkle
         end
 
         unless Sprinkle::OPTIONS[:testing]
-          logger.info "--> Installing #{package.name} for roles: #{roles}"
-          @delivery.process(@package.name, install_sequence, roles)
+          logger.debug "    --> Running #{self.class.name} for roles: #{roles}"
+          @delivery.install(self, roles, :per_host => per_host?)
         end
       end
 
-      protected
         # More complicated installers that have different stages, and require pre/post commands
         # within stages can override install_sequence and take complete control of the install
         # command sequence construction (eg. source based installer).
         def install_sequence
           commands = pre_commands(:install) + [ install_commands ] + post_commands(:install)
           commands.flatten
+        end
+        
+      protected
+      
+        def log(t, level=:info)
+          logger.send(level, t)
         end
 
         # A concrete installer (subclass of this virtual class) must override this method

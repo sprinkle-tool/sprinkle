@@ -3,7 +3,7 @@ require File.expand_path("../../spec_helper", File.dirname(__FILE__))
 describe Sprinkle::Installers::PushText do
 
   before do
-    @package = mock(Sprinkle::Package, :name => 'package')
+    @package = mock(Sprinkle::Package, :name => 'package', :sudo? => false)
     @options = {:sudo => true}
   end
 
@@ -29,6 +29,16 @@ describe Sprinkle::Installers::PushText do
         post :install, 'op2'
       end
       @install_commands = @installer.send :install_commands
+    end
+    
+    describe 'with sudo' do
+      before do
+        @installer = create_text 'another-hair-brained-idea', '/dev/mind/late-night', :sudo => true
+        @install_commands = @installer.send :install_commands
+      end
+      it 'should invoke sudo if sudo option passed' do
+        @install_commands.should == %q[/bin/echo -e 'another-hair-brained-idea' |sudo tee -a /dev/mind/late-night]
+      end
     end
 
     it 'should invoke the push text installer for all specified packages' do

@@ -3,37 +3,80 @@ require 'net/scp'
 
 module Sprinkle
   module Actors
-    # =  SSH Delivery Method
-    #
-    # Allows for delivering solely via SSH.  An example:
+    # The SSH actor requires no additional deployment tools other than the 
+    # Ruby SSH libraries.
     #
     #   deployment do
     #     delivery :ssh do
-    #       roles :app => '10.0.0.1'
-    #       user 'guy'
-    #       password 'my-password'
+    #       user "rails"
+    #       password "leetz"
+    #
+    #       role :app, "app.myserver.com"
     #     end
     #   end
-    class Ssh
-      attr_accessor :options
-
-      def initialize(options = {}, &block) #:nodoc:
-        @options = options.update(:user => 'root')
-        self.instance_eval &block if block
-      end
-
-      def roles(roles)
-        @options[:roles] = roles
+    #
+    #
+    # == Working thru a gateway
+    #
+    # If you're behind a firewall and need to use a SSH gateway that's fine.
+    # 
+    #   deployment do
+    #     delivery :ssh do
+    #       gateway "work.sshgateway.com"
+    #     end
+    #   end
+    class SSH
+      attr_accessor :options #:nodoc:
+      
+      class SSHCommandFailure < StandardError #:nodoc:
+        attr_accessor :details
       end
       
+      class SSHConnectionCache
+        def initialize; @cache={}; end
+        def start(host, user, opts={})
+          key="#{host}#{user}#{opts.to_s}"
+          @cache[key] ||= Net::SSH.start(host,user,opts)
+        end
+      end
+      
+      
+      def initialize(options = {}, &block) #:nodoc:
+        @options = options.update(:user => 'root')
+        @roles = {}
+        @connection_cache = SSHConnectionCache.new
+        self.instance_eval &block if block
+        raise "You must define at least a single role." if @roles.empty?
+      end
+
+      # Define a whole host of roles at once
+      #
+      # This is depreciated - you should be using role instead.
+      def roles(roles)
+        @roles = roles
+      end
+
+      # Define a role and add servers to it
+      #   
+      #   role :app, "app.server.com"
+      #   role :db, "db.server.com"
+      def role(role, server)
+        @roles[role] ||= []
+        @roles[role] << server
+      end
+      
+      # Set an optional SSH gateway server - if set all outbound SSH traffic
+      # will go thru this gateway
       def gateway(gateway)
         @options[:gateway] = gateway
       end
       
+      # Set the SSH user
       def user(user)
         @options[:user] = user
       end
 
+      # Set the SSH password
       def password(password)
         @options[:password] = password
       end
@@ -43,130 +86,158 @@ module Sprinkle
         @options[:use_sudo] = value
       end
 
-      def process(name, commands, roles, suppress_and_return_failures = false)
-        if @options[:use_sudo]
-          commands = commands.map do |command|
-            command.match(/^sudo/) ? command : "sudo #{command}"
-          end
-        end
-
-        return process_with_gateway(name, commands, roles) if gateway_defined?
-        r = process_direct(name, commands, roles)
-        logger.debug green "process returning #{r}"
-        return r
+      def setup_gateway #:nodoc:
+        @gateway ||= Net::SSH::Gateway.new(@options[:gateway], @options[:user]) if @options[:gateway]
       end
-
-      def transfer(name, source, destination, roles, recursive = true, suppress_and_return_failures = false)
-        return transfer_with_gateway(name, source, destination, roles, recursive) if gateway_defined?
-        transfer_direct(name, source, destination, roles, recursive)
+      
+      def teardown #:nodoc:
+        @gateway.shutdown! if @gateway
+      end
+      
+      def verify(verifier, roles, opts = {}) #:nodoc:
+        @verifier = verifier
+        # issue all the verification steps in a single SSH command
+        commands=[verifier.commands.join(" && ")]
+        process(verifier.package.name, commands, roles, 
+          :suppress_and_return_failures => true)
+      ensure
+        @verifier = nil
+      end
+      
+      def install(installer, roles, opts = {}) #:nodoc:
+        @installer = installer
+        process(installer.package.name, installer.install_sequence, roles)
+      rescue SSHCommandFailure => e
+        raise_error(e)
+      ensure
+        @installer = nil
       end
 
       protected
       
-        def process_with_gateway(name, commands, roles)
-          res = []
-          on_gateway do |gateway|
-            Array(roles).each { |role| res << execute_on_role(commands, role, gateway) }
+        def raise_error(e)
+          raise Sprinkle::Errors::RemoteCommandFailure.new(@installer, e.details, e)
+        end
+      
+        def process(name, commands, roles, opts = {}) #:nodoc:
+          opts.reverse_merge!(:suppress_and_return_failures => false)
+          setup_gateway
+          @suppress = opts[:suppress_and_return_failures]
+          r=execute_on_role(commands, roles)
+          logger.debug green "process returning #{r}"
+          return r
+        end      
+      
+        def execute_on_role(commands, role) #:nodoc:
+          hosts = @roles[role]
+          Array(hosts).each do |host| 
+            success = execute_on_host(commands, host)
+            return false unless success
           end
-          !(res.include? false)
         end
         
-        def process_direct(name, commands, roles)
-          res = []
-          Array(roles).each { |role| res << execute_on_role(commands, role) }
-          !(res.include? false)
-        end
-        
-        def transfer_with_gateway(name, source, destination, roles, recursive)
-          on_gateway do |gateway|
-            Array(roles).each { |role| transfer_to_role(source, destination, role, recursive, gateway) }
+        def prepare_commands(commands)
+          return commands unless @options[:use_sudo]
+          commands.map do |command| 
+            next command if command.is_a?(Symbol)
+            command.match(/^sudo/) ? command : "sudo #{command}"
           end
         end
         
-        def transfer_direct(name, source, destination, roles, recursive)
-          Array(roles).each { |role| transfer_to_role(source, destination, role, recursive) }
-        end
-
-        def execute_on_role(commands, role, gateway = nil)
-          hosts = @options[:roles][role]
-          res = []
-          Array(hosts).each { |host| res << execute_on_host(commands, host, gateway) }
-          !(res.include? false)
-        end
-
-        def transfer_to_role(source, destination, role, gateway = nil)
-          hosts = @options[:roles][role]
-          Array(hosts).each { |host| transfer_to_host(source, destination, host, gateway) }
+        def execute_on_host(commands,host) #:nodoc:
+          session = ssh_session(host)
+          @log_recorder = Sprinkle::Utility::LogRecorder.new
+          prepare_commands(commands).each do |cmd|
+            if cmd == :TRANSFER
+              transfer_to_host(@installer.sourcepath, @installer.destination, session, 
+                :recursive => @installer.options[:recursive])
+              next
+            elsif cmd == :RECONNECT
+              session.close # disconnenct
+              session = ssh_session(host) # reconnect
+              next
+            end
+            @log_recorder.reset cmd
+            res = ssh(session, cmd)
+            if res != 0 
+              if @suppress
+                return false
+              else
+                fail=SSHCommandFailure.new
+                fail.details = @log_recorder.hash.merge(:hosts => host)
+                raise fail, "#{cmd} failed with error code #{res[:code]}"
+              end
+            end
+          end
+          true
         end
         
-        def execute_on_host(commands, host, gateway = nil)
-          res = nil
-          logger.debug(blue "executing #{commands.inspect} on #{host}.")
-          if gateway # SSH connection via gateway
-            gateway.ssh(host, @options[:user]) do |ssh|
-              res = execute_on_connection(commands, ssh)
-              ssh.loop
+        def ssh(host, cmd, opts={}) #:nodoc:
+          logger.debug "ssh: #{cmd}"
+          session = host.is_a?(Net::SSH::Connection::Session) ? host : ssh_session(host)
+          channel_runner(session, cmd)
+        end
+        
+        def channel_runner(session, command) #:nodoc:
+          session.open_channel do |channel|
+            channel.on_data do |ch, data|
+              @log_recorder.log :out, data
+              logger.debug yellow("stdout said-->\n#{data}\n")
             end
-          else # direct SSH connection
-            Net::SSH.start(host, @options[:user], :password => @options[:password]) do |ssh|
-              res = execute_on_connection(commands, ssh)
-              ssh.loop
+            channel.on_extended_data do |ch, type, data|
+              next unless type == 1  # only handle stderr
+              @log_recorder.log :err, data
+              logger.debug red("stderr said -->\n#{data}\n")
+            end
+
+            channel.on_request("exit-status") do |ch, data|
+              @log_recorder.code = data.read_long
+              if @log_recorder.code == 0
+                logger.debug(green 'success')
+              else
+                logger.debug(red('failed (%d).' % @log_recorder.code))
+              end
+            end
+
+            channel.on_request("exit-signal") do |ch, data|
+              logger.debug red("#{cmd} was signaled!: #{data.read_long}")
+            end
+
+            channel.exec command  do  |ch, status|
+              logger.error("couldn't run remote command #{cmd}") unless status
+              @log_recorder.code = -1
             end
           end
-          res.detect{|x| x!=0}.nil?
+          session.loop
+          @log_recorder.code
         end
-
-        def execute_on_connection(commands, session)
-          res = []
-          Array(commands).each do |cmd|
-            session.open_channel do |channel|
-              channel.on_data do |ch, data|
-                logger.debug yellow("stdout said-->\n#{data}\n")
-              end
-              channel.on_extended_data do |ch, type, data|
-                next unless type == 1  # only handle stderr
-                logger.debug red("stderr said -->\n#{data}\n")
-              end
-
-              channel.on_request("exit-status") do |ch, data|
-                exit_code = data.read_long
-                if exit_code == 0
-                  logger.debug(green 'success')
-                else
-                  logger.debug(red('failed (%d).'%exit_code))
-                end
-                res << exit_code
-              end
-
-              channel.on_request("exit-signal") do |ch, data|
-                logger.debug red("#{cmd} was signaled!: #{data.read_long}")
-              end
-
-              channel.exec cmd  do  |ch, status|
-                logger.error("couldn't run remote command #{cmd}") unless status
-              end
-            end
+        
+        def transfer_to_role(source, destination, role, opts={}) #:nodoc:
+          hosts = @roles[role]
+          Array(hosts).each { |host| transfer_to_host(source, destination, host, opts) }
+        end
+        
+        def transfer_to_host(source, destination, host, opts={}) #:nodoc:
+          logger.debug "upload: #{destination}"
+          session = host.is_a?(Net::SSH::Connection::Session) ? host : ssh_session(host)
+          scp = Net::SCP.new(session)
+          scp.upload! source, destination, :recursive => opts[:recursive], :chunk_size => 32.kilobytes
+        rescue RuntimeError => e
+          if e.message =~ /Permission denied/
+            raise TransferFailure.no_permission(@installer,e)
+          else
+            raise e
+          end          
+        end
+        
+        def ssh_session(host)
+          if @gateway
+            gateway.ssh(host, @options[:user])
+          else
+            @connection_cache.start(host, @options[:user],:password => @options[:password])
           end
-          res
-        end
-
-        def transfer_to_host(source, destination, host, recursive, gateway = nil)
-          if gateway # SSH connection via gateway
-            gateway.ssh(host, @options[:user]) do |ssh|
-              transfer_on_connection(source, destination, recursive, ssh)
-            end
-          else # direct SSH connection
-            Net::SSH.start(host, @options[:user], :password => @options[:password]) do |ssh|
-              transfer_on_connection(source, destination, recursive, ssh)
-            end
-          end
-        end
-
-        def transfer_on_connection(source, destination, recursive, connection)
-          scp = Net::SCP.new(connection)
-          scp.upload! source, destination, :recursive => recursive
-        end
-
+        end        
+        
         private
         def color(code, s)
           "\033[%sm%s\033[0m"%[code,s]
@@ -182,17 +253,6 @@ module Sprinkle
         end
         def blue(s)
           color(34, s)
-        end
-
-        def gateway_defined?
-          !! @options[:gateway]
-        end
-
-        def on_gateway(&block)
-          gateway = Net::SSH::Gateway.new(@options[:gateway], @options[:user])
-          block.call gateway
-        ensure
-          gateway.shutdown!
         end
     end
   end

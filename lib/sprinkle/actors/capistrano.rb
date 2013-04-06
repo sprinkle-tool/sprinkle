@@ -2,16 +2,15 @@ require 'capistrano/cli'
 
 module Sprinkle
   module Actors
-    # = Capistrano Delivery Method
+    # The Capistrano actor uses Capistrano to define your roles and deliver 
+    # commands to your remote servers.  You'll need the capistrano gem installed.
     #
-    # Capistrano is one of the delivery method options available out of the
-    # box with Sprinkle. If you have the capistrano gem install, you may use
-    # this delivery. The only configuration option available, and which is 
-    # mandatory to include is +recipes+. An example:
+    # The only configuration option is to specify a recipe.
     #
     #   deployment do
     #     delivery :capistrano do
-    #       recipes 'deploy'
+    #       recipe 'deploy'
+    #       recipe 'more'
     #     end
     #   end
     #
@@ -47,52 +46,79 @@ module Sprinkle
       #
       #   deployment do
       #     delivery :capistrano do
-      #       recipes 'deploy'
-      #       recipes 'magic_beans'
+      #       recipe 'deploy'
+      #       recipes 'magic_beans', 'normal_beans'
       #     end
       #   end
-      def recipes(script)
+      def recipe(scripts)
         @loaded_recipes ||= []
-        @config.load script
-        @loaded_recipes << script
+        Array(scripts).each do |script|
+          @config.load script
+          @loaded_recipes << script        
+        end
       end
-
-      def process(name, commands, roles, suppress_and_return_failures = false) #:nodoc:
+      
+      def recipes(scripts) #:nodoc:
+        recipe(scripts)
+      end
+      
+      def install(installer, roles, opts = {}) #:nodoc:
+        @installer = installer
+        process(installer.package.name, installer.install_sequence, roles, opts)
+      rescue ::Capistrano::CommandError => e
+        raise_error(e)
+      ensure
+        @installer = nil
+      end
+      
+      def verify(verifier, roles, opts = {}) #:nodoc:
+        process(verifier.package.name, verifier.commands, roles, 
+          :suppress_and_return_failures => true)
+      end
+            
+      def process(name, commands, roles, opts = {}) #:nodoc:
+        inst=@installer
+        @log_recorder = log_recorder = Sprinkle::Utility::LogRecorder.new
         define_task(name, roles) do
           via = fetch(:run_method, :sudo)
           commands.each do |command|
-            invoke_command command, :via => via
+            if command == :TRANSFER
+              opts.reverse_merge!(:recursive => true)
+              upload inst.sourcepath, inst.destination, :via => :scp, 
+                :recursive => opts[:recursive]
+            elsif command == :RECONNECT
+              teardown_connections_to(sessions.keys)
+            else
+              # this reset the log
+              log_recorder.reset command
+              invoke_command(command, {:via => via}) do |c,s,d| 
+                # record the stream and data
+                log_recorder.log(s, d)
+              end
+            end
           end
         end
-        
-        begin
-          run(name)
-          return true
-        rescue ::Capistrano::CommandError => e
-          return false if suppress_and_return_failures
-          
-          # Reraise error if we're not suppressing it
-          raise
-        end
-      end
-
-      def transfer(name, source, destination, roles, recursive = true, suppress_and_return_failures = false)
-        define_task(name, roles) do
-          upload source, destination, :via => :scp, :recursive => recursive
-        end
-        
-        begin
-          run(name)
-          return true
-        rescue ::Capistrano::CommandError => e
-          return false if suppress_and_return_failures
-          
-          # Reraise error if we're not suppressing it
-          raise
-        end
+        run_task(name, opts)
       end
 			
       private
+            
+        def raise_error(e)
+          details={:command => @log_recorder.command, :code => "??", 
+            :message => e.message,
+            :hosts => e.hosts,
+            :error => @log_recorder.err, :stdout => @log_recorder.out}
+          raise Sprinkle::Errors::RemoteCommandFailure.new(@installer, details, e)
+        end
+      
+        def run_task(task, opts={})
+          run(task)
+          return true
+        rescue ::Capistrano::CommandError => e
+          return false if opts[:suppress_and_return_failures]
+          # Reraise error if we're not suppressing it
+          raise
+        end
 
         # REVISIT: can we set the description somehow?
         def define_task(name, roles, &block)

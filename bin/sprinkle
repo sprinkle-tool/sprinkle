@@ -20,7 +20,10 @@ ARGV.each do |arg|
   ENV[$1] = $2 if arg =~ /^(\w+)=(.*)$/
 end
 
+require File.dirname(__FILE__) + '/../lib/sprinkle/version'
+
 parser = OptionParser.new do |opts|
+  opts.version = Sprinkle::Version
   opts.banner = <<BANNER
 Sprinkle
 ========
@@ -44,6 +47,8 @@ BANNER
   opts.separator ""
   opts.on("-s", "--script=PATH", String,
           "Path to a sprinkle script to run") { |v| OPTIONS[:path] = v }
+  opts.on("--only [ROLE]", String,
+          "Only run sprinkle policies for the specified role") { |v| OPTIONS[:only_role] = v }
   opts.on("-t", "--test",
           "Process but don't perform any actions") { |v| OPTIONS[:testing] = v }
   opts.on("-v", "--verbose",
@@ -59,6 +64,12 @@ BANNER
   if MANDATORY_OPTIONS && MANDATORY_OPTIONS.find { |option| OPTIONS[option.to_sym].nil? }
     puts opts; exit
   end
+end
+
+def only_role(options)
+  role=OPTIONS[:only_role]
+  Sprinkle::OPTIONS[:only_role] = role
+  puts "Only running policies for :#{role}"
 end
 
 def force_mode(options)
@@ -78,7 +89,8 @@ def verbosity(options)
 end
 
 def log_level(options)
-  Object.logger.level = ActiveSupport::BufferedLogger::Severity::DEBUG if options[:verbose]
+  severity = ActiveSupport::BufferedLogger::Severity
+  Object.logger.level = options[:verbose] ? severity::DEBUG : severity::INFO
 end
 
 require File.dirname(__FILE__) + '/../lib/sprinkle'
@@ -91,5 +103,6 @@ operation_mode(OPTIONS)
 powder_cloud(OPTIONS)
 log_level(OPTIONS)
 verbosity(OPTIONS)
+only_role(OPTIONS)
 
 Sprinkle::Script.sprinkle File.read(powder), powder
