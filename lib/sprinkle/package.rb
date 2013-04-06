@@ -106,138 +106,91 @@ module Sprinkle
     end
 
     class Package #:nodoc:
-      include ArbitraryOptions
-      attr_accessor :name, :provides, :installers, :dependencies, :recommends, :verifications
+      # include ArbitraryOptions
+      attr_accessor :name, :provides, :installers, :verifications
+      attr_accessor :args, :opts
 
       def initialize(name, metadata = {}, &block)
         raise 'No package name supplied' unless name
 
         @name = name
+        @metadata = metadata
         @provides = metadata[:provides]
         @dependencies = []
         @recommends = []
         @optional = []
         @verifications = []
         @installers = []
+        @block = block
+        # this should probably not be done twice
         self.instance_eval &block
       end
-      def add_user(username, options={},  &block)
-        @installers << Sprinkle::Installers::User.new(self, username, options, &block)
-      end
-
-      def add_group(group, options={},  &block)
-        @installers << Sprinkle::Installers::Group.new(self, group, options, &block)
-      end
-
-      def freebsd_pkg(*names, &block)
-        @installers << Sprinkle::Installers::FreebsdPkg.new(self, *names, &block)
+      
+      def description(s=nil)
+        s ? @description = s : @description
       end
       
-      def freebsd_portinstall(port, &block)
-        @installers << Sprinkle::Installers::FreebsdPortinstall.new(self, port, &block)
-      end
-
-      def openbsd_pkg(*names, &block)
-        @installers << Sprinkle::Installers::OpenbsdPkg.new(self, *names, &block)
+      def version(s=nil)
+        s ? @version = s : @version
       end
       
-      def opensolaris_pkg(*names, &block)
-        @installers << Sprinkle::Installers::OpensolarisPkg.new(self, *names, &block)
+      def instance(*args)
+        p=Package.new(name, @metadata) {}
+        p.opts = args.extract_options!
+        p.args = args
+        p.instance_variable_set("@block", @block)
+        p.instance_eval &@block
+        p
       end
       
-      def bsd_port(port, &block)
-        @installers << Sprinkle::Installers::BsdPort.new(self, port, &block)
+      def sudo?
+        @use_sudo
       end
       
-      def mac_port(port, &block)
-        @installers << Sprinkle::Installers::MacPort.new(self, port, &block)
+      def use_sudo(flag=true)
+        @use_sudo = flag
       end
-
-      def apt(*names, &block)
-        @installers << Sprinkle::Installers::Apt.new(self, *names, &block)
-      end
-
-      def deb(*names, &block)
-        @installers << Sprinkle::Installers::Deb.new(self, *names, &block)
-      end
-
-      def rpm(*names, &block)
-        @installers << Sprinkle::Installers::Rpm.new(self, *names, &block)
-      end
-
-      def yum(*names, &block)
-        @installers << Sprinkle::Installers::Yum.new(self, *names, &block)
-      end
-
-      def zypper(*names, &block)
-        @installers << Sprinkle::Installers::Zypper.new(self, *names, &block)
+            
+      def args
+        @args || []
       end
       
-      def brew(*names, &block)
-        @installers << Sprinkle::Installers::Brew.new(self, *names, &block)
+      def opts
+        @opts || {}
+      end
+      
+      class ContextError < StandardError #:nodoc:
+      end
+      
+      def get(x)
+        raise ContextError, "Cannot call get inside a package, must be inside an Installer block"
+      end
+      
+      PKG_FORMATS = %w{apt brew deb rpm yum zypper freebsd_pkg openbsd_pkg opensolaris_pkg pacman}
+      PKG_FORMATS.each do |format|
+        eval "def #{format}(*names, &block)
+          @installers << Sprinkle::Installers::#{format.classify}.new(self, *names, &block)
+        end"
       end
 
-      def gem(name, options = {}, &block)
-        @recommends << :rubygems
-        @installers << Sprinkle::Installers::Gem.new(self, name, options, &block)
-      end
-
-      def source(source, options = {}, &block)
-        @recommends << :build_essential # Ubuntu/Debian
-        @installers << Sprinkle::Installers::Source.new(self, source, options, &block)
-      end
-      
-      def binary(source, options = {}, &block)
-        @installers << Sprinkle::Installers::Binary.new(self, source, options, &block)
-      end
-      
-      def rake(name, options = {}, &block)
-        @installers << Sprinkle::Installers::Rake.new(self, name, options, &block)
-      end    
-      
-      def thor(name, options = {}, &block)
-        @installers << Sprinkle::Installers::Thor.new(self, name, options, &block)
-      end  
-     
       def noop(&block)
-        @installers << Sprinkle::Installers::Runner.new(self, "echo noop", &block)
+        install Sprinkle::Installers::Runner.new(self, "echo noop", &block)
       end
-      
-      def push_text(text, path, options = {}, &block)
-        @installers << Sprinkle::Installers::PushText.new(self, text, path, options, &block)
+                  
+      # meta installer
+      # TODO - fix to be atomic
+      def push_file(file, options ={}, &block)
+        raise "need content" unless options[:content]
+        runner "#{"sudo " if sudo?}rm -f #{file}"
+        push_text options[:content], file, options, &block
       end
-
-      def replace_text(regex, text, path, options={}, &block)
-        @installers << Sprinkle::Installers::ReplaceText.new(self, regex, text, path, options, &block)
-      end
-      
-      def transfer(source, destination, options = {}, &block)
-        @installers << Sprinkle::Installers::Transfer.new(self, source, destination, options, &block)
-      end
-
-			def runner(cmd, &block)
-				@installers << Sprinkle::Installers::Runner.new(self, cmd, &block)
-			end
-
+                  
       def verify(description = '', &block)
         @verifications << Sprinkle::Verify.new(self, description, &block)
       end  
-
-      def pacman(*names, &block)
-        @installers << Sprinkle::Installers::Pacman.new(self, *names, &block)
-      end
-
-      def pear(thePackage, &block)
-        installer =  Sprinkle::Installers::Pear.new(self, thePackage, &block)
-        logger.debug("the pear installer is " + installer.to_s)
-        @installers << installer;
-      end
-
-      def npm(thePackage, &block)
-        @installers << Sprinkle::Installers::Npm.new(self, thePackage, &block);
-      end
       
       def process(deployment, roles)
+        logger.info "  * #{name}"
         return if meta_package?
         
         # Run a pre-test to see if the software is already installed. If so,
@@ -246,7 +199,7 @@ module Sprinkle
           begin
             process_verifications(deployment, roles, true)
             
-            logger.info "--> #{self.name} already installed for roles: #{roles}"
+            logger.info "    --> already installed for roles: #{roles}"
             return
           rescue Sprinkle::VerificationFailed => e
             # Continue
@@ -259,15 +212,16 @@ module Sprinkle
         end
         
         process_verifications(deployment, roles)
+        logger.info "    --> INSTALLED for roles: #{roles}"
       end
       
       def process_verifications(deployment, roles, pre = false)
         return if @verifications.blank?
         
         if pre
-          logger.info "--> Checking if #{self.name} is already installed for roles: #{roles}"
+          logger.debug "--> Checking if #{self.name} is already installed for roles: #{roles}"
         else
-          logger.info "--> Verifying #{self.name} was properly installed for roles: #{roles}"
+          logger.debug "--> Verifying #{self.name} was properly installed for roles: #{roles}"
         end
         
         @verifications.each do |v|
@@ -275,46 +229,61 @@ module Sprinkle
           v.process(roles)
         end
       end
-
+      
+      def dependencies
+        @dependencies.map {|a,b| a }
+      end
+      
       def requires(*packages)
-        @dependencies << packages
-        @dependencies.flatten!
+        opts = packages.extract_options!
+        packages.each do |pack|
+          @dependencies << [pack, opts]
+        end
       end
 
       def recommends(*packages)
-        @recommends << packages
-        @recommends.flatten!
+        opts = packages.extract_options!
+        packages.each do |pack|
+          @recommends << [pack, opts]
+        end
+        @recommends.map {|a,b| a }
       end
 
       def optional(*packages)
-        @optional << packages
-        @optional.flatten!
+        opts = packages.extract_options!
+        packages.each do |pack|
+          @optional << [pack, opts]
+        end
+        @optional.map {|a,b| a }
       end
 
       def tree(depth = 1, &block)
         packages = []
 
-        @recommends.each do |dep|
+        @recommends.each do |dep, config|
           package = PACKAGES[dep]
           next unless package # skip missing recommended packages as they're allowed to not exist
+          package=package.instance(config)
           block.call(self, package, depth) if block
           packages << package.tree(depth + 1, &block)
         end
 
-        @dependencies.each do |dep|
+        @dependencies.each do |dep, config|
           package = PACKAGES[dep]
           package = select_package(dep, package) if package.is_a? Array
           
           raise "Package definition not found for key: #{dep}" unless package
+          package = package.instance(config)
           block.call(self, package, depth) if block
           packages << package.tree(depth + 1, &block)
         end
 
         packages << self
 
-        @optional.each do |dep|
+        @optional.each do |dep, config|
           package = PACKAGES[dep]
           next unless package # skip missing optional packages as they're allow to not exist
+          package = package.instance(config)
           block.call(self, package, depth) if block
           packages << package.tree(depth + 1, &block)
         end
@@ -323,8 +292,18 @@ module Sprinkle
       end
 
       def to_s; @name; end
+      
+      protected
+      
+      def install(i)
+        @installers << i
+      end
 
       private
+      
+        def cloud_info(message)
+          logger.info(message) if Sprinkle::OPTIONS[:cloud] or logger.debug?
+        end
 
         def select_package(name, packages)
           if packages.size <= 1

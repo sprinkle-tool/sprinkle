@@ -1,8 +1,6 @@
 module Sprinkle
   module Installers
-    # = Mac OS X Port Installer (macports)
-    #
-    # The Port installer installs macports ports.
+    # The MacPort installer installs macports ports.
     # 
     # == Example Usage
     #
@@ -13,17 +11,26 @@ module Sprinkle
     #   end
     #
     # == Notes
+    #
     # Before MacPorts packages can be installed, the PATH
     # environment variable probably has to be changed so
-    # capistrano can find the /opt/local/bin/port executable
+    # Sprinkle can find the /opt/local/bin/port executable
     #
     # You must set PATH in ~/.ssh/environment on the remote
     # system and enable 'PermitUserEnvironment yes' in /etc/sshd_config
+    #
     class MacPort < Installer
+      
+      api do
+        def mac_port(port, options={}, &block)
+          install Sprinkle::Installers::MacPort.new(self, port, options, &block)
+        end
+      end
+      
       attr_accessor :port #:nodoc:
 
-      def initialize(parent, port, &block) #:nodoc:
-        super parent, &block
+      def initialize(parent, port, options = {}, &block) #:nodoc:
+        super parent, options, &block
         @port = port
       end
 

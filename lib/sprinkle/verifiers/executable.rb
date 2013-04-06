@@ -26,7 +26,7 @@ module Sprinkle
         # Be smart: If the path includes a forward slash, we're checking
         # an absolute path. Otherwise, we're checking a global executable
         if path.include?('/')
-          @commands << "test -x #{path}"
+          test "-x #{path}"
         else
           @commands << "[ -n \"`echo \\`which #{path}\\``\" ]"
         end

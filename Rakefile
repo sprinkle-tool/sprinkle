@@ -2,6 +2,7 @@ require 'rubygems'
 require 'rake'
 require 'rspec/core/rake_task'
 require 'rdoc/task'
+require 'lib/sprinkle/version'
 
 task "inst" => [:clobber, :build] do
   puts `gem install pkg/sprinkle-*.gem`
@@ -24,7 +25,7 @@ RSpec::Core::RakeTask.new(:coverage) do |t|
 end
 
 RDoc::Task.new do |rdoc|
-  version = File.exist?('VERSION') ? File.read('VERSION') : ""
+  version = Sprinkle::Version
 
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = "sprinkle #{version}"

@@ -151,7 +151,7 @@ CODE
       pkg.installers.first.class.should == Sprinkle::Installers::Runner
       @installer = pkg.installers.first
       @install_commands = @installer.send :install_commands
-      @install_commands.should == 'echo noop'
+      @install_commands.should == ['echo noop']
     end
 
     it 'should optionally accept an group installer' do
@@ -395,6 +395,12 @@ CODE
     end
 
     it 'should be able to return a dependency hierarchy tree' do
+      @ai, @bi, @ci, @di, @ei = @a, @b, @c, @d, @e
+      @b.should_receive(:instance).any_number_of_times.and_return(@bi)
+      @c.should_receive(:instance).any_number_of_times.and_return(@ci)
+      @d.should_receive(:instance).any_number_of_times.and_return(@di)
+      @e.should_receive(:instance).any_number_of_times.and_return(@ei)
+      
       @a.tree.flatten.should == [ @d, @c, @b, @a ]
       @b.tree.flatten.should == [ @d, @c, @b ]
       @c.tree.flatten.should == [ @d, @c ]
@@ -435,7 +441,9 @@ CODE
     end
 
     it 'should maintain a depth count of how deep the hierarchy is' do
-      @b.should_receive(:tree).with(2).and_return([@b])
+      instance=mock
+      @b.should_receive(:instance).and_return(instance)
+      instance.should_receive(:tree).with(2).and_return([@b])
       @a.tree do; end
     end
 

@@ -84,16 +84,16 @@ module Sprinkle
     def process(roles, pre = false) #:nodoc:
       assert_delivery
       
-      description = @description.empty? ? @package.name : @description
+      description = @description.empty? ? " (#{@package.name})" : @description
       
       if logger.debug?
         logger.debug "#{@package.name}#{description} verification sequence: #{@commands.join('; ')} for roles: #{roles}\n"
       end
       
       unless Sprinkle::OPTIONS[:testing]
-        logger.info "#{" " * @options[:padding]}--> Verifying #{description}..."
+        logger.debug "#{" " * @options[:padding]}--> Verifying #{description}..."
         
-        unless @delivery.process(@package.name, @commands, roles, true)
+        unless @delivery.verify(self, roles)
           # Verification failed, halt sprinkling gracefully.
           raise Sprinkle::VerificationFailed.new(@package, description)
         end

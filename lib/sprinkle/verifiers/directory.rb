@@ -9,7 +9,7 @@ module Sprinkle
       
       # Tests that the directory <tt>dir</tt> exists.
       def has_directory(dir)
-        @commands << "test -d #{dir}"
+        test "-d #{dir}"
       end
     end
   end

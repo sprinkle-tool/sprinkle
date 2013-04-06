@@ -13,25 +13,12 @@ module Sprinkle
     #     zypper 'magic_beans'
     #   end
     #
-    # You may also specify multiple packages as an array:
-    #
-    #   package :magic_beans do
-    #     zypper %w(magic_beans magic_sauce)
-    #   end
-    #
-    # or an argument list:
+    # You may also specify multiple packages as an argument list or array:
     #
     #   package :magic_beans do
     #     zypper "magic_beans", "magic_sauce"
     #   end
-    class Zypper < Installer
-      attr_accessor :packages #:nodoc:
-
-      def initialize(parent, *packages, &block) #:nodoc:
-        packages.flatten!
-        super parent, &block
-        @packages = packages
-      end
+    class Zypper < PackageInstaller
 
       protected
 

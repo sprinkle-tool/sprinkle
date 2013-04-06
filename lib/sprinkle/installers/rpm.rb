@@ -10,6 +10,7 @@ module Sprinkle
     #
     #   package :magic_beans do
     #     rpm 'magic_beans'
+    #     verify { has_rpm 'magic_beans' }
     #   end
     #
     # You may also specify multiple rpms as an array:
@@ -17,13 +18,12 @@ module Sprinkle
     #   package :magic_beans do
     #     rpm %w(magic_beans magic_sauce)
     #   end
-    class Rpm < Installer
-      attr_accessor :packages #:nodoc:
-
-      def initialize(parent, packages, &block) #:nodoc:
-        super parent, &block
-        packages = [packages] unless packages.is_a? Array
-        @packages = packages
+    class Rpm < PackageInstaller
+      
+      verify_api do
+        def has_rpm(package)
+          @commands << "rpm -qa | grep #{package}"
+        end
       end
 
       protected

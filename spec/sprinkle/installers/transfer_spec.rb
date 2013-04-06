@@ -5,9 +5,9 @@ describe Sprinkle::Installers::Transfer do
   include Sprinkle::Deployment
 
   before do
-    @package = mock(Sprinkle::Package, :name => 'package')
+    @package = mock(Sprinkle::Package, :name => 'package', :sudo? => false)
     @empty = Proc.new { }
-    @delivery = mock(Sprinkle::Deployment, :process => true)
+    @delivery = mock(Sprinkle::Deployment, :install => true)
 		@source = 'source'
 		@destination = 'destination'
     @installer = create_transfer(@source, @destination)
@@ -33,26 +33,43 @@ describe Sprinkle::Installers::Transfer do
 
   describe 'during installation' do
 
+    context "setting mode and owner" do
+      before do 
+        @installer = create_transfer @source, @destination do
+          mode "744"
+          owner "root"
+        end
+        @installer_commands = @installer.install_sequence
+      end
+      
+      it "should include command to set owner" do
+        @installer_commands.should include("chmod 744 #{@destination}")
+      end
+      
+      it "should include command to set mode" do
+        @installer_commands.should include("chown root #{@destination}")
+      end
+      
+    end
+
     context 'single pre/post commands' do
       before do
         @installer = create_transfer @source, @destination do
           pre :install, 'op1'
           post :install, 'op2'
         end
-
+        @installer_commands = @installer.install_sequence
         @delivery = @installer.delivery
       end
 
       it "should call the pre and post install commands around the file transfer" do
-        @delivery.should_receive(:process).with(@package.name, ['op1'], @roles).and_return
-        @delivery.should_receive(:transfer).and_return
-        @delivery.should_receive(:process).with(@package.name, ['op2'], @roles).and_return
+        @installer_commands.should == ["op1",:TRANSFER, "op2"]
       end
 
-      it "should call transfer with recursive defaulted to nil" do
-        @delivery.should_receive(:process).and_return
-        @delivery.should_receive(:transfer).with(@package.name, @source, @destination, @roles, nil)
-      end
+      # it "should call transfer with recursive defaulted to nil" do
+      #   @delivery.should_receive(:process).and_return
+      #   @delivery.should_receive(:transfer).with(@package.name, @source, @destination, @roles, nil)
+      # end
 
     end
 
@@ -62,14 +79,12 @@ describe Sprinkle::Installers::Transfer do
           pre :install, 'op1', 'op1-1'
           post :install, 'op2', 'op2-1'
         end
-
+        @installer_commands = @installer.install_sequence
         @delivery = @installer.delivery
       end
 
       it "should call the pre and post install commands around the file transfer" do
-        @delivery.should_receive(:process).with(@package.name, ['op1', 'op1-1'], @roles).and_return
-        @delivery.should_receive(:transfer).and_return
-        @delivery.should_receive(:process).with(@package.name, ['op2', 'op2-1'], @roles).and_return
+        @installer_commands.should == ["op1","op1-1",:TRANSFER, "op2","op2-1"]
       end
 
     end
@@ -95,7 +110,7 @@ describe Sprinkle::Installers::Transfer do
 		it "should call transfer with recursive set to false" do
 			@tempfile = Tempfile.new("foo")
 			@installer.should_receive(:render_template_file).with(@source, anything, @package.name).and_return(@tempfile)
-			@delivery.should_receive(:transfer).with(@package.name, @tempfile.path, @destination, @roles, false).ordered.and_return
+			@installer.options[:recursive].should == false
 		end
 
 		after do
@@ -110,7 +125,7 @@ describe Sprinkle::Installers::Transfer do
 
 		it "should call transfer with recursive set to false" do
 			delivery = @installer.delivery
-			delivery.should_receive(:transfer).with(@package.name, @source, @destination, @roles, false).ordered.and_return
+			@installer.options[:recursive].should == false
 		end
 
 		after do

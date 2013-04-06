@@ -1,8 +1,6 @@
 module Sprinkle
   module Installers
-    # = Ruby Gem Package Installer
-    #
-    # The gem package installer installs ruby gems.
+    # The gem package installer installs Ruby gems.
     #
     # The installer has a single optional configuration: source.
     # By changing source you can specify a given ruby gems
@@ -29,6 +27,14 @@ module Sprinkle
     # block and calling the option as a method with the value as 
     # its parameter.
     class Gem < Installer
+      
+      api do
+        def gem(name, options = {}, &block)
+          @recommends << :rubygems
+          install Sprinkle::Installers::Gem.new(self, name, options, &block)
+        end
+      end
+      
       attr_accessor :gem #:nodoc:
 
       def initialize(parent, gem, options = {}, &block) #:nodoc:

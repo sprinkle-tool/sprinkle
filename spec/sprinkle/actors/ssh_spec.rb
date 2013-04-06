@@ -1,9 +1,15 @@
 require 'spec_helper'
 
-describe Sprinkle::Actors::Ssh do
+describe Sprinkle::Actors::SSH do
   describe 'process' do
     before do
       subject.stub(:gateway_defined?).and_return(false)
+    end
+    
+    subject do
+      Sprinkle::Actors::SSH.new do
+        role :app, "booger.com"
+      end
     end
 
     let(:commands) { %w[one two three] }
@@ -15,12 +21,7 @@ describe Sprinkle::Actors::Ssh do
       end
 
       it 'prepends "sudo" to each command' do
-        subject.should_receive(:process_direct).with(
-          'test',
-          ['sudo one', 'sudo two', 'sudo three'],
-          roles
-        )
-        subject.process('test', commands, roles)
+        subject.send(:prepare_commands,commands).should == ['sudo one', 'sudo two', 'sudo three']
       end
     end
 
@@ -30,12 +31,7 @@ describe Sprinkle::Actors::Ssh do
       end
 
       it 'does not prepend "sudo" to each command' do
-        subject.should_receive(:process_direct).with(
-          'test',
-          commands,
-          roles
-        )
-        subject.process('test', commands, roles)
+        subject.send(:prepare_commands,commands).should == commands
       end
     end
   end

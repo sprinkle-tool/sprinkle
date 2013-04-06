@@ -1,35 +1,79 @@
+require 'open4'
+
 module Sprinkle
   module Actors
-    # = Local Delivery Method
+    # The local actor executes all commands on your local system, as opposed to other 
+    # implementations that generally run commands on a remote system over the
+    # network.
     #
-    # This actor implementation performs any given commands on your local system, as
-    # opposed to other implementations that generally run commands on a remote system
-    # via the network.
-    #
-    # This is useful if you'd like to use Sprinkle to provision your local machine. 
-    # To enable this actor, in your Sprinkle script specify the :local delivery mechanism. 
+    # This could be useful if you'd like to use Sprinkle to provision your 
+    # local machine.  To enable this actor, in your Sprinkle script specify 
+    # the :local delivery mechanism. 
     #
     #   deployment do
     #     delivery :local
     #   end
     #
-    # Note, your local machine will be assumed to be a member of all roles when applying policies
-    #
+    # Note: The local actor completely ignores roles and behaves as if your
+    # local system was a member of all roles defined.
     class Local
       
-      def process(name, commands, roles, suppress_and_return_failures = false) #:nodoc:
+      class LocalCommandError < StandardError; end
+      
+      def install(installer, roles, opts = {}) #:nodoc:
+        # all local installer cares about is the commands
+        @installer = installer
+        process(installer.package.name, installer.install_sequence, roles)
+      rescue LocalCommandError => e
+        raise_error(e)
+      ensure
+        @installer = nil
+      end
+      
+      def verify(verifier, roles, opts = {}) #:nodoc:
+        process(verifier.package.name, verifier.commands, roles, :suppress_and_return_failures => true)
+      end
+      
+    protected
+      
+      def process(name, commands, roles, opts = {}) #:nodoc:
+        @log_recorder = Sprinkle::Utility::LogRecorder.new
         commands.each do |command|
-          system command
-          return false if $?.to_i != 0
+          if command == :RECONNECT
+            return true
+          elsif command == :TRANSFER
+            res = transfer(@installer.sourcepath, @installer.destination, roles,
+              :recursive => @installer.options[:recursive])
+            raise LocalCommandError if res != 0
+          else
+            res = run_command command
+            raise LocalCommandError if res != 0 and not opts[:suppress_and_return_failures]
+          end
         end
         return true
       end
       
-      def transfer(name, source, destination, roles, recursive = true, suppress_and_return_failures = false)
-        flags = "-R " if recursive
-
-        system "cp #{flags}#{source} #{destination}"
+      def run_command(cmd)
+        @log_recorder.reset cmd
+        pid, stdin, out, err = Open4.popen4(cmd)
+        ignored, status = Process::waitpid2 pid
+        @log_recorder.log :err, err.read
+        @log_recorder.log :out, out.read
+        @log_recorder.code = status.to_i
       end
+      
+      def raise_error(e)
+        raise Sprinkle::Errors::RemoteCommandFailure.new(@installer, @log_recorder.hash, e)
+      end
+      
+      def transfer(source, destination, roles, opts ={}) #:nodoc:
+			  opts.reverse_merge!(:recursive => true)
+				flags = "-R " if opts[:recursive]
+				
+				run_command "cp #{flags}#{source} #{destination}"
+			end
+      
+      
     end
   end
 end

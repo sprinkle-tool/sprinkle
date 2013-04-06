@@ -52,22 +52,22 @@ describe Sprinkle::Installers::Source do
 
     before do
       @settings = { :prefix => '/usr/local', :archives => '/usr/local/tmp', :builds => '/usr/local/stage' }
+      @settings.each { |k, v| @installer.send k, v }
     end
 
     it 'should fail if no installation area has been specified' do
-      @settings.delete(:prefix)
+      @installer.options[:prefix] = nil
     end
 
     it 'should fail if no build area has been specified' do
-      @settings.delete(:builds)
+      @installer.options[:builds] = nil
     end
 
     it 'should fail if no source download area has been specified' do
-      @settings.delete(:archives)
+      @installer.options[:archives] = nil
     end
 
     after do
-      @settings.each { |k, v| @installer.send k, v }
       lambda { @installer.install_sequence }.should raise_error
     end
 

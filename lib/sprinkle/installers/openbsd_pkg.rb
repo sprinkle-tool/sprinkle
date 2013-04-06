@@ -1,8 +1,6 @@
 module Sprinkle
   module Installers
-    # = OpenBSD Package Installer
-    #
-    # The Pkg package installer installs OpenBSD packages.
+    # The OpenBSD package installer installs OpenBSD packages.
     # 
     # == Example Usage
     #
@@ -27,14 +25,7 @@ module Sprinkle
     # 
     # For help on PKG_PATH see section 15.2.2 of the OpenBSD FAQ 
     # (http://www.openbsd.org/faq/faq15.html)
-    class OpenbsdPkg < Installer
-      attr_accessor :packages #:nodoc:
-
-      def initialize(parent, packages, &block) #:nodoc:
-        super parent, &block
-        packages = [packages] unless packages.is_a? Array
-        @packages = packages
-      end
+    class OpenbsdPkg < PackageInstaller
 
       protected
 

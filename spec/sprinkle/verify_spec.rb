@@ -18,6 +18,9 @@ describe Sprinkle::Verify do
         # Check a directory exists
         has_directory 'mydir'
         
+        # generic test
+        test "`version` == \"one\""
+        
         # Check for a user
         has_user "bob"
         
@@ -82,6 +85,10 @@ describe Sprinkle::Verify do
 
     it 'should do a "test -d" on the has_directory check' do
       @verification.commands.should include('test -d mydir')
+    end
+    
+    it 'should include the generic test' do
+      @verification.commands.should include("test `version` == \"one\"")
     end
     
     it 'should use id to check for user in group' do
@@ -157,12 +164,12 @@ describe Sprinkle::Verify do
       end
 
       it 'should call process on the delivery with the correct parameters' do
-        @delivery.should_receive(:process).with(@name, @verification.commands, [:app], true).once.and_return(true)
+        @delivery.should_receive(:verify).with(@verification, [:app]).once.and_return(true)
         @verification.process([:app])
       end
 
       it 'should raise Sprinkle::VerificationFailed exception when commands fail' do
-        @delivery.should_receive(:process).once.and_return(false)
+        @delivery.should_receive(:verify).once.and_return(false)
         lambda { @verification.process([:app]) }.should raise_error(Sprinkle::VerificationFailed) do |error|
           error.package.should eql(@package)
           error.description.should eql('moo')

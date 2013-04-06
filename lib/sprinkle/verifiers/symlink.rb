@@ -20,9 +20,9 @@ module Sprinkle
       # given, it checks that <tt>symlink</tt> points to <tt>file</tt>
       def has_symlink(symlink, file = nil)
         if file.nil?
-          @commands << "test -L #{symlink}"
+          test "-L #{symlink}"
         else
-          @commands << "test '#{file}' = `readlink #{symlink}`"
+          test "'#{file}' = `readlink #{symlink}`"
         end
       end
     end

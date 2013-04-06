@@ -4,20 +4,8 @@ module Sprinkle
       Sprinkle::Verify.register(Sprinkle::Verifiers::Package)
 
       def has_package(*packages)
-        if packages.is_a?(Array) && packages.first.is_a?(Array)
-          packages = packages.first
-        else
-          packages = [packages] unless packages.is_a? Array
-        end
-
-        packages.each do |pak|
-          case Sprinkle::Installers::InstallPackage.installer
-            when :yum
-              @commands << "[ -n \"`yum list installed #{pak} 2> /dev/null | egrep -e \\\"#{pak}\\\"`\" ]"
-            else
-              raise "Unknown InstallPackage.installer"
-          end
-        end
+        puts "has_package and has_packages are depreciated"
+        raise "please use has_yum and friends instead"
       end
 
       alias_method :has_packages, :has_package  

@@ -1,5 +1,5 @@
 require 'rubygems'
-require 'active_support'
+require 'active_support/all'
 
 # Use active supports auto load mechanism
 require 'active_support/version'
@@ -14,10 +14,14 @@ end
 #ActiveSupport::Dependencies::RAILS_DEFAULT_LOGGER = Logger.new($stdout)
 #ActiveSupport::Dependencies.log_activity = true
 
+require File.dirname(__FILE__) + "/sprinkle/version.rb"
+
 # Load up extensions to existing classes
 Dir[File.dirname(__FILE__) + '/sprinkle/extensions/*.rb'].each { |e| require e }
 # Load up the verifiers so they can register themselves
 Dir[File.dirname(__FILE__) + '/sprinkle/verifiers/*.rb'].each { |e| require e }
+# Load up the installers so they can register themselves
+Dir[File.dirname(__FILE__) + '/sprinkle/installers/*.rb'].each { |e| require e }
 
 # Configuration options
 module Sprinkle
