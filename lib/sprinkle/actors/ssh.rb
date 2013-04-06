@@ -136,7 +136,7 @@ module Sprinkle
           end
         end
         
-        def prepared_commands
+        def prepare_commands(commands)
           return commands unless @options[:use_sudo]
           commands.map do |command| 
             next command if command.is_a?(Symbol)
@@ -147,7 +147,7 @@ module Sprinkle
         def execute_on_host(commands,host) #:nodoc:
           session = ssh_session(host)
           @log_recorder = Sprinkle::Utility::LogRecorder.new
-          prepared_commands.each do |cmd|
+          prepare_commands(commands).each do |cmd|
             if cmd == :TRANSFER
               transfer_to_host(@installer.sourcepath, @installer.destination, session, 
                 :recursive => @installer.options[:recursive])
