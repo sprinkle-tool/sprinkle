@@ -5,9 +5,10 @@ PATH
       activesupport (>= 2.0.2)
       capistrano (>= 2.5.5)
       highline (>= 1.4.0)
+      open4 (>= 1.1.0)
 
 GEM
-  remote: http://rubygems.org/
+  remote: https://rubygems.org/
   specs:
     activesupport (3.2.13)
       i18n (= 0.6.1)
@@ -30,6 +31,7 @@ GEM
     net-ssh (2.6.6)
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
+    open4 (1.1.0)
     rake (10.0.4)
     rdoc (3.12)
       json (~> 1.4)
