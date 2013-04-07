@@ -166,13 +166,6 @@ module Sprinkle
         raise ContextError, "Cannot call get inside a package, must be inside an Installer block"
       end
       
-      PKG_FORMATS = %w{apt brew deb rpm yum zypper freebsd_pkg openbsd_pkg opensolaris_pkg pacman}
-      PKG_FORMATS.each do |format|
-        eval "def #{format}(*names, &block)
-          @installers << Sprinkle::Installers::#{format.classify}.new(self, *names, &block)
-        end"
-      end
-
       def noop(&block)
         install Sprinkle::Installers::Runner.new(self, "echo noop", &block)
       end
@@ -297,6 +290,7 @@ module Sprinkle
       
       def install(i)
         @installers << i
+        i
       end
 
       private

@@ -19,6 +19,8 @@ module Sprinkle
     #     zypper "magic_beans", "magic_sauce"
     #   end
     class Zypper < PackageInstaller
+      
+      auto_api
 
       protected
 

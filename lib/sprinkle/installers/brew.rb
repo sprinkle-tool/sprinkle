@@ -20,7 +20,7 @@ module Sprinkle
       api do
         def brew(*names, &block)
           @recommends << :homebrew
-          install Sprinkle::Installers::Brew.new(self, *names, &block)
+          install_package(*names, &block)
         end
       end
       

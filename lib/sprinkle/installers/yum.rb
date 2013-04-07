@@ -18,6 +18,8 @@ module Sprinkle
     #   end
     class Yum < PackageInstaller
 
+      auto_api
+
       verify_api do
         def has_yum(package)
           @commands << "yum list installed #{package} | grep ^#{package}"

@@ -11,6 +11,8 @@ module Sprinkle
     #   end
     #
     class Deb < PackageInstaller
+      
+      auto_api
 
       protected
 

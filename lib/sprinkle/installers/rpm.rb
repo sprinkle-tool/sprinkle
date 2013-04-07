@@ -19,6 +19,8 @@ module Sprinkle
     #     rpm %w(magic_beans magic_sauce)
     #   end
     class Rpm < PackageInstaller
+
+      auto_api
       
       verify_api do
         def has_rpm(package)

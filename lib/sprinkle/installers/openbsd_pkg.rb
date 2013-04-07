@@ -26,6 +26,8 @@ module Sprinkle
     # For help on PKG_PATH see section 15.2.2 of the OpenBSD FAQ 
     # (http://www.openbsd.org/faq/faq15.html)
     class OpenbsdPkg < PackageInstaller
+      
+      auto_api
 
       protected
 

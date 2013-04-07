@@ -31,6 +31,8 @@ module Sprinkle
         super parent, *packages, &block
         @options.reverse_merge!(:dependencies_only => false)
       end
+
+      auto_api
       
       verify_api do
         def has_apt(package)

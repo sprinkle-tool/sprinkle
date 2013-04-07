@@ -17,6 +17,8 @@ module Sprinkle
     #   end
     #
     class FreebsdPkg < PackageInstaller
+      
+      auto_api
 
       protected
 

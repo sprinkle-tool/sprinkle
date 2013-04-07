@@ -2,6 +2,8 @@ module Sprinkle
   module Installers
     # The pacman installer installs Pacman packages
     class Pacman < PackageInstaller
+      
+      auto_api
 
       protected
 

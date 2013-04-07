@@ -3,11 +3,17 @@ require File.expand_path("../../spec_helper", File.dirname(__FILE__))
 describe Sprinkle::Installers::Apt do
 
   before do
-    @package = mock(Sprinkle::Package, :name => 'package', :sudo? => false)
+    @package = create_pkg "name", :use_sudo => false
+  end
+  
+  def create_pkg(name="name", opts={})
+    @package = Sprinkle::Package::Package.new(name) {}
+    @package.use_sudo opts[:use_sudo]
+    @package
   end
 
   def create_apt(*debs, &block)
-    Sprinkle::Installers::Apt.new(@package, *debs, &block)
+    installer=@package.apt *debs, &block
   end
 
   describe 'when created' do
@@ -41,13 +47,14 @@ describe Sprinkle::Installers::Apt do
     end
     
     it 'should use sudo if package specifies' do
-      @package = mock(Sprinkle::Package, :name => 'package', :sudo? => true)
+      @package = create_pkg "name", :use_sudo => true
       @installer = create_apt 'ruby'
       @install_commands = @installer.send :install_commands
       @install_commands.should =~ /sudo apt-get/
     end
     
     it 'should use sudo if installer specifies' do
+      @package = create_pkg "name", :use_sudo => false
       @installer = create_apt 'ruby', :sudo => true
       @install_commands = @installer.send :install_commands
       @install_commands.should =~ /sudo apt-get/

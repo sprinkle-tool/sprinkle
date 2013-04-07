@@ -23,6 +23,8 @@ module Sprinkle
     #   set :sudo, 'pfexec'
     #   set :sudo_prompt, ''
     class OpensolarisPkg < PackageInstaller
+      
+      auto_api
 
       protected
 
