@@ -23,7 +23,7 @@ module Sprinkle
       verify_api do
         def has_user(user, opts = {})
           if opts[:in_group]
-            @commands << "id -G #{user} | xargs -n1 echo | grep #{opts[:in_group]}"
+            @commands << "id -nG #{user} | xargs -n1 echo | grep #{opts[:in_group]}"
           else
             @commands << "id #{user}"
           end
