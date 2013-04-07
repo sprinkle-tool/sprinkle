@@ -5,3 +5,4 @@ pkg
 .*.swp
 coverage/*
 rdoc
+.ruby-version
