@@ -2,7 +2,7 @@ require 'rubygems'
 require 'rake'
 require 'rspec/core/rake_task'
 require 'rdoc/task'
-require 'lib/sprinkle/version'
+require './lib/sprinkle/version'
 
 task "inst" => [:clobber, :build] do
   puts `gem install pkg/sprinkle-*.gem`
