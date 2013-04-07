@@ -91,8 +91,8 @@ describe Sprinkle::Verify do
       @verification.commands.should include("test `version` == \"one\"")
     end
     
-    it 'should use id to check for user in group' do
-      @verification.commands.should include("id -G alf | xargs -n1 echo | grep alien")
+    it 'should use to check for user in group' do
+      @verification.commands.should include("id -nG alf | xargs -n1 echo | grep alien")
     end
     
     it 'should use id to check for user' do
