@@ -8,6 +8,8 @@ describe Sprinkle::Installers::PushText do
   end
 
   def create_text(text, path, options={}, &block)
+    # the old default
+    options.reverse_merge!(:idempotent => false)
     Sprinkle::Installers::PushText.new(@package, text, path, options, &block)
   end
 
@@ -29,6 +31,16 @@ describe Sprinkle::Installers::PushText do
         post :install, 'op2'
       end
       @install_commands = @installer.send :install_commands
+    end
+    
+    describe 'with idempotent' do
+      before do
+        @installer = create_text 'another-hair-brained-idea', '/dev/mind/late-night', :idempotent => true
+        @install_commands = @installer.send :install_commands
+      end
+      it "should grep for existing of the string" do
+        @install_commands.should == %q[grep "^another-hair-brained-idea$" /dev/mind/late-night || /bin/echo -e 'another-hair-brained-idea' |tee -a /dev/mind/late-night]
+      end
     end
     
     describe 'with sudo' do
