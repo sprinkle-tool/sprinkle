@@ -1,7 +1,13 @@
-# SPRINKLE
+# Sprinkle
+
+Sprinkle is a software provisioning tool you can use to build remote servers with, after the base operating
+system has been installed. For example, to install a Rails or Merb stack on a brand new slice directly after
+its been created.
+
+[![Build Status](https://travis-ci.org/sprinkle-tool/sprinkle.png?branch=master)](https://travis-ci.org/sprinkle-tool/sprinkle)
 
   * <http://redartisan.com/2008/5/27/sprinkle-intro>
-  * <http://github.com/crafterm/sprinkle>
+  * <http://github.com/sprinkle-tool/sprinkle>
   * <http://github.com/benschwarz/passenger-stack>
   * <http://github.com/trevorturk/sprinkle-packages>
   * <http://www.vimeo.com/2888665>
@@ -10,19 +16,13 @@
   * <http://github.com/stuartellis/spritz>
   * <http://engineering.gomiso.com/2011/08/26/forget-chef-or-puppet-automate-with-sprinkle/>
 
-  [![Build Status](https://travis-ci.org/crafterm/sprinkle.png?branch=master)](https://travis-ci.org/crafterm/sprinkle)
-
-## DESCRIPTION:
-
-Sprinkle is a software provisioning tool you can use to build remote servers with, after the base operating
-system has been installed. For example, to install a Rails or Merb stack on a brand new slice directly after
-its been created.
+### Packages
 
 Properties of packages such as their name, type, dependencies, etc, and what packages apply to what machines
 is described via a domain specific language that Sprinkle executes (in fact one of the aims of Sprinkle is to
 define as concisely as possible a language for installing software).
 
-An example package description follows:
+An example:
 
 ``` ruby
 package :ruby do
@@ -37,10 +37,8 @@ package :ruby do
 end
 ```
 
-This defines a package called `'ruby'`, that uses the source based installer to build Ruby 1.8.6 from source,
-installing the package `'ruby_dependencies'` beforehand. Additionally, the package verifies it was installed
-correctly by verifying the file `'/usr/bin/ruby'` exists after installation. If this verification fails, the
-sprinkle script will gracefully stop.
+This defines a package called `ruby`, that uses the source based installer to build Ruby 1.8.6 from source,
+installing the package `ruby_dependencies` beforehand. The package verifies it was installed correctly by verifying the file `/usr/bin/ruby` exists after installation. If this verification fails, the sprinkle script will gracefully stop.
 
 Reasonable defaults are set by sprinkle, such as the install prefix, download area, etc, but can be customized
 globally or per package (see below for an example).
@@ -55,13 +53,13 @@ of changing installer types as software is updated upstream.
 Sprinkle also supports dependencies between packages, allowing you specify pre-requisites that need to be
 installed in order.
 
-Packages can be grouped into polices to define several packages that should be installed together.
+### Policies
 
-An example policy:
+Packages can be grouped into polices to define several packages that should be installed together.  An example:
 
 ``` ruby
 policy :rails, :roles => :app do
-  requires :rails, :version => '2.1.0'
+  requires :rails_32
   requires :appserver
   requires :database
   requires :webserver
@@ -69,17 +67,27 @@ end
 ```
 
 This defines a policy called Rails, that applies to machines of role `:app`. The policy includes the packages
-rails (version 2.1.0), appserver, database and webserver.
+rails (version 3.2), appserver, database and webserver.
 
-appserver, database and webserver can be virtual packages, where the user will be prompted for selection if
-multiple choices for the virtual package exist.
+The appserver, database and webserver packages can also be virtual, prompting the user for selection if multiple choices for the virtual package exist.
 
 Sprinkle is architected to be extendable in many ways, one of those areas is in its deployment of commands to
 remote hosts. Currently Sprinkle supports the use of Capistrano, Vlad, or a direct net/ssh connection to
 issue commands on remote hosts via ssh, but could also be extended to use any other command transport mechanism
 desired. Sprinkle can also be configured to simply issue installation commands to provision the local system.
 
-An full example Sprinkle deployment script for deploying Rails (via gems), MySQL (via APT), Apache (via source)
+Sprinkle is a work in progress and I'm excited to hear if anyone finds it useful - please feel free to
+comment, ask any questions, or send in any ideas, patches, bugs. All most welcome.
+
+Marcus Crafter - <crafterm@redartisan.com>
+
+----
+
+## APPENDIX 
+
+### A full example deployment
+
+A full example Sprinkle deployment script for deploying Rails (via gems), MySQL (via APT), Apache (via source)
 and Git (via source with dependencies from APT):
 
 ``` ruby
@@ -151,10 +159,10 @@ package :rubygems do
   requires :ruby
 end
 
-package :rails do
+package :rails_32 do
   description 'Ruby on Rails'
   gem 'rails'
-  version '2.1.0'
+  version '3.2'
 end
 
 package :mongrel do
@@ -190,7 +198,7 @@ end
 # the user is requested to select which one to use.
 
 policy :rails, :roles => :app do
-  requires :rails, :version => '2.1.0'
+  requires :rails
   requires :appserver
   requires :database
   requires :webserver
@@ -221,10 +229,5 @@ end
 ```
 
 Please see the examples directory for more complete examples of Sprinkle deployment scripts, and 
-also the [Passenger Stack github page](http://github.com/benschwarz/passenger-stack) and video by 
-(Ben Schwarz)[http://www.vimeo.com/2888665].
-
-Sprinkle is a work in progress and I'm excited to hear if anyone finds it useful - please feel free to
-comment, ask any questions, or send in any ideas, patches, bugs. All most welcome.
-
-Marcus Crafter <crafterm@redartisan.com>
+also the [Passenger Stack github page](http://github.com/benschwarz/passenger-stack) and [video by 
+Ben Schwarz](http://www.vimeo.com/2888665).
