@@ -15,7 +15,7 @@ module Sprinkle
         
         api do
           def pear(package, &block)
-            install Sprinkle::Installers::Pear.new(self, package, &block)
+            install Pear.new(self, package, &block)
           end
         end
         

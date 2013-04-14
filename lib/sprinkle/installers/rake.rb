@@ -15,7 +15,7 @@ module Sprinkle
       
       api do
         def rake(name, options = {}, &block)
-          install Sprinkle::Installers::Rake.new(self, name, options, &block)
+          install Rake.new(self, name, options, &block)
         end    
       end
       

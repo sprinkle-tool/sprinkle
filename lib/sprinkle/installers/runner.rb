@@ -20,7 +20,7 @@ module Sprinkle
       api do
         def runner(*cmds, &block)
           options = cmds.extract_options!
-          install Sprinkle::Installers::Runner.new(self, cmds, options, &block)
+          install Runner.new(self, cmds, options, &block)
         end
       end
       

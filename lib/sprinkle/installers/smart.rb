@@ -4,7 +4,7 @@ module Sprinkle
       
       api do
         def smart(*names, &block)
-          install Sprinkle::Installers::Smart.new(self, *names, &block)
+          install Smart.new(self, *names, &block)
         end
       end
 

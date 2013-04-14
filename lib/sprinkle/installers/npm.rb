@@ -17,7 +17,7 @@ module Sprinkle
         
         api do
           def npm(package, &block)
-            install Sprinkle::Installers::Npm.new(self, package, &block)
+            install Npm.new(self, package, &block)
           end
         end
         

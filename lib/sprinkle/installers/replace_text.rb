@@ -28,7 +28,7 @@ module Sprinkle
       
       api do
         def replace_text(regex, text, path, options={}, &block)
-          install Sprinkle::Installers::ReplaceText.new(self, regex, text, path, options, &block)
+          install ReplaceText.new(self, regex, text, path, options, &block)
         end
       end
 

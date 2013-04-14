@@ -16,7 +16,7 @@ module Sprinkle
       
       api do
         def add_user(username, options={},  &block)
-          install Sprinkle::Installers::User.new(self, username, options, &block)
+          install User.new(self, username, options, &block)
         end
       end
       

@@ -23,7 +23,7 @@ module Sprinkle
       
       api do
         def thor(name, options = {}, &block)
-          install Sprinkle::Installers::Thor.new(self, name, options, &block)
+          install Thor.new(self, name, options, &block)
         end  
       end
       

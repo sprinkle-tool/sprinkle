@@ -23,7 +23,7 @@ module Sprinkle
       
       api do
         def mac_port(port, options={}, &block)
-          install Sprinkle::Installers::MacPort.new(self, port, options, &block)
+          install MacPort.new(self, port, options, &block)
         end
       end
       

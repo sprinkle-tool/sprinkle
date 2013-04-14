@@ -35,7 +35,7 @@ module Sprinkle
       
       api do
         def push_text(text, path, options = {}, &block)
-          install Sprinkle::Installers::PushText.new(self, text, path, options, &block)
+          install PushText.new(self, text, path, options, &block)
         end
       end
 

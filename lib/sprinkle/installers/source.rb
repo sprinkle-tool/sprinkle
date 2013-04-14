@@ -81,7 +81,7 @@ module Sprinkle
       api do
         def source(source, options = {}, &block)
           @recommends << :build_essential # Ubuntu/Debian
-          install Sprinkle::Installers::Source.new(self, source, options, &block)
+          install Source.new(self, source, options, &block)
         end
       end
 

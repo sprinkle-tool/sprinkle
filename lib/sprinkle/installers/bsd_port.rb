@@ -17,7 +17,7 @@ module Sprinkle
       
       api do
         def bsd_port(port, options ={}, &block)
-          install Sprinkle::Installers::BsdPort.new(self, port, options, &block)
+          install BsdPort.new(self, port, options, &block)
         end
       end
 

@@ -16,7 +16,7 @@ module Sprinkle
       
       api do
         def binary(source, options = {}, &block)
-          install Sprinkle::Installers::Binary.new(self, source, options, &block)
+          install Binary.new(self, source, options, &block)
         end
       end
       

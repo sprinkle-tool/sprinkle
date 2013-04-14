@@ -22,7 +22,7 @@ module Sprinkle
       
       api do
         def freebsd_portinstall(port, options={}, &block)
-          install Sprinkle::Installers::FreebsdPortinstall.new(self, port, options, &block)
+          install FreebsdPortinstall.new(self, port, options, &block)
         end
       end
 

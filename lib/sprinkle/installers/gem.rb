@@ -31,7 +31,7 @@ module Sprinkle
       api do
         def gem(name, options = {}, &block)
           @recommends << :rubygems
-          install Sprinkle::Installers::Gem.new(self, name, options, &block)
+          install Gem.new(self, name, options, &block)
         end
       end
       

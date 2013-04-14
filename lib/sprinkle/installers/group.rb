@@ -15,7 +15,7 @@ module Sprinkle
       
       api do
         def add_group(group, options={},  &block)
-          install Sprinkle::Installers::Group.new(self, group, options, &block)
+          install Group.new(self, group, options, &block)
         end
       end
       

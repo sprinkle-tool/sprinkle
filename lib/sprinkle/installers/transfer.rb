@@ -89,7 +89,7 @@ module Sprinkle
       api do
         def transfer(source, destination, options = {}, &block)
           options.merge!(:binding => binding())
-          install Sprinkle::Installers::Transfer.new(self, source, destination, options, &block)
+          install Transfer.new(self, source, destination, options, &block)
         end
       end
 
