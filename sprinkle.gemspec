@@ -9,7 +9,7 @@ Gem::Specification.new do |s|
   s.email = "crafterm@redartisan.com"
   s.executables = ["sprinkle"]
   s.extra_rdoc_files = [
-    "README.markdown"
+    "README.md"
   ]
   
   s.files         = `git ls-files`.split("\n")
