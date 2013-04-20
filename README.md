@@ -6,6 +6,7 @@ its been created.
 
 [![Build Status](https://travis-ci.org/sprinkle-tool/sprinkle.png?branch=master)](https://travis-ci.org/sprinkle-tool/sprinkle)
 
+  * `#sprinkle` channel on the Freenode IRC Network
   * <http://redartisan.com/2008/5/27/sprinkle-intro>
   * <http://github.com/sprinkle-tool/sprinkle>
   * <http://github.com/benschwarz/passenger-stack>
