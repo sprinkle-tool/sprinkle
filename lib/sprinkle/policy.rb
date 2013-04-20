@@ -80,7 +80,7 @@ module Sprinkle
         cloud_info "--> Cloud hierarchy for policy #{@name}"
 
         @packages.each do |p, args|
-          cloud_info "\nPolicy #{@name} requires package #{p}"
+          cloud_info "  * requires package #{p}"
 
           package = Sprinkle::Package::PACKAGES[p]
           raise "Package definition not found for key: #{p}" unless package
@@ -124,7 +124,7 @@ module Sprinkle
 
         def normalize(all, &block)
           all = all.flatten.uniq
-          cloud_info "\n--> Normalized installation order for all packages: #{all.collect(&:name).join(', ')}"
+          cloud_info "--> Normalized installation order for all packages: #{all.collect(&:name).join(', ')}\n"
           all.each &block
         end
     end
