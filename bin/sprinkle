@@ -68,6 +68,7 @@ end
 
 def only_role(options)
   role=OPTIONS[:only_role]
+  return if role.blank?
   Sprinkle::OPTIONS[:only_role] = role
   puts "Only running policies for :#{role}"
 end
