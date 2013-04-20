@@ -4,6 +4,9 @@
 package :ruby_enterprise do
   description 'Ruby Enterprise Edition'
   version '1.8.6-20080810'
+  requires :apache
+  requires :passenger
+  
   source 'http://rubyforge.org/frs/download.php/41040/ruby-enterprise-1.8.6-20080810.tar.gz' do
     custom_install 'echo -en "\n\n\n\n" | ./installer'
     
@@ -18,13 +21,13 @@ package :ruby_enterprise do
     has_directory '/opt/ruby-enterprise-1.8.6-20080810'
     has_executable '/opt/ruby-enterprise-1.8.6-20080810/bin/ruby'
   end
-  
-  requires :apache
-  requires :passenger
 end
 
 package :passenger, :provides => :appserver do
   description 'Phusion Passenger (mod_rails)'
+  requires :apache
+  requires :apache2_prefork_dev
+  
   gem 'passenger' do
     post :install, 'echo -en "\n\n\n\n" | passenger-install-apache2-module'
     
@@ -48,8 +51,5 @@ package :passenger, :provides => :appserver do
     has_file '/etc/apache2/extras/passenger.conf'
     has_file '/usr/lib/ruby/gems/1.8/gems/passenger-2.0.3/ext/apache2/mod_passenger.so'
     has_directory '/usr/lib/ruby/gems/1.8/gems/passenger-2.0.3'
-  end
-  
-  requires :apache
-  requires :apache2_prefork_dev
+  end  
 end

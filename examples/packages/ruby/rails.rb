@@ -1,7 +1,8 @@
 package :rails do
   description 'Ruby on Rails'
+  version '3.2'
+  
   gem 'rails'
-  version '2.1.0'
   
   verify do
     has_executable 'rails'
