@@ -13,7 +13,7 @@ module Sprinkle
     #   end
     #
     # If you user has access to 'sudo' and theres a file that requires
-    # priveledges, you can pass :sudo => true 
+    # privileges, you can pass :sudo => true 
     #
     #   package :magic_beans do
     #     replace_text 'Port 22', 'Port 2500', '/etc/ssh/sshd_config', :sudo => true
@@ -46,7 +46,7 @@ module Sprinkle
       protected
       
         def install_commands #:nodoc:
-          "#{'sudo ' if option?(:sudo)}sed -i 's/#{escape_sed_arg(@regex)}/#{escape_sed_arg(@text)}/g' #{@path}"
+          "#{sudo_cmd}sed -i 's/#{escape_sed_arg(@regex)}/#{escape_sed_arg(@text)}/g' #{@path}"
         end
 
         def escape_sed_arg str
