@@ -54,7 +54,7 @@ module Sprinkle
       protected
 
         def install_commands #:nodoc:
-          escaped_text = @text.gsub("'", "'\\\\''").gsub("\n", '\n')
+          escaped_text = escape_shell_arg(@text)
           escaped_regex = Regexp.escape(@text)
           command = ""
           command << "#{sudo_cmd}grep -qPzo '^#{escaped_regex}$' #{@path} || " if option?(:idempotent)

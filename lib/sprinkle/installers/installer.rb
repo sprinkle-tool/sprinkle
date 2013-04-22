@@ -82,11 +82,15 @@ module Sprinkle
       def sudo_cmd
         "sudo " if sudo?
       end
-      
+
       def sudo?
         options[:sudo] or package.sudo?
       end
-            
+
+      def escape_shell_arg(str)
+        str.gsub("'", "'\\\\''").gsub("/", "\\\\/").gsub("\n", '\n').gsub('&', '\\\&')
+      end
+
       def pre(stage, *commands)
         @pre[stage] ||= []
         @pre[stage] += commands

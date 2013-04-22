@@ -3,8 +3,7 @@ require File.expand_path("../../spec_helper", File.dirname(__FILE__))
 describe Sprinkle::Installers::ReplaceText do
 
   before do
-    @package = mock(Sprinkle::Package, :name => 'package')
-    @options = {:sudo => true}
+    @package = mock(Sprinkle::Package, :name => 'package', :sudo? => false)
   end
 
   def create_replacement_text(regex, text, path, options={}, &block)
