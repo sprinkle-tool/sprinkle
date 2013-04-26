@@ -37,6 +37,9 @@ class Object
   include Sprinkle::Package, Sprinkle::Policy, Sprinkle::Deployment
 
   def logger # :nodoc:
-    @@__log__ ||= ActiveSupport::BufferedLogger.new($stdout, ActiveSupport::BufferedLogger::Severity::INFO)
+    # ActiveSupport::BufferedLogger was deprecated and replaced by ActiveSupport::Logger in Rails 4.
+    # Use ActiveSupport::Logger if available.
+    active_support_logger = defined?(ActiveSupport::Logger) ? ActiveSupport::Logger : ActiveSupport::BufferedLogger
+    @@__log__ ||= active_support_logger.new($stdout, active_support_logger::Severity::INFO)
   end
 end

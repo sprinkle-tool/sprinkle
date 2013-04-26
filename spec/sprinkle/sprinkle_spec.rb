@@ -15,11 +15,17 @@ describe Sprinkle do
   it 'should automatically create a logger object on Kernel' do
     Object.should respond_to(:logger)
     logger.should_not be_nil
-    logger.class.should == ActiveSupport::BufferedLogger
+    # ActiveSupport::BufferedLogger was deprecated and replaced by ActiveSupport::Logger in Rails 4.
+    # Use ActiveSupport::Logger if available.
+    active_support_logger = defined?(ActiveSupport::Logger) ? ActiveSupport::Logger : ActiveSupport::BufferedLogger
+    logger.class.should == active_support_logger
   end
 
   it 'should create a logger of level INFO' do
-    logger.level.should == ActiveSupport::BufferedLogger::Severity::INFO
+    # ActiveSupport::BufferedLogger was deprecated and replaced by ActiveSupport::Logger in Rails 4.
+    # Use ActiveSupport::Logger if available.
+    active_support_logger = defined?(ActiveSupport::Logger) ? ActiveSupport::Logger : ActiveSupport::BufferedLogger
+    logger.level.should == active_support_logger::Severity::INFO
   end
 
 end
