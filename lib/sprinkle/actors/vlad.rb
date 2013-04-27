@@ -25,7 +25,7 @@ module Sprinkle
       
       def servers_for_role?
         raise "The vlad actor needs a maintainer.  "+
-        "Please file an issue on github.com/sprinkle-tool/spinkle if you can help."
+        "Please file an issue on github.com/sprinkle-tool/sprinkle if you can help."
       end
 
       # Defines a script file which will be included by vlad. Use these
