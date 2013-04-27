@@ -1,8 +1,10 @@
 = CREDITS
 
-Many thanks to the following people who have submitted ideas, patches, helped with testing
-and/or generally provided support to Sprinkle, I really appreciate your help:
+Many thanks to the following people who have submitted ideas, patches, helped with 
+testing and/or generally provided support to Sprinkle, I really appreciate your help:
 
+Koen Punt              (http://github.com/koenpunt)
+Manuel Meurer          (http://github.com/manuelmeurer)
 Kristin Baumann        (http://crafterm.net/kristin/blog/)
 Ben Schwarz            (http://germanforblack.com/)
 Jim Freeze             (http://www.artima.com/rubycs/articles/ruby_as_dslP.html)
@@ -31,4 +33,5 @@ Geoff Garside          (http://geoffgarside.co.uk/)
 Oliver Kiessler        (http://inceedo.com)
 Nick Plante            (http://blog.zerosum.org)
 
-The transfer installer contains a piece of exception reporting code copied from the Chef library (http://wiki.opscode.com/display/chef/Home)
+The transfer installer contains a piece of exception reporting code copied from 
+the Chef library (http://wiki.opscode.com/display/chef/Home)
