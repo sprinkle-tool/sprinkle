@@ -16,9 +16,13 @@ module Sprinkle
     #
     # Note: The local actor completely ignores roles and behaves as if your
     # local system was a member of all roles defined.
-    class Local
+    class Local < Actor
       
       class LocalCommandError < StandardError; end
+      
+      def servers_for_role?
+        true
+      end
       
       def install(installer, roles, opts = {}) #:nodoc:
         # all local installer cares about is the commands

@@ -6,6 +6,17 @@ describe Sprinkle::Policy do
   before do
     @name = 'a policy'
   end
+  
+  describe 'with a role with no matching servers' do
+    before do
+      @policy = policy @name, :roles => :app do; end
+    end
+    
+    it "should raise an error" do
+      @deployment = mock(:style => Sprinkle::Actors::Dummy.new {})
+      lambda { @policy.process(@deployment) }.should raise_error(Sprinkle::Policy::NoMatchingServersError)
+    end
+  end
 
   describe 'when created' do
 
@@ -46,6 +57,8 @@ describe Sprinkle::Policy do
 
     before do
       @deployment = mock(Sprinkle::Deployment)
+      actor = mock(:servers_for_role? => true)
+      @deployment.stub!(:style).and_return(actor)
       Sprinkle::Package::PACKAGES.clear # reset full package list before each spec is run
 
       @a = package :a do; requires :b; requires :c; end
@@ -125,6 +138,8 @@ describe Sprinkle::Policy, 'with missing packages' do
 
   before do
     @deployment = mock(Sprinkle::Deployment)
+    actor = mock(:servers_for_role? => true)
+    @deployment.stub!(:style).and_return(actor)
     Sprinkle::Package::PACKAGES.clear # reset full package list before each spec is run
 
     @policy = policy :test, :roles => :app do; requires :z; end

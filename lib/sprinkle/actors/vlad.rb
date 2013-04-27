@@ -16,11 +16,16 @@ module Sprinkle
     # script is given a list of files which vlad will include and load.
     # These recipes are mainly to set variables such as :user, :password, and to 
     # set the app domain which will be sprinkled.
-    class Vlad
+    class Vlad < Actor
       attr_accessor :loaded_recipes #:nodoc:
 
       def initialize(&block) #:nodoc:
         self.instance_eval &block if block
+      end
+      
+      def servers_for_role?
+        raise "The vlad actor needs a maintainer.  "+
+        "Please file an issue on github.com/sprinkle-tool/spinkle if you can help."
       end
 
       # Defines a script file which will be included by vlad. Use these

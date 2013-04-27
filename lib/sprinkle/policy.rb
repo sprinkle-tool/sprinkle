@@ -49,7 +49,18 @@ module Sprinkle
       POLICIES << p
       p
     end
-
+    
+    class NoMatchingServersError < StandardError #:nodoc:
+      def initialize(name, roles)
+        @name = name
+        @roles = roles
+      end
+      
+      def to_s
+        "Policy #{@name} is to be installed on #{@roles.inspect} but no server has such a role."
+      end
+    end
+    
     class Policy #:nodoc:
       attr_reader :name, :roles
 
@@ -73,6 +84,8 @@ module Sprinkle
       def to_s; name; end
 
       def process(deployment)
+        raise NoMatchingServersError.new(@name, @roles) unless deployment.style.servers_for_role?(@roles)
+        
         all = []
         
         logger.info "[#{name}]"

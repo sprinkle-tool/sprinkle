@@ -25,7 +25,7 @@ module Sprinkle
     #       gateway "work.sshgateway.com"
     #     end
     #   end
-    class SSH
+    class SSH < Actor
       attr_accessor :options #:nodoc:
       
       class SSHCommandFailure < StandardError #:nodoc:
@@ -43,7 +43,7 @@ module Sprinkle
       
       def initialize(options = {}, &block) #:nodoc:
         @options = options.update(:user => 'root')
-        @roles = {}
+        @roles = {}.with_indifferent_access
         @connection_cache = SSHConnectionCache.new
         self.instance_eval &block if block
         raise "You must define at least a single role." if @roles.empty?
@@ -54,6 +54,12 @@ module Sprinkle
       # This is depreciated - you should be using role instead.
       def roles(roles)
         @roles = roles
+      end
+      
+      # Determines if there are any servers for the given roles
+      def servers_for_role?(roles)
+        roles=Array(roles)
+        roles.any? { |r| @roles.keys.include? (r) }
       end
 
       # Define a role and add servers to it

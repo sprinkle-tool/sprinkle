@@ -17,7 +17,7 @@ module Sprinkle
     # Recipes is given a list of files which capistrano will include and load.
     # These recipes are mainly to set variables such as :user, :password, and to 
     # set the app domain which will be sprinkled. 
-    class Capistrano
+    class Capistrano < Actor
       attr_accessor :config, :loaded_recipes #:nodoc:
 
       def initialize(&block) #:nodoc:
@@ -37,6 +37,13 @@ module Sprinkle
           @config.load 'deploy' # normally in the config directory for rails
         end
       end
+      
+      # Determines if there are any servers for the given roles
+      def servers_for_role?(roles)
+        roles=Array(roles)
+        roles.any? { |r| @config.roles.keys.include? (r) }
+      end
+      
 
       # Defines a recipe file which will be included by capistrano. Use these
       # recipe files to set capistrano specific configurations. Default recipe
