@@ -12,10 +12,9 @@ module Sprinkle
     #
     # Actors must provide only 3 methods:
     # 
-    # * servers_for_role? (roles)
     # * install (installer, roles, options)
     # * verify (verifier, roles, options)
-    # * transfer (source, destination, roles, options)
+    # * servers_for_role? (roles)
     #
     # Hopefully these methods are kind of fairly obvious.  They should return true
     # to indicate success and false to indicate failure.
@@ -30,6 +29,14 @@ module Sprinkle
       # input: a single role or array of roles
       def servers_for_role?(r)
         raise "please define servers_for_role?"
+      end
+      
+      def install(*args)
+        raise "you must define install"
+      end
+      
+      def verify(*args)
+        raise "you must define verify"
       end
       
     end
