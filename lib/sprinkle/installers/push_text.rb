@@ -47,12 +47,20 @@ module Sprinkle
         @path = path
       end
 
+      def announce
+        log "--> Append '#{@text}' to file #{@path}"
+      end
+
       protected
 
         def install_commands #:nodoc:
-          "#{"#{sudo_cmd}grep \"^#{@text.gsub("'", "'\\\\''").gsub("\n", '\n')}$\" #{@path} || " if option?(:idempotent) }/bin/echo -e '#{@text.gsub("'", "'\\\\''").gsub("\n", '\n')}' |#{sudo_cmd}tee -a #{@path}"
+          escaped_text = escape_shell_arg(@text)
+          escaped_regex = Regexp.escape(@text)
+          command = ""
+          command << "#{sudo_cmd}grep -qPzo '^#{escaped_regex}$' #{@path} || " if option?(:idempotent)
+          command << "/bin/echo -e '#{escaped_text}' |#{sudo_cmd}tee -a #{@path}"
+          command
         end
-
     end
   end
 end
