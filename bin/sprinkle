@@ -90,7 +90,7 @@ def verbosity(options)
 end
 
 def log_level(options)
-  Object.logger.level = Logger::Severity::DEBUG : Logger::Severity::INFO
+  Object.logger.level = OPTIONS[:verbose] ? Logger::Severity::DEBUG : Logger::Severity::INFO
 end
 
 require File.dirname(__FILE__) + '/../lib/sprinkle'
