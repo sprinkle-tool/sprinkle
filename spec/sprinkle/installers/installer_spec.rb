@@ -69,10 +69,7 @@ describe Sprinkle::Installers::Installer do
 
       before do
         Sprinkle::OPTIONS[:testing] = true
-        # ActiveSupport::BufferedLogger was deprecated and replaced by ActiveSupport::Logger in Rails 4.
-        # Use ActiveSupport::Logger if available.
-        active_support_logger = defined?(ActiveSupport::Logger) ? ActiveSupport::Logger : ActiveSupport::BufferedLogger
-        @logger = mock(active_support_logger, :debug => true, :debug? => true)
+        @logger = mock(:debug => true, :debug? => true)
       end
 
       it 'should not invoke the delivery mechanism with the install sequence' do

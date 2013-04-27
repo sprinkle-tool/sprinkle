@@ -352,10 +352,7 @@ CODE
       @pkg.installers = [ @installer ]
       @installer.stub!(:defaults)
       @installer.stub!(:process)
-      # ActiveSupport::BufferedLogger was deprecated and replaced by ActiveSupport::Logger in Rails 4.
-      # Use ActiveSupport::Logger if available.
-      active_support_logger = defined?(ActiveSupport::Logger) ? ActiveSupport::Logger : ActiveSupport::BufferedLogger
-      @logger = mock(active_support_logger, :debug => true, :debug? => true)
+      @logger = mock(:debug => true, :debug? => true)
       @logger.stub!(:info)
     end
 

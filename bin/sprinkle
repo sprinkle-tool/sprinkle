@@ -90,10 +90,7 @@ def verbosity(options)
 end
 
 def log_level(options)
-  # ActiveSupport::BufferedLogger was deprecated and replaced by ActiveSupport::Logger in Rails 4.
-  # Use ActiveSupport::Logger if available.
-  active_support_logger = defined?(ActiveSupport::Logger) ? ActiveSupport::Logger : ActiveSupport::BufferedLogger
-  Object.logger.level = options[:verbose] ? active_support_logger::Severity::DEBUG : active_support_logger::Severity::INFO
+  Object.logger.level = Logger::Severity::DEBUG : Logger::Severity::INFO
 end
 
 require File.dirname(__FILE__) + '/../lib/sprinkle'
