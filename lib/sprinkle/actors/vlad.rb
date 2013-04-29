@@ -75,7 +75,7 @@ module Sprinkle
       
       def process_with_transfer(name, commands, roles, opts ={}) #:nodoc:
         raise "cant do non recursive file transfers, sorry" if opts[:recursive] == false
-        commands = commands.map{|x| x == :TRANSFER : x ? "sudo #{x}" } if use_sudo
+        commands = commands.map{|x| x == :TRANSFER ? x : "sudo #{x}" } if use_sudo
         i = commands.index(:TRANSFER)
         before = commands.first(i).join(" && ")
         after = commands.last(commands.size-i+1).join(" && ")
