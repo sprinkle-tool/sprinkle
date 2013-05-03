@@ -222,78 +222,66 @@ module Sprinkle
           v.process(roles)
         end
       end
+                  
+      def requires(*packages)
+        add_dependencies packages, :dependencies
+      end
+
+      def recommends(*packages)
+        add_dependencies packages, :recommends
+      end
+
+      def optional(*packages)
+        add_dependencies packages, :optional
+      end
       
       def dependencies
         @dependencies.map {|a,b| a }
       end
       
-      def requires(*packages)
-        opts = packages.extract_options!
-        packages.each do |pack|
-          @dependencies << [pack, opts]
-        end
-      end
-
-      def recommends(*packages)
-        opts = packages.extract_options!
-        packages.each do |pack|
-          @recommends << [pack, opts]
-        end
-        @recommends.map {|a,b| a }
-      end
-
-      def optional(*packages)
-        opts = packages.extract_options!
-        packages.each do |pack|
-          @optional << [pack, opts]
-        end
-        @optional.map {|a,b| a }
-      end
-
       def tree(depth = 1, &block)
         packages = []
-
-        @recommends.each do |dep, config|
-          package = PACKAGES[dep]
-          next unless package # skip missing recommended packages as they're allowed to not exist
-          package=package.instance(config)
-          block.call(self, package, depth) if block
-          packages << package.tree(depth + 1, &block)
-        end
-
-        @dependencies.each do |dep, config|
-          package = PACKAGES[dep]
-          package = select_package(dep, package) if package.is_a? Array
-          
-          raise "Package definition not found for key: #{dep}" unless package
-          package = package.instance(config)
-          block.call(self, package, depth) if block
-          packages << package.tree(depth + 1, &block)
-        end
-
+        packages << tree_for_packages(@recommends, :depth => depth, &block)
+        packages << tree_for_packages(@dependencies, :depth => depth, :required => true, &block)
         packages << self
-
-        @optional.each do |dep, config|
-          package = PACKAGES[dep]
-          next unless package # skip missing optional packages as they're allow to not exist
-          package = package.instance(config)
-          block.call(self, package, depth) if block
-          packages << package.tree(depth + 1, &block)
-        end
-
+        packages << tree_for_packages(@optional, :depth => depth, &block)
         packages
       end
 
       def to_s; @name; end
       
-      protected
+    protected
       
       def install(i)
         @installers << i
         i
       end
 
-      private
+    private
+      
+      def add_dependencies(packages, kind)
+        opts = packages.extract_options!
+        depends = instance_variable_get("@#{kind}")
+        packages.each do |pack|
+          depends << [pack, opts]
+        end
+        depends.map {|a,b| a }
+      end
+      
+      def tree_for_packages(packages, opts={}, &block)
+        depth = opts[:depth]
+        tree = []
+        packages.each do |dep, config|
+          package = PACKAGES[dep]
+          raise "Package definition not found for key: #{dep}" if not package and opts[:required]
+          next unless package # skip missing recommended packages as they're allowed to not exist
+          package = select_package(dep, package) if package.is_a? Array
+          package = package.instance(config)
+          block.call(self, package, depth) if block
+          tree << package.tree(depth + 1, &block)
+        end
+        tree
+      end
       
         def cloud_info(message)
           logger.info(message) if Sprinkle::OPTIONS[:cloud] or logger.debug?
