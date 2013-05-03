@@ -1,4 +1,5 @@
 require "./lib/sprinkle/version"
+require 'date'
 
 Gem::Specification.new do |s|
   s.name = "sprinkle"
