@@ -73,7 +73,8 @@ describe Sprinkle::Installers::Apt do
     end
 
     it 'should install a specific version if defined' do
-      pending
+      @installer = create_apt 'ruby=2'
+      @installer.send(:install_sequence).should == [ %(env DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive apt-get --force-yes -qyu install ruby=2)]
     end
 
   end
