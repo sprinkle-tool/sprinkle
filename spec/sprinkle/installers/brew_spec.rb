@@ -47,8 +47,6 @@ describe Sprinkle::Installers::Brew do
       @installer.send(:install_sequence).should == [ 'op1', %(brew install ruby), 'op2' ]
     end
 
-    it 'should install a specific version if defined'
-
   end
   
   # describe 'during dependencies only installation' do
