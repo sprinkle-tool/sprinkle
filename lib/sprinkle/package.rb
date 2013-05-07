@@ -92,16 +92,12 @@ module Sprinkle
   # FIXME: Should probably document recommendations.
   #++
   module Package
-    PACKAGES = {}
+    
+    PACKAGES = PackageRepository.new
 
     def package(name, metadata = {}, &block)
       package = Package.new(name, metadata, &block)
-      PACKAGES[name] = package
-
-      if package.provides
-        (PACKAGES[package.provides] ||= []) << package
-      end
-
+      PACKAGES << package
       package
     end
 
@@ -248,7 +244,9 @@ module Sprinkle
         packages
       end
 
-      def to_s; @name; end
+      def to_s
+        "#{@name} #{@version}".strip
+      end
       
     protected
       
@@ -272,10 +270,10 @@ module Sprinkle
         depth = opts[:depth]
         tree = []
         packages.each do |dep, config|
-          package = PACKAGES[dep]
-          raise "Package definition not found for key: #{dep}" if not package and opts[:required]
-          next unless package # skip missing recommended packages as they're allowed to not exist
-          package = select_package(dep, package) if package.is_a? Array
+          package = PACKAGES.find_all(dep, config)
+          raise "Package definition not found for key: #{dep}" if package.empty? and opts[:required]
+          next if package.empty? # skip missing recommended packages as they're allowed to not exist
+          package = Chooser.select_package(dep, package) #if package.size>1
           package = package.instance(config)
           block.call(self, package, depth) if block
           tree << package.tree(depth + 1, &block)
@@ -285,22 +283,6 @@ module Sprinkle
       
         def cloud_info(message)
           logger.info(message) if Sprinkle::OPTIONS[:cloud] or logger.debug?
-        end
-
-        def select_package(name, packages)
-          if packages.size <= 1
-            package = packages.first
-          else
-            package = choose do |menu|
-              menu.prompt = "Multiple choices exist for virtual package #{name}"
-              menu.choices *packages.collect(&:to_s)
-            end
-            package = Sprinkle::Package::PACKAGES[package]
-          end
-
-          cloud_info "Selecting #{package.to_s} for virtual package #{name}"
-
-          package
         end
 
         def meta_package?

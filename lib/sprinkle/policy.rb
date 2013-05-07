@@ -74,9 +74,8 @@ module Sprinkle
         self.instance_eval(&block)
       end
 
-      # def requires(package, options = {})
-      def requires(package, *args)
-        @packages << [package, args]
+      def requires(package, opts={})
+        @packages << [package, opts]
       end
       
       def packages; @packages.map {|x| x.first }; end
@@ -95,9 +94,9 @@ module Sprinkle
         @packages.each do |p, args|
           cloud_info "  * requires package #{p}"
 
-          package = Sprinkle::Package::PACKAGES[p]
+          package = Sprinkle::Package::PACKAGES.find_all(p, args)
           raise "Package definition not found for key: #{p}" unless package
-          package = select_package(p, package) if package.is_a? Array # handle virtual package selection
+          package = Sprinkle::Package::Chooser.select_package(p, package) if package.is_a? Array # handle virtual package selection
           # get an instance of the package and pass our config options
           package = package.instance(*args)
 
@@ -117,22 +116,6 @@ module Sprinkle
 
         def cloud_info(message)
           logger.info(message) if Sprinkle::OPTIONS[:cloud] or logger.debug?
-        end
-
-        def select_package(name, packages)
-          if packages.size <= 1
-            package = packages.first
-          else
-            package = choose do |menu|
-              menu.prompt = "Multiple choices exist for virtual package #{name}"
-              menu.choices *packages.collect(&:to_s)
-            end
-            package = Sprinkle::Package::PACKAGES[package]
-          end
-
-          cloud_info "Selecting #{package.to_s} for virtual package #{name}"
-
-          package
         end
 
         def normalize(all, &block)
