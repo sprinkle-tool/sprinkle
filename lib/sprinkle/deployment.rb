@@ -83,7 +83,7 @@ module Sprinkle
         exit 1
       rescue Sprinkle::Errors::TransferFailure => e
         e.print_summary
-        exit 1
+        exit 2
       ensure
         # do any cleanup our actor may need to close network sockets, etc
         @style.teardown if @style.respond_to?(:teardown)        
