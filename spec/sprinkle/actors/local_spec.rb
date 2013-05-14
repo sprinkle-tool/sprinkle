@@ -33,13 +33,18 @@ describe Sprinkle::Actors::Local do
       @verifier.commands += ["test","test"]
       @roles    = %w( app )
       @name     = 'name'
-
-      @local.stub!(:run_command).and_return(0)
+    end
+    
+    it 'should return false when verification fails' do
+      @local.stub!(:run_command).and_return(1)
+      res = @local.verify @verifier, @roles
+      res.should == false
     end
 
     it 'should run the commands on the local system' do
-      @local.should_receive(:run_command).twice.and_return
-      @local.verify @verifier, @roles
+      @local.stub!(:run_command).and_return(0)
+      res = @local.verify @verifier, @roles
+      res.should == true
     end
     
   end

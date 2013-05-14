@@ -35,7 +35,10 @@ module Sprinkle
       end
       
       def verify(verifier, roles, opts = {}) #:nodoc:
-        process(verifier.package.name, verifier.commands, roles, :suppress_and_return_failures => true)
+        process(verifier.package.name, verifier.commands, roles)
+        true
+      rescue LocalCommandError
+        false
       end
       
     protected
@@ -44,15 +47,14 @@ module Sprinkle
         @log_recorder = Sprinkle::Utility::LogRecorder.new
         commands.each do |command|
           if command == :RECONNECT
-            return true
+            res = 0
           elsif command == :TRANSFER
             res = transfer(@installer.sourcepath, @installer.destination, roles,
               :recursive => @installer.options[:recursive])
-            raise LocalCommandError if res != 0
           else
             res = run_command command
-            raise LocalCommandError if res != 0 and not opts[:suppress_and_return_failures]
           end
+          raise LocalCommandError if res != 0
         end
         return true
       end
