@@ -87,7 +87,7 @@ module Sprinkle
         inst=@installer
         @log_recorder = log_recorder = Sprinkle::Utility::LogRecorder.new
         define_task(name, roles) do
-          via = fetch(:run_method, :run)
+          via = fetch(:run_method, fetch(:use_sudo, true) ? :sudo : :run)
           commands.each do |command|
             if command == :TRANSFER
               opts.reverse_merge!(:recursive => true)
