@@ -80,10 +80,10 @@ module Sprinkle
         end
       rescue Sprinkle::Errors::RemoteCommandFailure => e
         e.print_summary
-        exit
+        exit 1
       rescue Sprinkle::Errors::TransferFailure => e
         e.print_summary
-        exit
+        exit 2
       ensure
         # do any cleanup our actor may need to close network sockets, etc
         @style.teardown if @style.respond_to?(:teardown)        
