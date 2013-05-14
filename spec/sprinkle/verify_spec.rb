@@ -80,7 +80,7 @@ describe Sprinkle::Verify do
     end
 
     it 'should do a md5sum to see if a file matches local file' do
-      @verification.commands.should include(%{[ "X$(md5sum my_file.txt|cut -d\\  -f 1)" = "Xed20d984b757ad5291963389fc209864" ]})
+      @verification.commands.should include(%{bash -c '[ "X$(md5sum my_file.txt|cut -d\\  -f 1)" = "Xed20d984b757ad5291963389fc209864" ]'})
     end
 
     it 'should do a "test -d" on the has_directory check' do

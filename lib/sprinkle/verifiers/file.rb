@@ -36,7 +36,7 @@ module Sprinkle
         raise "Couldn't find local file #{localfile}" unless ::File.exists?(localfile)
         require 'digest/md5'
         local = Digest::MD5.hexdigest(::File.read(localfile))
-        @commands << %{[ "X$(md5sum #{remotefile}|cut -d\\  -f 1)" = "X#{local}" ]}
+        @commands << %{bash -c '[ "X$(md5sum #{remotefile}|cut -d\\  -f 1)" = "X#{local}" ]'}
       end
     end
   end
