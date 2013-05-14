@@ -30,11 +30,11 @@ module Sprinkle
         def @config.recipes(script)
           _sprinkle_actor.recipes(script)
         end
-        
+
         if block
           @config.instance_eval &block
         else
-          @config.load 'deploy' # normally in the config directory for rails
+          @config.load "Capfile"
         end
       end
       
@@ -97,7 +97,7 @@ module Sprinkle
         @log_recorder = log_recorder = Sprinkle::Utility::LogRecorder.new
         commands = commands.map {|x| rewrite_command(x)}
         define_task(name, roles) do
-          via = fetch(:run_method, :sudo)
+          via = fetch(:run_method, :run)
           commands.each do |command|
             if command == :TRANSFER
               opts.reverse_merge!(:recursive => true)

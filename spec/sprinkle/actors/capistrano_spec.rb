@@ -55,7 +55,7 @@ describe Sprinkle::Actors::Capistrano do
       end
 
       it 'should evaluate the block against the actor instance' do
-        @actor.loaded_recipes.should include('cool gear')
+        @actor.loaded_recipes.should == ['cool gear']
       end
 
     end
@@ -63,7 +63,7 @@ describe Sprinkle::Actors::Capistrano do
     describe 'without a block' do
 
       it 'should automatically load the default capistrano configuration' do
-        @cap.should_receive(:load).with('deploy').and_return
+        @cap.should_receive(:load).with('Capfile').and_return
       end
 
       after do
@@ -77,15 +77,13 @@ describe Sprinkle::Actors::Capistrano do
   describe 'recipes' do
 
     it 'should add the recipe location to an internal store' do
-      @cap = create_cap do
-        recipes 'deploy'
-      end
+      @cap = create_cap { recipes "deploy" }
       @cap.loaded_recipes.should == [ @recipes ]
     end
 
     it 'should load the given recipe' do
       @cap.should_receive(:load).with(@recipes).and_return
-      create_cap
+      @cap = create_cap { recipes "deploy" }
     end
 
   end
@@ -131,6 +129,7 @@ describe Sprinkle::Actors::Capistrano do
       # pretend the package or installer has also added sudo
       @commands =["sudo op1"]
       @cap.stub(:sudo_command).and_return("sudo")
+      @cap.config.stub!(:fetch).and_return(:sudo)
       @cap.unstub!(:run)
       @cap.config.should_receive(:invoke_command).with('op1', :via => :sudo).ordered.and_return
     end
@@ -205,12 +204,13 @@ describe Sprinkle::Actors::Capistrano do
       @cap.config.stub!(:invoke_command).and_return
     end
 
-    it 'should use sudo to invoke commands when so configured' do
-      @cap.config.should_receive(:invoke_command).with('op1', :via => :sudo).ordered.and_return
-      @cap.config.should_receive(:invoke_command).with('op2', :via => :sudo).ordered.and_return
+    it 'should run the supplied commands by default' do
+      @cap.config.should_receive(:invoke_command).with('op1', :via => :run).ordered.and_return
+      @cap.config.should_receive(:invoke_command).with('op2', :via => :run).ordered.and_return
     end
 
-    it 'should run the supplied commands' do
+    it 'should use sudo to invoke commands when so configured' do
+      @cap.config.stub!(:fetch).and_return(:sudo)
       @cap.config.should_receive(:invoke_command).with('op1', :via => :sudo).ordered.and_return
       @cap.config.should_receive(:invoke_command).with('op2', :via => :sudo).ordered.and_return
     end
