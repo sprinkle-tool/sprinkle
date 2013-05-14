@@ -8,6 +8,31 @@ describe Sprinkle::Actors::Local do
     @package = Package.new("super") {}
   end
 
+  describe 'when processing commands' do
+
+    before do
+      @commands = %w( op1 op2 )
+      @roles    = %w( app )
+      @name     = 'name'
+    end
+
+    it 'should raise Sprinkle::Actors::Local::LocalCommandError when suppressing parameter is not set' do
+      @local.should_receive(:run).and_return(1)
+
+      lambda { @local.process @name, @commands, @roles }.should raise_error(Sprinkle::Actors::Local::LocalCommandError)
+    end
+
+    it 'should not raise Sprinkle::Actors::Local::LocalCommandError and instead return false when suppressing parameter is set' do
+      @local.should_receive(:run).and_return(1)
+
+      value = nil
+      lambda { value = @local.process(@name, @commands, @roles, :suppress_and_return_failures => true) }.should_not raise_error(Sprinkle::Actors::Local::LocalCommandError)
+
+      value.should_not be
+    end
+
+  end
+
   describe 'when installing' do
 
     before do

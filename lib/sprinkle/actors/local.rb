@@ -38,26 +38,39 @@ module Sprinkle
         process(verifier.package.name, verifier.commands, roles, :suppress_and_return_failures => true)
       end
       
-    protected
-      
       def process(name, commands, roles, opts = {}) #:nodoc:
         @log_recorder = Sprinkle::Utility::LogRecorder.new
+        @suppress = opts[:suppress_and_return_failures]
         commands.each do |command|
           if command == :RECONNECT
             return true
           elsif command == :TRANSFER
-            res = transfer(@installer.sourcepath, @installer.destination, roles,
+            success = transfer(@installer.sourcepath, @installer.destination, roles,
               :recursive => @installer.options[:recursive])
-            raise LocalCommandError if res != 0
+            return false unless success
           else
-            res = run_command command
-            raise LocalCommandError if res != 0 and not opts[:suppress_and_return_failures]
+            success = run_command command
+            return false unless success
           end
         end
         return true
       end
       
+    protected
+
       def run_command(cmd)
+        res = run(cmd)
+        if res != 0
+          if @suppress
+            return false
+          else
+            raise LocalCommandError
+          end
+        end
+        true
+      end
+
+      def run(cmd)
         @log_recorder.reset cmd
         pid, stdin, out, err = Open4.popen4(cmd)
         ignored, status = Process::waitpid2 pid
