@@ -80,7 +80,7 @@ module Sprinkle
       end
             
       def sudo_cmd
-        return @delivery.sudo_command if sudo?
+        return "#{@delivery.sudo_command} " if sudo?
       end
 
       def sudo?
