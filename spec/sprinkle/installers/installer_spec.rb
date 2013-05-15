@@ -7,7 +7,8 @@ describe Sprinkle::Installers::Installer do
     @package = mock(Sprinkle::Package, :name => 'package')
     @empty = Proc.new { }
     @sequence = ['op1', 'op2']
-    @delivery = mock(Sprinkle::Deployment, :process => true, :install => true)
+    @delivery = mock(Sprinkle::Deployment, :process => true, :install => true, 
+      :sudo_command => "sudo")
     @installer = create_installer
     @installer.delivery = @delivery
     @roles = []
@@ -100,6 +101,12 @@ describe Sprinkle::Installers::Installer do
       before do
         @installer = Sprinkle::Installers::Installer.new @package, :sudo => true
         @installer.delivery = @delivery
+      end
+      
+      it "should use sudo command from actor" do
+        @installer.delivery = mock(Sprinkle::Deployment, :process => true, :install => true, 
+          :sudo_command => "sudo -p blah")
+        @installer.sudo_cmd.should =~ /sudo -p blah /  
       end
       
       it "should know it uses sudo" do

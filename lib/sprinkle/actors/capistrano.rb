@@ -87,8 +87,9 @@ module Sprinkle
       end
       
       def verify(verifier, roles, opts = {}) #:nodoc:
-        process(verifier.package.name, verifier.commands, roles, 
-          :suppress_and_return_failures => true)
+        process(verifier.package.name, verifier.commands, roles)
+      rescue ::Capistrano::CommandError
+        return false
       end
             
       def process(name, commands, roles, opts = {}) #:nodoc:
@@ -121,6 +122,7 @@ module Sprinkle
             
         # rip out any double sudos from the beginning of the command
         def rewrite_command(cmd)
+          return cmd if cmd.is_a?(Symbol)
           via = @config.fetch(:run_method, :sudo)
           if via == :sudo and cmd =~ /^#{sudo_command}/
             cmd.gsub(/^#{sudo_command}\s?/,"")
@@ -139,11 +141,7 @@ module Sprinkle
       
         def run_task(task, opts={})
           run(task)
-          return true
-        rescue ::Capistrano::CommandError => e
-          return false if opts[:suppress_and_return_failures]
-          # Reraise error if we're not suppressing it
-          raise
+          true
         end
 
         # REVISIT: can we set the description somehow?

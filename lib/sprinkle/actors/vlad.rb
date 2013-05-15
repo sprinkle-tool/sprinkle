@@ -27,6 +27,15 @@ module Sprinkle
         raise "The vlad actor needs a maintainer.  "+
         "Please file an issue on github.com/sprinkle-tool/sprinkle if you can help."
       end
+      
+      def sudo?
+        # TODO
+        raise
+      end
+      
+      def sudo_command
+        "sudo"
+      end
 
       # Defines a script file which will be included by vlad. Use these
       # script files to set vlad specific configurations. Multiple scripts
@@ -66,7 +75,7 @@ module Sprinkle
       protected
       
       def process(name, commands, roles, opts ={}) #:nodoc:
-        commands = commands.map{|x| "sudo #{x}"} if use_sudo
+        commands = commands.map{|x| "#{sudo_command} #{x}"} if sudo?
         commands = commands.join(' && ')
         puts "executing #{commands}"
         task = remote_task(task_sym(name), :roles => roles) { run commands }
@@ -75,7 +84,7 @@ module Sprinkle
       
       def process_with_transfer(name, commands, roles, opts ={}) #:nodoc:
         raise "cant do non recursive file transfers, sorry" if opts[:recursive] == false
-        commands = commands.map{|x| x == :TRANSFER ? x : "sudo #{x}" } if use_sudo
+        commands = commands.map{|x| x == :TRANSFER ? x : "sudo #{x}" } if sudo?
         i = commands.index(:TRANSFER)
         before = commands.first(i).join(" && ")
         after = commands.last(commands.size-i+1).join(" && ")

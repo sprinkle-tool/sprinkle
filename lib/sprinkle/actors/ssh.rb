@@ -88,8 +88,16 @@ module Sprinkle
       end
 
       # Set this to true to prepend 'sudo' to every command.
-      def use_sudo(value)
+      def use_sudo(value=true)
         @options[:use_sudo] = value
+      end
+      
+      def sudo?
+        @options[:use_sudo]
+      end
+      
+      def sudo_command
+        "sudo"
       end
 
       def setup_gateway #:nodoc:
@@ -143,10 +151,10 @@ module Sprinkle
         end
         
         def prepare_commands(commands)
-          return commands unless @options[:use_sudo]
+          return commands unless sudo?
           commands.map do |command| 
             next command if command.is_a?(Symbol)
-            command.match(/^sudo/) ? command : "sudo #{command}"
+            command.match(/^#{sudo_command}/) ? command : "#{sudo_command} #{command}"
           end
         end
         
