@@ -43,7 +43,8 @@ describe Sprinkle::Installers::Yum do
     end
 
     it 'should install a specific version if defined' do
-      pending
+      @installer = create_rpm 'ruby-2.0' 
+      @installer.send(:install_sequence).should == [ 'yum install ruby-2.0 -y' ]
     end
 
   end

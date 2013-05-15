@@ -16,6 +16,12 @@ module Sprinkle
     #   package :magic_beans do
     #     yum "magic_beans", "magic_sauce"
     #   end
+    #
+    # To install a specific version just add that version after the name
+    #
+    #   package :magic_beans do
+    #     yum "magic_beans-3.0" 
+    #   end
     class Yum < PackageInstaller
 
       auto_api
