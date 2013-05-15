@@ -80,11 +80,11 @@ module Sprinkle
       end
             
       def sudo_cmd
-        "sudo " if sudo?
+        return @delivery.sudo_command if sudo?
       end
 
       def sudo?
-        options[:sudo] or package.sudo?
+        options[:sudo] or package.sudo? or @delivery.sudo?
       end
 
       def escape_shell_arg(str)

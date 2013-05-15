@@ -15,6 +15,8 @@ module Sprinkle
     # * install (installer, roles, options)
     # * verify (verifier, roles, options)
     # * servers_for_role? (roles)
+    # * sudo?
+    # * sudo_command
     #
     # Hopefully these methods are kind of fairly obvious.  They should return true
     # to indicate success and false to indicate failure.
@@ -33,6 +35,14 @@ module Sprinkle
       
       def install(*args)
         raise "you must define install"
+      end
+      
+      def sudo?
+        raise "you must define sudo?"
+      end
+      
+      def sudo_command
+        raise "you must define sudo_command"
       end
       
       def verify(*args)

@@ -38,6 +38,14 @@ module Sprinkle
         end
       end
       
+      def sudo?
+        @config.fetch(:run_method, :sudo) == :sudo
+      end
+      
+      def sudo_command
+        @config.sudo
+      end
+      
       # Determines if there are any servers for the given roles
       def servers_for_role?(roles)
         roles=Array(roles)
