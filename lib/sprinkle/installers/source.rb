@@ -155,15 +155,27 @@ module Sprinkle
 
         # REVISIT: must be better processing of custom install commands somehow? use splat operator?
         def custom_install_commands #:nodoc:
-          dress @options[:custom_install], :install
+          dress @options[:custom_install], nil, :install
         end
 
       protected
+      
+        def pre_commands(stage) #:nodoc:
+          dress @pre[stage] || [], :pre, stage
+        end
+
+        def post_commands(stage) #:nodoc:
+          dress @post[stage] || [], :post, stage
+        end
+      
 
         # dress is overriden from the base Sprinkle::Installers::Installer class so that the command changes
         # directory to the build directory first. Also, the result of the command is logged.
-        def dress(commands, stage)
-          commands.collect { |command| "bash -c 'cd #{build_dir} && #{command} >> #{@package.name}-#{stage}.log 2>&1'" }
+        def dress(commands, pre_or_post, stage)
+          chdir = "cd #{build_dir} && "
+          chdir = "" if [:prepare, :download].include?(stage)
+          chdir = "" if stage == :extract and pre_or_post == :pre
+          commands.collect { |command| "bash -c '#{chdir}#{command} >> #{@package.name}-#{stage}.log 2>&1'" }
         end
 
       private

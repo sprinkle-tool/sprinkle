@@ -285,9 +285,16 @@ describe Sprinkle::Installers::Source do
     it 'should run all pre-prepare commands' do
       @commands.each { |k, v| @installer.should_receive(:pre_commands).with(k).and_return(v) }
     end
+    
+    it "should be logged" do
+      pending
+    end
 
     it 'should be run relative to the source build area' do
-      @commands.each { |stage, command| @installer.send(:pre_commands, stage).first.should =~ %r{cd /usr/builds/ruby-1.8.6-p111} }
+      [:prepare, :download, :extract].each { |stage, command| 
+        @installer.send(:pre_commands, stage).first.should_not =~ %r{cd /usr/builds/ruby-1.8.6-p111} }
+      [:configure, :build, :install].each { |stage, command| 
+        @installer.send(:pre_commands, stage).first.should =~ %r{cd /usr/builds/ruby-1.8.6-p111} }
     end
 
     after do
@@ -318,7 +325,10 @@ describe Sprinkle::Installers::Source do
     end
 
     it 'should be run relative to the source build area' do
-      @commands.each { |stage, command| @installer.send(:post_commands, stage).first.should =~ %r{cd /usr/builds/ruby-1.8.6-p111} }
+      [:prepare, :download].each { |stage, command| 
+        @installer.send(:post_commands, stage).first.should_not =~ %r{cd /usr/builds/ruby-1.8.6-p111} }
+      [:extract, :configure, :build, :install].each { |stage, command| 
+        @installer.send(:post_commands, stage).first.should =~ %r{cd /usr/builds/ruby-1.8.6-p111} }
     end
 
     after do
