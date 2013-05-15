@@ -109,6 +109,15 @@ module Sprinkle
       # include ArbitraryOptions
       attr_accessor :name, :provides, :installers, :verifications
       attr_accessor :args, :opts
+      attr_reader :installer_methods
+      
+      def self.add_api(&block)
+        @installer_methods ||= []
+        before = self.instance_methods
+        self.class_eval &block
+        added = self.instance_methods - before
+        @installer_methods += added
+      end
 
       def initialize(name, metadata = {}, &block)
         raise 'No package name supplied' unless name
@@ -249,6 +258,19 @@ module Sprinkle
       end
 
       def to_s; @name; end
+        
+      # allow an installer to request a private install queue from the package
+      # for example to allow pre and post hooks to have their own installers that
+      # do not mess with the packages installer list
+      # 
+      # returns: the private queue
+      def with_private_install_queue()
+        b = @installers
+        @installers = private_queue =[]
+        yield
+        @installers = b
+        private_queue
+      end
       
     protected
       
@@ -256,7 +278,7 @@ module Sprinkle
         @installers << i
         i
       end
-
+      
     private
       
       def add_dependencies(packages, kind)

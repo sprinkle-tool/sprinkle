@@ -126,41 +126,52 @@ describe Sprinkle::Installers::Installer do
     
     describe "with a pre command" do
       
-      def create_installer_with_pre_command(cmd="")
+      def create_installer_with_pre_command(cmd = nil, &block)
         installer = Sprinkle::Installers::Installer.new @package do
-          pre :install, cmd
+          pre :install, cmd if cmd
           
           def install_commands
             ["installer"]
           end          
         end
-        
+        installer.instance_eval &block if block
         installer.stub!(:puts).and_return
         installer.delivery = @delivery
         installer
       end
       before do
         @installer = create_installer_with_pre_command('run')
+        @package.stub!(:installers).and_return []
       end
       describe "string commands" do
         it "should insert the pre command for the specific package in the installation process" do
           @installer.send(:install_sequence).should == [ 'run', 'installer' ]
         end
-      end      
+      end
+      describe "block with their embeded installers" do
+        before(:each) do
+          @package = Package.new("package") do; end
+          @installer = create_installer_with_pre_command do
+            pre :install do
+              runner "b" do
+                pre(:install) { runner "a" }
+                post(:install) { runner "c" }
+              end
+            end
+          end
+        end
+        it "should properly execute pre and post blocks" do
+          @installer.send(:install_sequence).should == [ "a", "b", "c", 'installer' ]
+        end
+      end
       describe "blocks as commands" do
         before(:each) do          
-          @installer = Sprinkle::Installers::Installer.new @package do
+          @package = Package.new("package") do; end
+          @installer = create_installer_with_pre_command do
             pre :install do
               %w(a b c)
             end
-
-            def install_commands
-              ["installer"]
-            end          
           end
-
-          @installer.stub!(:puts).and_return
-          @installer.delivery = @delivery
         end
         it "should be able to store a block if it's the pre command" do
           @installer.send(:install_sequence).should == [ "a", "b", "c", 'installer' ]

@@ -67,7 +67,7 @@ module Sprinkle
         end
         
         def api(&block)
-          Sprinkle::Package::Package.class_eval &block
+          Sprinkle::Package::Package.add_api &block
         end
         
         def verify_api(&block)
@@ -91,16 +91,34 @@ module Sprinkle
         str.gsub("'", "'\\\\''").gsub("/", "\\\\/").gsub("\n", '\n').gsub('&', '\\\&')
       end
 
-      def pre(stage, *commands)
+      def pre(stage, *commands, &block)
         @pre[stage] ||= []
         @pre[stage] += commands
-        @pre[stage] += [yield] if block_given?
+        @pre[stage] += commands_from_block(block)
       end
 
-      def post(stage, *commands)
+      def post(stage, *commands, &block)
         @post[stage] ||= []
         @post[stage] += commands
-        @post[stage] += [yield] if block_given?
+        @post[stage] += commands_from_block(block) 
+      end
+      
+      def commands_from_block(block)
+        return [] unless block
+        out = nil
+        diff = @package.with_private_install_queue do
+          out = block.call
+        end
+        diff.empty? ? out : diff.map {|x| x.install_sequence }
+      end
+      
+      def method_missing(method, *args, &block)
+        if package.respond_to? method
+        # if package.installer_methods.include?(method)
+          @package.send(method, *args, &block)
+        else
+          super(method, *args, &block)
+        end
       end
       
       def per_host?
