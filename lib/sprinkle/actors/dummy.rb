@@ -19,7 +19,7 @@ module Sprinkle
       # Determines if there are any servers for the given roles
       def servers_for_role?(roles)
         roles=Array(roles)
-        roles.any? { |r| @roles.keys.include? (r) }
+        roles.any? { |r| @roles.keys.include?(r) }
       end
       
       def install(installer, roles, opts={})

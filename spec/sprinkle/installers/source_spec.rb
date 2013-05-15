@@ -76,35 +76,35 @@ describe Sprinkle::Installers::Source do
   describe 'customized configuration' do
 
     it 'should support specification of "enable" options' do
-      @installer.enable.first.should == %w( headers ssl deflate so )
+      @installer.enable.should == %w( headers ssl deflate so )
     end
 
     it 'should support specification of "disable" options' do
-      @installer.disable.first.should == %w( cache proxy rewrite )
+      @installer.disable.should == %w( cache proxy rewrite )
     end
 
     it 'should support specification of "with" options' do
-      @installer.with.first.should == %w( debug extras )
+      @installer.with.should == %w( debug extras )
     end
 
     it 'should support specification of "without" options' do
-      @installer.without.first.should == %w( fancyisms pandas )
+      @installer.without.should == %w( fancyisms pandas )
     end
 
     it 'should support specification of "option" options' do
-      @installer.option.first.should == %w( foo bar baz )
+      @installer.option.should == %w( foo bar baz )
     end
 
     it 'should support customized build area' do
-      @installer.prefix.first.should == '/usr/local'
+      @installer.prefix.should == '/usr/local'
     end
 
     it 'should support customized source area' do
-      @installer.archives.first.should == '/usr/local/archives'
+      @installer.archives.should == '/usr/local/archives'
     end
 
     it 'should support customized install area' do
-      @installer.builds.first.should == '/usr/local/builds'
+      @installer.builds.should == '/usr/local/builds'
     end
   end
 

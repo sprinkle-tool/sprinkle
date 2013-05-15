@@ -31,6 +31,8 @@ module Sprinkle
         super parent, *packages, &block
         @options.reverse_merge!(:dependencies_only => false)
       end
+      
+      attributes :dependencies_only
 
       auto_api
       

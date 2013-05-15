@@ -140,17 +140,6 @@ describe Sprinkle::Verify do
     end
   end
 
-  describe 'with configurations' do
-    # Make sure it includes Sprinkle::Configurable
-    it 'should respond to configurable methods' do
-      @verification.should respond_to(:defaults)
-    end
-
-    it 'should default padding option to 4' do
-      @verification.padding.should eql(4)
-    end
-  end
-
   describe 'with process' do
     it 'should raise an error when no delivery mechanism is set' do
       @verification.instance_variable_set(:@delivery, nil)

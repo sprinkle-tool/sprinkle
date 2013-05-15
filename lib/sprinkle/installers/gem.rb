@@ -41,14 +41,8 @@ module Sprinkle
         super parent, options, &block
         @gem = gem
       end
-
-      def source(location = nil) #:nodoc:
-        # package defines an installer called source so here we specify a method directly
-        # rather than rely on the automatic options processing since packages' method missing
-        # won't be run
-        return @options[:source] unless location
-        @options[:source] = location
-      end
+      
+      attributes :source, :repository, :http_proxy, :build_flags, :version
 
       protected
 

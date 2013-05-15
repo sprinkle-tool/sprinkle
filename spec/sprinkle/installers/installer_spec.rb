@@ -42,19 +42,18 @@ describe Sprinkle::Installers::Installer do
 
       it 'should accept an optional block to customize installers defaults' do
         @installer = create_installer do; prefix '/usr/local'; end
-        @installer.prefix.first.should == '/usr/local'
+        @installer.prefix.should == '/usr/local'
       end
 
       it 'should override any deployment level defaults' do
         @installer = create_installer do; prefix '/usr/local'; end
         @installer.defaults(@deployment)
-        @installer.prefix.first.should == '/usr/local'
+        @installer.prefix.should == '/usr/local'
       end
     end
   end
 
   describe 'during configuration' do
-    # We just check to make sure it has the Sprinkle::Configurable method
     it 'should be configurable' do
       @installer.should respond_to(:defaults)
     end

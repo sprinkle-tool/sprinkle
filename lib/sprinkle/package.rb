@@ -106,17 +106,16 @@ module Sprinkle
     end
 
     class Package #:nodoc:
-      # include ArbitraryOptions
       attr_accessor :name, :provides, :installers, :verifications
       attr_accessor :args, :opts
-      attr_reader :installer_methods
+      cattr_reader :installer_methods
+      @@installer_methods = []
       
       def self.add_api(&block)
-        @installer_methods ||= []
         before = self.instance_methods
         self.class_eval &block
         added = self.instance_methods - before
-        @installer_methods += added
+        @@installer_methods += added.map(&:to_sym)
       end
 
       def initialize(name, metadata = {}, &block)

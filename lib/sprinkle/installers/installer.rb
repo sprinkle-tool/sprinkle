@@ -51,7 +51,8 @@ module Sprinkle
     # or post :install. If this is the case, it will be documented on
     # the installation method's corresponding documentation page. 
     class Installer
-      include Sprinkle::Configurable
+      include Sprinkle::Attributes      
+      
       attr_accessor :delivery, :package, :options, :pre, :post #:nodoc:
 
       def initialize(package, options = {}, &block) #:nodoc:
@@ -60,6 +61,8 @@ module Sprinkle
         @pre = {}; @post = {}
         self.instance_eval(&block) if block
       end
+            
+      attributes :prefix, :archives, :builds
       
       class << self
         def subclasses
@@ -113,8 +116,7 @@ module Sprinkle
       end
       
       def method_missing(method, *args, &block)
-        if package.respond_to? method
-        # if package.installer_methods.include?(method)
+        if package.class.installer_methods.include?(method)
           @package.send(method, *args, &block)
         else
           super(method, *args, &block)
@@ -131,8 +133,6 @@ module Sprinkle
       def announce; end
 
       def process(roles) #:nodoc:
-        assert_delivery
-
         if logger.debug?
           sequence = install_sequence; sequence = sequence.join('; ') if sequence.is_a? Array
           logger.debug "#{@package.name} install sequence: #{sequence} for roles: #{roles}\n"

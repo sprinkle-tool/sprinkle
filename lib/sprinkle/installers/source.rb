@@ -90,6 +90,9 @@ module Sprinkle
         @source = source
       end
       
+      multi_attributes :enable, :disable, :with, :without, :option, 
+        :custom_install
+      
       def install_sequence #:nodoc:
         prepare + download + extract + configure + build + install
       end
@@ -107,23 +110,23 @@ module Sprinkle
           raise 'No build area defined' unless @options[:builds]
           raise 'No source download area defined' unless @options[:archives]
 
-          [ "mkdir -p #{@options[:prefix].first}",
-            "mkdir -p #{@options[:builds].first}",
-            "mkdir -p #{@options[:archives].first}" ]
+          [ "mkdir -p #{@options[:prefix]}",
+            "mkdir -p #{@options[:builds]}",
+            "mkdir -p #{@options[:archives]}" ]
         end
 
         def download_commands #:nodoc:
-          [ "wget -cq -O '#{@options[:archives].first}/#{archive_name}' #{@source}" ]
+          [ "wget -cq -O '#{@options[:archives]}/#{archive_name}' #{@source}" ]
         end
 
         def extract_commands #:nodoc:
-          [ "bash -c 'cd #{@options[:builds].first} && #{extract_command} #{@options[:archives].first}/#{archive_name}'" ]
+          [ "bash -c 'cd #{@options[:builds]} && #{extract_command} #{@options[:archives]}/#{archive_name}'" ]
         end
 
         def configure_commands #:nodoc:
           return [] if custom_install?
 
-          command = "bash -c 'cd #{build_dir} && ./configure --prefix=#{@options[:prefix].first} "
+          command = "bash -c 'cd #{build_dir} && ./configure --prefix=#{@options[:prefix]} "
 
           extras = {
             :enable  => '--enable', :disable => '--disable',
@@ -166,7 +169,7 @@ module Sprinkle
       private
 
         def create_options(key, prefix) #:nodoc:
-          @options[key].first.inject('') { |m, option| m << "#{prefix}-#{option} "; m }
+          @options[key].inject('') { |m, option| m << "#{prefix}-#{option} "; m }
         end
 
         def extract_command #:nodoc:
@@ -195,7 +198,7 @@ module Sprinkle
         end
 
         def build_dir #:nodoc:
-          "#{@options[:builds].first}/#{options[:custom_dir] || base_dir}"
+          "#{@options[:builds]}/#{options[:custom_dir] || base_dir}"
         end
 
         def base_dir #:nodoc:

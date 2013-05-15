@@ -158,8 +158,6 @@ module Sprinkle
       end
 
       def process(roles) #:nodoc:
-        assert_delivery
-
         logger.debug "transfer: #{@source} -> #{@destination} for roles: #{roles}\n"
 
         return if Sprinkle::OPTIONS[:testing]
