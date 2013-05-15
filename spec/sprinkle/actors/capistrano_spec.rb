@@ -211,7 +211,7 @@ describe Sprinkle::Actors::Capistrano do
     end
 
     it 'should use sudo to invoke commands when so configured' do
-      @cap.config.stub!(:fetch).and_return(:sudo)
+      @cap.config.set :run_method, :sudo
       @cap.config.should_receive(:invoke_command).with('op1', :via => :sudo).ordered.and_return
       @cap.config.should_receive(:invoke_command).with('op2', :via => :sudo).ordered.and_return
     end

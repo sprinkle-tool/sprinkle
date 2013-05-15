@@ -39,7 +39,7 @@ module Sprinkle
       end
       
       def sudo?
-        @config.fetch(:run_method, :sudo) == :sudo
+        @config.fetch(:run_method, :run) == :sudo
       end
       
       def sudo_command
@@ -123,7 +123,7 @@ module Sprinkle
         # rip out any double sudos from the beginning of the command
         def rewrite_command(cmd)
           return cmd if cmd.is_a?(Symbol)
-          via = @config.fetch(:run_method, :sudo)
+          via = @config.fetch(:run_method, :run)
           if via == :sudo and cmd =~ /^#{sudo_command}/
             cmd.gsub(/^#{sudo_command}\s?/,"")
           else
