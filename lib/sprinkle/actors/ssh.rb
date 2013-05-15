@@ -88,8 +88,16 @@ module Sprinkle
       end
 
       # Set this to true to prepend 'sudo' to every command.
-      def use_sudo(value)
+      def use_sudo(value=true)
         @options[:use_sudo] = value
+      end
+      
+      def sudo?
+        @options[:use_sudo]
+      end
+      
+      def sudo_command
+        "sudo"
       end
 
       def setup_gateway #:nodoc:
@@ -104,8 +112,9 @@ module Sprinkle
         @verifier = verifier
         # issue all the verification steps in a single SSH command
         commands=[verifier.commands.join(" && ")]
-        process(verifier.package.name, commands, roles, 
-          :suppress_and_return_failures => true)
+        process(verifier.package.name, commands, roles)
+      rescue SSHCommandFailure => e
+        false
       ensure
         @verifier = nil
       end
@@ -126,9 +135,7 @@ module Sprinkle
         end
       
         def process(name, commands, roles, opts = {}) #:nodoc:
-          opts.reverse_merge!(:suppress_and_return_failures => false)
           setup_gateway
-          @suppress = opts[:suppress_and_return_failures]
           r=execute_on_role(commands, roles)
           logger.debug green "process returning #{r}"
           return r
@@ -143,10 +150,10 @@ module Sprinkle
         end
         
         def prepare_commands(commands)
-          return commands unless @options[:use_sudo]
+          return commands unless sudo?
           commands.map do |command| 
             next command if command.is_a?(Symbol)
-            command.match(/^sudo/) ? command : "sudo #{command}"
+            command.match(/^#{sudo_command}/) ? command : "#{sudo_command} #{command}"
           end
         end
         
@@ -166,13 +173,9 @@ module Sprinkle
             @log_recorder.reset cmd
             res = ssh(session, cmd)
             if res != 0 
-              if @suppress
-                return false
-              else
-                fail=SSHCommandFailure.new
-                fail.details = @log_recorder.hash.merge(:hosts => host)
-                raise fail, "#{cmd} failed with error code #{res[:code]}"
-              end
+              fail=SSHCommandFailure.new
+              fail.details = @log_recorder.hash.merge(:hosts => host)
+              raise fail, "#{cmd} failed with error code #{res[:code]}"
             end
           end
           true

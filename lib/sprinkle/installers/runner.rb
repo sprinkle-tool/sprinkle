@@ -34,7 +34,7 @@ module Sprinkle
       protected
         
         def install_commands #:nodoc:
-          sudo_cmd ? 
+          sudo? ? 
             @cmds.map { |cmd| "#{sudo_cmd}#{cmd}"} :
             @cmds
         end

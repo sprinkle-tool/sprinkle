@@ -38,6 +38,14 @@ module Sprinkle
         end
       end
       
+      def sudo?
+        @config.fetch(:run_method, :sudo) == :sudo
+      end
+      
+      def sudo_command
+        @config.sudo
+      end
+      
       # Determines if there are any servers for the given roles
       def servers_for_role?(roles)
         roles=Array(roles)
@@ -79,13 +87,15 @@ module Sprinkle
       end
       
       def verify(verifier, roles, opts = {}) #:nodoc:
-        process(verifier.package.name, verifier.commands, roles, 
-          :suppress_and_return_failures => true)
+        process(verifier.package.name, verifier.commands, roles)
+      rescue ::Capistrano::CommandError
+        return false
       end
             
       def process(name, commands, roles, opts = {}) #:nodoc:
         inst=@installer
         @log_recorder = log_recorder = Sprinkle::Utility::LogRecorder.new
+        commands = commands.map {|x| rewrite_command(x)}
         define_task(name, roles) do
           via = fetch(:run_method, :sudo)
           commands.each do |command|
@@ -110,6 +120,17 @@ module Sprinkle
 			
       private
             
+        # rip out any double sudos from the beginning of the command
+        def rewrite_command(cmd)
+          return cmd if cmd.is_a?(Symbol)
+          via = @config.fetch(:run_method, :sudo)
+          if via == :sudo and cmd =~ /^#{sudo_command}/
+            cmd.gsub(/^#{sudo_command}\s?/,"")
+          else
+            cmd
+          end
+        end
+        
         def raise_error(e)
           details={:command => @log_recorder.command, :code => "??", 
             :message => e.message,
@@ -120,11 +141,7 @@ module Sprinkle
       
         def run_task(task, opts={})
           run(task)
-          return true
-        rescue ::Capistrano::CommandError => e
-          return false if opts[:suppress_and_return_failures]
-          # Reraise error if we're not suppressing it
-          raise
+          true
         end
 
         # REVISIT: can we set the description somehow?

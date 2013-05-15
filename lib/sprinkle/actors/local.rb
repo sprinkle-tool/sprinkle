@@ -24,6 +24,9 @@ module Sprinkle
         true
       end
       
+      def sudo?; false; end
+      def sudo_command; nil; end
+      
       def install(installer, roles, opts = {}) #:nodoc:
         # all local installer cares about is the commands
         @installer = installer
