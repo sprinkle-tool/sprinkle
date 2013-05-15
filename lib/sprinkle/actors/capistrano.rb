@@ -94,6 +94,7 @@ module Sprinkle
       def process(name, commands, roles, opts = {}) #:nodoc:
         inst=@installer
         @log_recorder = log_recorder = Sprinkle::Utility::LogRecorder.new
+        commands = commands.map {|x| rewrite_command(x)}
         define_task(name, roles) do
           via = fetch(:run_method, :sudo)
           commands.each do |command|
@@ -118,6 +119,16 @@ module Sprinkle
 			
       private
             
+        # rip out any double sudos from the beginning of the command
+        def rewrite_command(cmd)
+          via = @config.fetch(:run_method, :sudo)
+          if via == :sudo and cmd =~ /^#{sudo_command}/
+            cmd.gsub(/^#{sudo_command}\s?/,"")
+          else
+            cmd
+          end
+        end
+        
         def raise_error(e)
           details={:command => @log_recorder.command, :code => "??", 
             :message => e.message,
