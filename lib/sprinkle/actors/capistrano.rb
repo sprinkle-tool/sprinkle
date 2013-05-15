@@ -34,7 +34,7 @@ module Sprinkle
         if block
           @config.instance_eval &block
         else
-          @config.load "Capfile"
+          @config.load "Capfile" if File.exist?("Capfile")
         end
       end
       

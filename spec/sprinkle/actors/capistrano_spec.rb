@@ -63,6 +63,7 @@ describe Sprinkle::Actors::Capistrano do
     describe 'without a block' do
 
       it 'should automatically load the default capistrano configuration' do
+        File.stub!(:exist?).with("Capfile").and_return true
         @cap.should_receive(:load).with('Capfile').and_return
       end
 
