@@ -22,6 +22,10 @@ module Sprinkle
           options = cmds.extract_options!
           install Runner.new(self, cmds, options, &block)
         end
+        
+        def noop(&block)
+          install Runner.new(self, "echo noop", &block)
+        end
       end
       
       attr_accessor :cmds #:nodoc:

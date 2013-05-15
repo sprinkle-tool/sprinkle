@@ -174,10 +174,6 @@ module Sprinkle
         raise ContextError, "Cannot call get inside a package, must be inside an Installer block"
       end
       
-      def noop(&block)
-        install Sprinkle::Installers::Runner.new(self, "echo noop", &block)
-      end
-                  
       # meta installer
       # TODO - fix to be atomic
       def push_file(file, options ={}, &block)
