@@ -202,12 +202,12 @@ describe Sprinkle::Actors::Capistrano do
       @name     = 'name'
 
       @cap = create_cap do; recipes 'deploy'; end
-      @cap.config.stub!(:fetch).and_return(:sudo)
       @cap.config.stub!(:invoke_command).and_return
     end
 
     it 'should use sudo to invoke commands when so configured' do
-      @cap.config.should_receive(:fetch).with(:run_method, :sudo).and_return(:sudo)
+      @cap.config.should_receive(:invoke_command).with('op1', :via => :sudo).ordered.and_return
+      @cap.config.should_receive(:invoke_command).with('op2', :via => :sudo).ordered.and_return
     end
 
     it 'should run the supplied commands' do
