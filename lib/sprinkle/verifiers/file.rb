@@ -38,7 +38,7 @@ module Sprinkle
       end
       
       def md5_of_file(path, md5)
-        test "\"`md5sum #{path} | cut -f1 -d' '`\" = \"#{md5}\""
+        test "\"`#{sudo_cmd}md5sum #{path} | cut -f1 -d' '`\" = \"#{md5}\""
       end
       
       def file_contains(path, text)
@@ -55,7 +55,7 @@ module Sprinkle
         raise "Couldn't find local file #{localfile}" unless ::File.exists?(localfile)
         require 'digest/md5'
         local = Digest::MD5.hexdigest(::File.read(localfile))
-        @commands << %{[ "X$(md5sum #{remotefile}|cut -d\\  -f 1)" = "X#{local}" ]}
+        md5_of_file remotefile, local
       end
     end
   end
