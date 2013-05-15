@@ -29,16 +29,19 @@ module Sprinkle
           end
         end
       end
-      
+
       def initialize(package, username, options = {}, &block) #:nodoc:
         super package, options, &block
         @username = username
       end
-      
+
       protected 
       
       def install_commands #:nodoc:
-        "adduser #{@options[:flags]} #{@username}"
+        noninteractive = "--gecos ,,,"
+        flags = @options[:flags] || ""
+        flags << noninteractive unless flags =~ /--gecos/
+        "adduser #{flags} #{@username}"
       end
     end
   end
