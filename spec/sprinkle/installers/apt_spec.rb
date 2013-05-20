@@ -50,14 +50,14 @@ describe Sprinkle::Installers::Apt do
       @package = create_pkg "name", :use_sudo => true
       @installer = create_apt 'ruby'
       @install_commands = @installer.send :install_commands
-      @install_commands.should =~ /sudo apt-get/
+      @install_commands.should =~ /sudo env/
     end
     
     it 'should use sudo if installer specifies' do
       @package = create_pkg "name", :use_sudo => false
       @installer = create_apt 'ruby', :sudo => true
       @install_commands = @installer.send :install_commands
-      @install_commands.should =~ /sudo apt-get/
+      @install_commands.should =~ /sudo env/
     end
 
     it 'should invoke the apt installer for all specified packages' do
