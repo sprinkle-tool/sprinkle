@@ -91,7 +91,7 @@ module Sprinkle
       end
 
       def escape_shell_arg(str)
-        str.gsub("'", "'\\\\''").gsub("/", "\\\\/").gsub("\n", '\n').gsub('&', '\\\&')
+        str.gsub("'", "'\\\\''").gsub("\n", '\n')
       end
 
       def pre(stage, *commands, &block)

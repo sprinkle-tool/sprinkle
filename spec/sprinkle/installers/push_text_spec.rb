@@ -89,6 +89,21 @@ MULTI
     end
   end
   
+  describe 'sending a string with special characters' do
+    
+    it "should not escape an ampersand" do
+      @installer = create_text "bob & lucy", "/dev/mind/the-day-after"
+      @install_commands = @installer.send :install_commands
+      @install_commands.should == %q[/bin/echo -e 'bob & lucy' |tee -a /dev/mind/the-day-after]
+    end
+    
+    it "should not escape a slash" do
+      @installer = create_text "bob/lucy", "/dev/mind/the-day-after"
+      @install_commands = @installer.send :install_commands
+      @install_commands.should == %q[/bin/echo -e 'bob/lucy' |tee -a /dev/mind/the-day-after]
+    end
+  end
+  
   describe 'sending a string with single quotes' do
     before do
       @installer = create_text "I'm a string with a single quote", "/dev/mind/the-day-after"

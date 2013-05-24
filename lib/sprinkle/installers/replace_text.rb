@@ -45,8 +45,12 @@ module Sprinkle
 
       protected
       
+        def escape_sed_arg(s)
+          escape_shell_arg(s).gsub("/", "\\\\/").gsub('&', '\\\&')
+        end
+      
         def install_commands #:nodoc:
-          "#{sudo_cmd}sed -i 's/#{escape_shell_arg(@regex)}/#{escape_shell_arg(@text)}/g' #{@path}"
+          "#{sudo_cmd}sed -i 's/#{escape_sed_arg(@regex)}/#{escape_sed_arg(@text)}/g' #{@path}"
         end
 
     end
