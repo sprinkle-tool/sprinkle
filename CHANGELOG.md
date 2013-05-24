@@ -1,3 +1,7 @@
+*   push_text was escaping & and / when it should not be
+
+    *Stefano Diem Benatti*
+
 *   Sprinkle `sudo_cmd` and Capistrino should work together instead of getting in each others way
     
     When using the capistrano actor `sudo_cmd` will now use the capistrano
@@ -21,6 +25,7 @@
     old behavior.
     
     *Josh Goebel*
+    
 *   Capistrano actor now uses the configured setting of `run_method`, instead of always sudo.
     The default Capistrano setup prefers sudo, so nothing should change for 
     most users.  If you want to NOT use sudo to run commands you can set 
