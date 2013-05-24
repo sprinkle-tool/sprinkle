@@ -109,7 +109,7 @@ module Sprinkle
               # this reset the log
               log_recorder.reset command
               invoke_command(command, {:via => via}) do |ch, stream, out|
-                ::Capistrano::Configuration.default_io_proc.call(ch, stream, out)
+                ::Capistrano::Configuration.default_io_proc.call(ch, stream, out) if Sprinkle::OPTIONS[:verbose]
                 log_recorder.log(stream, out)
               end
             end
