@@ -108,9 +108,9 @@ module Sprinkle
             else
               # this reset the log
               log_recorder.reset command
-              invoke_command(command, {:via => via}) do |c,s,d| 
-                # record the stream and data
-                log_recorder.log(s, d)
+              invoke_command(command, {:via => via}) do |ch, stream, out|
+                ::Capistrano::Configuration.default_io_proc.call(ch, stream, out)
+                log_recorder.log(stream, out)
               end
             end
           end
