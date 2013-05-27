@@ -43,7 +43,7 @@ module Sprinkle
       
       def initialize(options = {}, &block) #:nodoc:
         @options = options.update(:user => 'root')
-        @roles = {}.with_indifferent_access
+        @roles = {}
         @connection_cache = SSHConnectionCache.new
         self.instance_eval &block if block
         raise "You must define at least a single role." if @roles.empty?
