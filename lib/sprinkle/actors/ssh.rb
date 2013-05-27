@@ -87,6 +87,10 @@ module Sprinkle
         @options[:password] = password
       end
 
+      def keys(keys)
+        @options[:keys] = keys
+      end
+
       # Set this to true to prepend 'sudo' to every command.
       def use_sudo(value=true)
         @options[:use_sudo] = value
@@ -243,7 +247,7 @@ module Sprinkle
           if @gateway
             gateway.ssh(host, @options[:user])
           else
-            @connection_cache.start(host, @options[:user],:password => @options[:password])
+            @connection_cache.start(host, @options[:user],:password => @options[:password], :keys => @options[:keys])
           end
         end        
         
