@@ -16,6 +16,18 @@ module Sprinkle
     #   end
     #
     #
+    # == Use ssh key file
+    #
+    #   deployment do
+    #     delivery :ssh do
+    #       user "sprinkle"
+    #       keys "/path/to/ssh/key/file" # passed directly to Net::SSH as :keys option
+    #
+    #       role :app, "app.myserver.com"
+    #     end
+    #   end
+    #
+    #
     # == Working thru a gateway
     #
     # If you're behind a firewall and need to use a SSH gateway that's fine.
@@ -85,6 +97,10 @@ module Sprinkle
       # Set the SSH password
       def password(password)
         @options[:password] = password
+      end
+
+      def keys(keys)
+        @options[:keys] = keys
       end
 
       # Set this to true to prepend 'sudo' to every command.
@@ -243,7 +259,7 @@ module Sprinkle
           if @gateway
             gateway.ssh(host, @options[:user])
           else
-            @connection_cache.start(host, @options[:user],:password => @options[:password])
+            @connection_cache.start(host, @options[:user],:password => @options[:password], :keys => @options[:keys])
           end
         end        
         
