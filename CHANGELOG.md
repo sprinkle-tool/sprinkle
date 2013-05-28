@@ -1,3 +1,7 @@
+*   Add support for specifying the Net::SSH keys property
+
+    *Chris Kimpton*
+
 *   push_text was escaping & and / when it should not be
 
     *Stefano Diem Benatti*
