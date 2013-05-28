@@ -38,7 +38,7 @@ module Sprinkle
       protected 
       
       def install_commands #:nodoc:
-        noninteractive = "--gecos ,,,"
+        noninteractive = " --gecos ,,,"
         flags = @options[:flags] || ""
         flags << noninteractive unless flags =~ /--gecos/
         "adduser #{flags} #{@username}"
