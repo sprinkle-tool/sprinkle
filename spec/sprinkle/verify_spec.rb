@@ -140,13 +140,13 @@ describe Sprinkle::Verify do
     end
 
     it 'should delegate opts' do
-      @package.opts[:tester_opt] = "test-opt"
+      @package.opts = {:tester_opt => "test-opt"}
       @verification.opts[:tester_opt].should == "test-opt"
     end
 
     it 'should delegate args' do
-      @package.args[:tester_arg] = "test-arg"
-      @verification.opts[:tester_arg].should == "test-arg"
+      @package.args = ["test-arg"]
+      @verification.args[0].should == "test-arg"
     end
   end
 
