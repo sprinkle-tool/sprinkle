@@ -16,7 +16,13 @@ describe Sprinkle::Installers::User do
     it "should invoke add user" do
       @installer = create_user 'bob'
       @install_commands = @installer.send :install_commands
-      @install_commands.should == "adduser --gecos ,,, bob"
+      @install_commands.should == "adduser  --gecos ,,, bob"
+    end
+    
+    it "should merge flags" do
+      @installer = create_user 'bob', :flags => "-x"
+      @install_commands = @installer.send :install_commands
+      @install_commands.should == "adduser -x --gecos ,,, bob"
     end
     
     it "should use actual gecos options if passed" do
