@@ -116,11 +116,11 @@ describe Sprinkle::Verify do
     end
 
     it 'should do a "test -x" to check for an executable' do
-      @verification.commands.should include("test -x /usr/bin/ruby")
+      @verification.commands.should include("which /usr/bin/ruby")
     end
 
     it 'should test the "which" command to look for a global executable' do
-      @verification.commands.should include('[ -n "`echo \`which rails\``" ]')
+      @verification.commands.should include('which rails')
     end
 
     it 'should test the process list to find a process' do
