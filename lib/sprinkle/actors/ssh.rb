@@ -16,6 +16,18 @@ module Sprinkle
     #   end
     #
     #
+    # == Use ssh key file
+    #
+    #   deployment do
+    #     delivery :ssh do
+    #       user "sprinkle"
+    #       keys "/path/to/ssh/key/file" # passed directly to Net::SSH as :keys option
+    #
+    #       role :app, "app.myserver.com"
+    #     end
+    #   end
+    #
+    #
     # == Working thru a gateway
     #
     # If you're behind a firewall and need to use a SSH gateway that's fine.
