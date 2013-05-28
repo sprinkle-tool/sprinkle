@@ -191,7 +191,7 @@ module Sprinkle
             if res != 0 
               fail=SSHCommandFailure.new
               fail.details = @log_recorder.hash.merge(:hosts => host)
-              raise fail, "#{cmd} failed with error code #{res[:code]}"
+              raise fail
             end
           end
           true
