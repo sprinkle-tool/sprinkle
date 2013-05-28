@@ -62,6 +62,9 @@ module Sprinkle
     include Sprinkle::Attributes
     attr_accessor :package, :description, :commands #:nodoc:
     
+    delegate :opts, :to => :package
+    delegate :args, :to => :package
+
     class <<self
       # Register a verification module
       def register(new_module)
