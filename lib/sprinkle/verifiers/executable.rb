@@ -18,18 +18,10 @@ module Sprinkle
     module Executable
       Sprinkle::Verify.register(Sprinkle::Verifiers::Executable)
       
-      # Checks if <tt>path</tt> is an executable script. This verifier is "smart" because
-      # if the path contains a forward slash '/' then it assumes you're checking an 
-      # absolute path to an executable. If no '/' is in the path, it assumes you're
-      # checking for a global executable that would be available anywhere on the command line.
+      # Checks if <tt>path</tt> is an executable script using which
+      # - accepts both absolute paths and binary names with no path
       def has_executable(path)
-        # Be smart: If the path includes a forward slash, we're checking
-        # an absolute path. Otherwise, we're checking a global executable
-        if path.include?('/')
-          test "-x #{path}"
-        else
-          @commands << "[ -n \"`echo \\`which #{path}\\``\" ]"
-        end
+        @commands << "which #{path}"
       end
 
       # Same as has_executable but with checking for e certain version number.
