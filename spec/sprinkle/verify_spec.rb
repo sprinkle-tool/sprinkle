@@ -138,6 +138,16 @@ describe Sprinkle::Verify do
     it 'should check that an RPM is installed' do
       @verification.commands.should include("rpm -qa | grep ntp")
     end
+
+    it 'should delegate opts' do
+      @package.opts[:tester_opt] = "test-opt"
+      @verification.opts[:tester_opt].should == "test-opt"
+    end
+
+    it 'should delegate args' do
+      @package.args[:tester_arg] = "test-arg"
+      @verification.opts[:tester_arg].should == "test-arg"
+    end
   end
 
   describe 'with process' do
