@@ -42,10 +42,6 @@ describe Sprinkle::Installers::OpenbsdPkg do
       @installer.send(:install_sequence).should == [ 'op1', 'pkg_add ruby', 'op2' ]
     end
 
-    it 'should install a specific version if defined' do
-      pending
-    end
-
   end
 
 end
