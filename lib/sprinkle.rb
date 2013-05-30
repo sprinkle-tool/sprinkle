@@ -28,13 +28,13 @@ module Sprinkle
   OPTIONS = { :testing => false, :verbose => false, :force => false }
 end
 
-# Object is extended to give the package, policy, and deployment methods. To
-# read about each method, see the corresponding module which is included.
+# Object is extended to Add the package and policy methods. To read about 
+# each method, see the corresponding module which is included.
 #--
 # Define a logging target and understand packages, policies and deployment DSL
 #++
 class Object
-  include Sprinkle::Package, Sprinkle::Policy, Sprinkle::Deployment
+  include Sprinkle::Package, Sprinkle::Policy
 
   def logger # :nodoc:
     # ActiveSupport::BufferedLogger was deprecated and replaced by ActiveSupport::Logger in Rails 4.

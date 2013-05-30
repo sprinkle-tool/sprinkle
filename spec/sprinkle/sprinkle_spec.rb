@@ -3,7 +3,7 @@ require File.expand_path("../spec_helper", File.dirname(__FILE__))
 describe Sprinkle do
 
   it 'should automatically extend Object to support package, policy and deployment DSL keywords' do
-    %w( package policy deployment ).each do |keyword|
+    %w( package policy ).each do |keyword|
       Object.should respond_to(keyword.to_sym)
     end
   end

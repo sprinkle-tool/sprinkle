@@ -1,3 +1,11 @@
+*   Remove the Deployment module from Object.  
+
+    If anyone is relying on the behavior of placing their deployment block in a required 
+    file then they will first need to manually add the module back to the Object class
+    themselves.  Polluting Object is generally bad.
+
+    *Josh Goebel*
+    
 *   Add support for specifying the Net::SSH keys property
 
     *Chris Kimpton*

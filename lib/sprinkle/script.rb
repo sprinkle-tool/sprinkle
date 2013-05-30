@@ -4,6 +4,8 @@ module Sprinkle
   # Sprinkle::Script gives you a way to programatically run a given
   # sprinkle script. 
   class Script
+    include Sprinkle::Deployment
+    
     # Run a given sprinkle script. This method is <b>blocking</b> so
     # it will not return until the sprinkling is complete or fails.
     #--

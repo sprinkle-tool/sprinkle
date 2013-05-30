@@ -29,6 +29,10 @@ module Sprinkle
   # they will say so on their corresponding documentation page. See
   # Sprinkle::Installers
   #
+  # The deployment block must be included in the script file passed to the 
+  # sprinkle executable.  It may not be loaded from a required file unless you 
+  # first manually include the Sprinkle::Deployment module in the Object class.
+  #
   # <b>Only one deployment block is on any given sprinkle script</b>
   module Deployment
     # The method outlined above which specifies deployment specific information

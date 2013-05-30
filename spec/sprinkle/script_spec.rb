@@ -6,6 +6,10 @@ describe Sprinkle::Script, 'class' do
     Sprinkle::Script.should respond_to(:sprinkle)
   end
   
+  it 'should respond to deployment' do
+    Sprinkle::Script.new.should respond_to(:deployment)
+  end
+  
 end
 
 describe Sprinkle::Script, 'when given a script' do
