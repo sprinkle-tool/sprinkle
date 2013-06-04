@@ -95,15 +95,25 @@ module Sprinkle
       end
 
       def pre(stage, *commands, &block)
+        options = commands.extract_options!
+        commands.concat(commands_from_block(block))
         @pre[stage] ||= []
-        @pre[stage] += commands
-        @pre[stage] += commands_from_block(block)
+        if options.fetch(:prepend, false)
+          @pre[stage].unshift(commands)
+        else
+          @pre[stage] << commands
+        end
       end
 
       def post(stage, *commands, &block)
+        options = commands.extract_options!
+        commands.concat(commands_from_block(block))
         @post[stage] ||= []
-        @post[stage] += commands
-        @post[stage] += commands_from_block(block) 
+        if options.fetch(:prepend, false)
+          @post[stage].unshift(commands)
+        else
+          @post[stage] << commands
+        end
       end
       
       def commands_from_block(block)

@@ -73,6 +73,26 @@ describe Sprinkle::Installers::Transfer do
 
     end
 
+    context 'should prepend pre/post commands' do
+      before do
+        @installer = create_transfer @source, @destination do
+          pre :install, 'initial-op1'
+          post :install, 'initial-op2'
+        end
+
+        @installer.pre :install, 'op1', :prepend => true
+        @installer.post :install, 'op2', :prepend => true
+
+        @installer_commands = @installer.install_sequence
+
+        @delivery = @installer.delivery
+      end
+
+      it "should call the pre and post install commands around the file transfer and should have prepended the later added callbacks" do
+        @installer_commands.should == ['op1', 'initial-op1', :TRANSFER, 'op2', 'initial-op2']
+      end
+    end
+
     context 'multiple pre/post commands' do
       before do
         @installer = create_transfer @source, @destination do
