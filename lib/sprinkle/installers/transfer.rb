@@ -103,7 +103,7 @@ module Sprinkle
         if sudo?
           final = @destination
           @destination = "/tmp/sprinkle_#{File.basename(@destination)}"
-          post :install, "#{sudo_cmd}mv #{@destination} #{final}"
+          post :install, "#{sudo_cmd}mv #{@destination} #{final}", :prepend => true
         end
         owner(options[:owner]) if options[:owner]
         mode(options[:mode]) if options[:mode]
