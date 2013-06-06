@@ -72,6 +72,23 @@ describe Sprinkle::Installers::Transfer do
       # end
 
     end
+    
+    context 'pre/post with sudo' do
+      before do
+        @installer = create_transfer @source, @destination do
+          @options[:sudo]= true
+          pre :install, 'op1'
+          post :install, 'op2'
+        end
+        @installer_commands = @installer.install_sequence
+        @delivery = @installer.delivery
+      end
+
+      it "should call the pre and post install commands around the file transfer" do
+        @installer_commands.should == ["op1",:TRANSFER, 
+          "sudo mv /tmp/sprinkle_destination destination", "op2"]
+      end
+    end
 
     context 'multiple pre/post commands' do
       before do

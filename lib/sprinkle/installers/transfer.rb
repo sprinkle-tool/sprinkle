@@ -99,11 +99,12 @@ module Sprinkle
         @orig_destination = destination
         super parent, options, &block
         @binding = options[:binding]
-        # perform the transfer in two steps if we're using sudo
-        if sudo?
+        if sudo? # perform the transfer in two steps if we're using sudo
           final = @destination
           @destination = "/tmp/sprinkle_#{File.basename(@destination)}"
-          post :install, "#{sudo_cmd}mv #{@destination} #{final}"
+          # make sure we push the move ahead of any other post install tasks
+          # a user may have requested
+          post(:install).unshift ["#{sudo_cmd}mv #{@destination} #{final}"]
         end
         owner(options[:owner]) if options[:owner]
         mode(options[:mode]) if options[:mode]

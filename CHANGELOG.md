@@ -1,3 +1,8 @@
+*   A users own post :install hooks should happen after a file has completely been moved
+    (when using sudo this was not the case)
+    
+    *Koen Punt*
+
 *   Remove the Deployment module from Object.  
 
     If anyone is relying on the behavior of placing their deployment block in a required 
