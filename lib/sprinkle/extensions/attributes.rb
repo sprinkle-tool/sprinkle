@@ -22,7 +22,7 @@ module Sprinkle
     private 
     
     def read_from_package(m)
-      @package.send(m) if @package.respond_to?(m)
+      @package.send(m) if @package.respond_to?(m) and @package.method(m).arity.abs < 2
     end
     
     def option?(sym)

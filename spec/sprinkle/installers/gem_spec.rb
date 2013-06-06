@@ -9,7 +9,9 @@ describe Sprinkle::Installers::Gem do
   end
 
   def create_gem(gem, version = nil, options = {}, &block)
-    @package = mock(Sprinkle::Package, :name => gem, :version => version)
+    # @package = mock(Sprinkle::Package, :name => gem, :version => version)
+    @package = Package.new "test" do; end
+    @package.version version
     Sprinkle::Installers::Gem.new(@package, gem, options, &block)
   end
 
@@ -17,6 +19,12 @@ describe Sprinkle::Installers::Gem do
 
     before do
       @installer = create_gem @gem, @version, @options
+    end
+    
+    it "should return nil if no source is not configured" do
+      @options.delete(:source)
+      @installer = create_gem @gem, @version, @options
+      @installer.source.should == nil
     end
 
     it 'should accept a single package to install' do
