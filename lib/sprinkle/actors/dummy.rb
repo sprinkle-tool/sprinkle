@@ -34,6 +34,10 @@ module Sprinkle
         end
       end
       
+      def sudo?
+        false
+      end
+      
       def verify(verifier, roles, opts = {})
         process(verifier.package.name, verifier.commands, roles, opts = {})
       end
