@@ -45,11 +45,11 @@ end
 
 module Sprinkle
   module Installers
-    # Beware, another strange "installer" coming your way.
-    #
     # = File transfer installer
     #
-    # This installer pushes files from the local disk to remote servers.
+    # This installer copies files from the local disk to remote servers using SCP.
+    # Symbolic links will be followed and the files copied, but the symbolic links
+    # themselves will not be preserved.  That's just how SCP works.
     #
     # == Example Usage
     #
@@ -68,7 +68,13 @@ module Sprinkle
     #
     # By default, transfers are recursive and you can move whole directories
     # via this method. If you wish to disable recursive transfers, you can pass
-    # recursive => false, although it will not be obeyed when using the Vlad actor.
+    # :recursive => false, although it will not be obeyed when using the Vlad actor.
+    #
+    # Should you need to run commands before or after the file transfer (making
+    # directories or changing permissions), you can use the pre/post :install directives
+    # and they will be run.
+    # 
+    # == Rendering templates
     #
     # If you pass the option :render => true, this tells transfer that the source file
     # is an ERB template to be rendered locally before being transferred (you can declare
@@ -79,10 +85,6 @@ module Sprinkle
     #     nginx_port = 8080
     #     transfer 'files/nginx.conf', '/etc/nginx.conf', :render => true
     #   end
-    #
-    # Finally, should you need to run commands before or after the file transfer (making
-    # directories or changing permissions), you can use the pre/post :install directives
-    # and they will be run.
     class Transfer < Installer
       attr_accessor :source, :destination, :sourcepath #:nodoc:
       
