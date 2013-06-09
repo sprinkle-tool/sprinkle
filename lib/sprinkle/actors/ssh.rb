@@ -198,8 +198,8 @@ module Sprinkle
         end
         
         def ssh(host, cmd, opts={}) #:nodoc:
-          logger.debug "ssh: #{cmd}"
           session = host.is_a?(Net::SSH::Connection::Session) ? host : ssh_session(host)
+          logger.debug "[#{session.host}] ssh: #{cmd}"
           channel_runner(session, cmd)
         end
         
@@ -207,12 +207,12 @@ module Sprinkle
           session.open_channel do |channel|
             channel.on_data do |ch, data|
               @log_recorder.log :out, data
-              logger.debug yellow("stdout said-->\n#{data}\n")
+              logger.debug yellow("[#{session.host}] stdout said-->\n#{data}\n")
             end
             channel.on_extended_data do |ch, type, data|
               next unless type == 1  # only handle stderr
               @log_recorder.log :err, data
-              logger.debug red("stderr said -->\n#{data}\n")
+              logger.debug red("[#{session.host}] stderr said -->\n#{data}\n")
             end
 
             channel.on_request("exit-status") do |ch, data|
