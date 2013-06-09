@@ -142,7 +142,7 @@ module Sprinkle
       
       def instance(*args)
         p=Package.new(name, @metadata) {}
-        p.opts = args.extract_options!
+        p.opts = defaults.merge(args.extract_options!)
         p.args = args
         p.instance_variable_set("@block", @block)
         p.instance_eval &@block
@@ -156,13 +156,17 @@ module Sprinkle
       def use_sudo(flag=true)
         @use_sudo = flag
       end
-            
+
+      def defaults(s=nil)
+        s ? @defaults = s : @defaults ||= Hash.new
+      end
+
       def args
         @args || []
       end
       
       def opts
-        @opts || {}
+        @opts || defaults
       end
       
       class ContextError < StandardError #:nodoc:
@@ -224,7 +228,7 @@ module Sprinkle
           v.process(roles)
         end
       end
-                  
+
       def requires(*packages)
         add_dependencies packages, :dependencies
       end
