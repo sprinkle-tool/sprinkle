@@ -66,6 +66,14 @@ CODE
       pkg.version.should == '2.0.2'
     end
 
+    it 'should optionally accept configuration defaults' do
+      pkg = package @name do
+        defaults :some_option => 123, :some_other_option => true
+      end
+      pkg.defaults.should_not be_empty
+      pkg.opts.should eql({:some_option => 123, :some_other_option => true})
+    end
+
     it 'should optionally accept an installer' do
       pkg = package @name do
         gem 'rails'
