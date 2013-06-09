@@ -1,3 +1,4 @@
+# encoding: utf-8
 module Sprinkle
   # = Packages
   #
@@ -191,6 +192,15 @@ module Sprinkle
       def process(deployment, roles)
         logger.info "  * #{name}"
         return if meta_package?
+        unless opts.empty?
+          opts.each_with_index do |(k, v), index| 
+            if index == opts.size - 1
+              logger.info "    └─ #{k}: #{v}" 
+            else
+              logger.info "    ├─ #{k}: #{v}" 
+            end
+          end
+        end
         
         # Run a pre-test to see if the software is already installed. If so,
         # we can skip it, unless we have the force option turned on!
