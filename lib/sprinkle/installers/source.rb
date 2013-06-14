@@ -89,10 +89,10 @@ module Sprinkle
         super parent, options, &block
         @source = source
       end
-      
-      multi_attributes :enable, :disable, :with, :without, :option, 
-        :custom_install
-      
+
+      multi_attributes :enable, :disable, :with, :without, :option,
+        :custom_install, :configure_command, :build_command, :install_command
+
       def install_sequence #:nodoc:
         prepare + download + extract + configure + build + install
       end
@@ -126,7 +126,7 @@ module Sprinkle
         def configure_commands #:nodoc:
           return [] if custom_install?
 
-          command = "bash -c 'cd #{build_dir} && ./configure --prefix=#{@options[:prefix]} "
+          command = "bash -c 'cd #{build_dir} && #{actual_configure_command} --prefix=#{@options[:prefix]} "
 
           extras = {
             :enable  => '--enable', :disable => '--disable',
@@ -141,12 +141,24 @@ module Sprinkle
 
         def build_commands #:nodoc:
           return [] if custom_install?
-          [ "bash -c 'cd #{build_dir} && make > #{@package.name}-build.log 2>&1'" ]
+          [ "bash -c 'cd #{build_dir} && #{actual_build_command} > #{@package.name}-build.log 2>&1'" ]
         end
 
         def install_commands #:nodoc:
           return custom_install_commands if custom_install?
-          [ "bash -c 'cd #{build_dir} && make install > #{@package.name}-install.log 2>&1'" ]
+          [ "bash -c 'cd #{build_dir} && #{actual_install_command} > #{@package.name}-install.log 2>&1'" ]
+        end
+
+        def actual_configure_command #:nodoc:
+          @options[:configure_command] || './configure'
+        end
+
+        def actual_build_command #:nodoc:
+          @options[:build_command] || 'make'
+        end
+
+        def actual_install_command #:nodoc:
+          @options[:install_command] || 'make install'
         end
 
         def custom_install? #:nodoc:
