@@ -5,6 +5,8 @@ describe Sprinkle::Verify do
     @name = :package
     @package = package @name do
       gem 'nonexistent'
+      who = "Binding" # binding attribute
+
       verify 'moo' do
         # Check a file exists
         has_file 'my_file.txt'
@@ -14,6 +16,12 @@ describe Sprinkle::Verify do
 
         # Checks that a file matches a local file
         matches_local File.join(File.dirname(__FILE__), '..', 'fixtures', 'my_file.txt'), 'my_file.txt'
+
+        # Checks that a file matches a local rendered erb template rendering hash params
+        matches_local File.join(File.dirname(__FILE__), '..', 'fixtures', 'template.erb'), 'my_file.txt', render: true, locals: {who: "World"}
+
+        # Checks that a file matches a local rendered erb template rendering rendering the callers binding
+        matches_local File.join(File.dirname(__FILE__), '..', 'fixtures', 'template.erb'), 'my_file.txt', render: true, binding: binding()
 
         # Check a directory exists
         has_directory 'mydir'
@@ -81,6 +89,14 @@ describe Sprinkle::Verify do
 
     it 'should do a md5sum to see if a file matches local file' do
       @verification.commands.should include(%{[ "X$(md5sum my_file.txt|cut -d\\  -f 1)" = "Xed20d984b757ad5291963389fc209864" ]})
+    end
+
+    it 'should do a md5sum to see if a file matches a rendered erb file with hash param' do
+      @verification.commands.should include(%{[ "X$(md5sum my_file.txt|cut -d\\  -f 1)" = "Xe59ff97941044f85df5297e1c302d260" ]}) # Hello World
+    end
+
+    it 'should do a md5sum to see if a file matches a rendered erb file with the callers binding' do
+      @verification.commands.should include(%{[ "X$(md5sum my_file.txt|cut -d\\  -f 1)" = "X16926fbb1a243aa638f585e736a75c5d" ]}) # Hello Binding
     end
 
     it 'should do a "test -d" on the has_directory check' do
