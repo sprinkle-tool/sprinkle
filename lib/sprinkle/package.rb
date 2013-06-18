@@ -163,11 +163,11 @@ module Sprinkle
       end
 
       def args
-        @args || []
+        @args ||= []
       end
       
       def opts
-        @opts || defaults
+        @opts ||= defaults.clone
       end
       
       class ContextError < StandardError #:nodoc:
@@ -187,7 +187,7 @@ module Sprinkle
                   
       def verify(description = '', &block)
         @verifications << Sprinkle::Verify.new(self, description, &block)
-      end  
+      end
       
       def process(deployment, roles)
         logger.info "  * #{name}"
