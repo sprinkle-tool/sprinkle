@@ -20,7 +20,7 @@ module Sprinkle
       
       class LocalCommandError < StandardError; end
       
-      def servers_for_role?
+      def servers_for_role?(role)
         true
       end
       
