@@ -60,7 +60,7 @@ Packages can be grouped into polices to define several packages that should be i
 
 ``` ruby
 policy :rails, :roles => :app do
-  requires :rails_32
+  requires :rails, :version => "3.2"
   requires :appserver
   requires :database
   requires :webserver
@@ -160,7 +160,7 @@ package :rubygems do
   requires :ruby
 end
 
-package :rails_32 do
+package :rails do
   description 'Ruby on Rails'
   gem 'rails'
   version '3.2'
@@ -199,7 +199,7 @@ end
 # the user is requested to select which one to use.
 
 policy :rails, :roles => :app do
-  requires :rails
+  requires :rails, :version => "3.2"
   requires :appserver
   requires :database
   requires :webserver
