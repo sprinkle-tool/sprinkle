@@ -74,6 +74,14 @@ CODE
       pkg.opts.should eql({:some_option => 123, :some_other_option => true})
     end
 
+    it 'should merge configuration defaults and additional opts' do
+      pkg = package @name do
+        defaults :some_option => 123, :some_other_option => true
+      end
+      instance = pkg.instance({:some_option => 345, :extra_option => false})
+      instance.opts.should eql({:some_option => 345, :some_other_option => true, :extra_option => false})
+    end
+
     it 'should optionally accept an installer' do
       pkg = package @name do
         gem 'rails'
