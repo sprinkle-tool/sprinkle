@@ -207,6 +207,48 @@ describe Sprinkle::Installers::Source do
 
     end
 
+    describe 'with default configure, build, and install commands' do
+
+      before do
+        @installer = create_source @source
+
+        @installer.defaults(@deployment)
+      end
+
+      it 'should use the default commands' do
+        @installer.send(:configure_commands).first.should =~ /\.\/configure/
+        @installer.send(:build_commands).first.should     =~ /make/
+        @installer.send(:install_commands).first.should   =~ /make install/
+      end
+
+    end
+
+    describe 'with custom configure, build, and install commands' do
+
+      before do
+        @installer = create_source @source do
+          configure_command './custom-configure'
+          build_command     'custom-make'
+          install_command   'custom-make install'
+        end
+
+        @installer.defaults(@deployment)
+      end
+
+      it 'should store the custom commands' do
+        @installer.options[:configure_command].first.should == './custom-configure'
+        @installer.options[:build_command].first.should     == 'custom-make'
+        @installer.options[:install_command].first.should   == 'custom-make install'
+      end
+
+      it 'should use the custom commands' do
+        @installer.send(:configure_commands).first.should =~ /\.\/custom-configure/
+        @installer.send(:build_commands).first.should     =~ /custom-make/
+        @installer.send(:install_commands).first.should   =~ /custom-make install/
+      end
+
+    end
+
     describe 'during a customized install' do
 
       before do
