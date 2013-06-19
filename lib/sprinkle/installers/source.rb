@@ -137,7 +137,7 @@ module Sprinkle
         def configure_commands #:nodoc:
           return [] if custom_install?
 
-          command = "bash -c 'cd #{build_dir} && #{actual_configure_command} --prefix=#{@options[:prefix]} "
+          command = "#{configure_command || './configure'} --prefix=#{@options[:prefix]} "
 
           extras = {
             :enable  => '--enable', :disable => '--disable',
@@ -147,29 +147,17 @@ module Sprinkle
 
           extras.inject(command) { |m, (k, v)|  m << create_options(k, v) if options[k]; m }
 
-          [ command << " > #{@package.name}-configure.log 2>&1'" ]
+          [ in_build_dir(with_log(command,:configure)) ]
         end
 
         def build_commands #:nodoc:
           return [] if custom_install?
-          [ "bash -c 'cd #{build_dir} && #{actual_build_command} > #{@package.name}-build.log 2>&1'" ]
+          [ in_build_dir(with_log("#{build_command || "make"}",:build))  ]
         end
 
         def install_commands #:nodoc:
           return custom_install_commands if custom_install?
-          [ "bash -c 'cd #{build_dir} && #{actual_install_command} > #{@package.name}-install.log 2>&1'" ]
-        end
-
-        def actual_configure_command #:nodoc:
-          @options[:configure_command] || './configure'
-        end
-
-        def actual_build_command #:nodoc:
-          @options[:build_command] || 'make'
-        end
-
-        def actual_install_command #:nodoc:
-          @options[:install_command] || 'make install'
+          [ in_build_dir(with_log("#{install_command || "make install"}",:install)) ]
         end
 
         def custom_install? #:nodoc:
@@ -182,6 +170,14 @@ module Sprinkle
         end
 
       protected
+      
+        def with_log(cmd, stage)
+          "#{cmd} > #{@package.name}-#{stage}.log 2>&1"
+        end
+      
+        def in_build_dir(cmd)
+          "bash -c 'cd #{build_dir} && #{cmd}'"
+        end
       
         def pre_commands(stage) #:nodoc:
           dress @pre[stage] || [], :pre, stage
