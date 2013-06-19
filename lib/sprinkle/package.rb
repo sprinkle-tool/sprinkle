@@ -139,11 +139,9 @@ module Sprinkle
       end
       
       def instance(*args)
-        p=Package.new(name, @metadata) {}
+        p = self.clone
         p.opts = args.extract_options!
         p.args = args
-        p.instance_variable_set("@block", @block)
-        p.instance_eval &@block
         p
       end
       
