@@ -1,9 +1,10 @@
 PATH
   remote: .
   specs:
-    sprinkle (0.6.2)
+    sprinkle (0.7)
       activesupport (>= 2.0.2)
       capistrano (>= 2.5.5)
+      erubis (>= 2.7.0)
       highline (>= 1.4.0)
       open4 (>= 1.1.0)
 
@@ -21,6 +22,7 @@ GEM
       net-ssh-gateway (>= 1.1.0)
     coderay (1.0.9)
     diff-lcs (1.2.4)
+    erubis (2.7.0)
     highline (1.6.19)
     i18n (0.6.1)
     interception (0.3)
