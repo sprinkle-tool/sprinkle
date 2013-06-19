@@ -19,10 +19,13 @@ GEM
       net-sftp (>= 2.0.0)
       net-ssh (>= 2.0.14)
       net-ssh-gateway (>= 1.1.0)
+    coderay (1.0.9)
     diff-lcs (1.2.4)
     highline (1.6.19)
     i18n (0.6.1)
+    interception (0.3)
     json (1.8.0)
+    method_source (0.8.1)
     multi_json (1.7.7)
     net-scp (1.1.1)
       net-ssh (>= 2.6.5)
@@ -32,6 +35,15 @@ GEM
     net-ssh-gateway (1.2.0)
       net-ssh (>= 2.6.5)
     open4 (1.3.0)
+    pry (0.9.12.2)
+      coderay (~> 1.0.5)
+      method_source (~> 0.8)
+      slop (~> 3.4)
+    pry-rescue (1.1.1)
+      interception (>= 0.3)
+      pry
+    pry_debug (0.1.0)
+      pry (~> 0.9.0)
     rake (10.0.4)
     rdoc (4.0.1)
       json (~> 1.4)
@@ -43,11 +55,15 @@ GEM
     rspec-expectations (2.13.0)
       diff-lcs (>= 1.1.3, < 2.0)
     rspec-mocks (2.13.1)
+    slop (3.4.5)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
+  pry
+  pry-rescue
+  pry_debug
   rake (>= 0.8.7)
   rdoc (>= 3.12)
   rspec (>= 2.5)

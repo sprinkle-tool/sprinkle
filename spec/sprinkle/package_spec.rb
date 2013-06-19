@@ -8,6 +8,10 @@ describe Sprinkle::Package do
     @empty = Proc.new { }
     @opts = { }
   end
+  
+  after do
+    Sprinkle::Package::PACKAGES.clear
+  end
 
   # Kind of a messy way to do this but it works and DRYs out
   # the specs. Checks to make sure an installer is receiving
@@ -97,21 +101,16 @@ CODE
 
     it 'should be able to represent itself as a string' do
       pkg = package @name do; end
-      pkg.to_s.should == @name
+      pkg.to_s.should == @name.to_s
     end
 
   end
 
   describe 'helper method' do
 
-    it 'should added new packages to the global package hash' do
+    it 'should add new packages to the global package repository' do
       pkg = package @name do; end
-      Sprinkle::Package::PACKAGES[@name].should == pkg
-    end
-
-    it 'should add the new package to the provides list if specified' do
-      pkg = package @name, :provides => :database do; end
-      Sprinkle::Package::PACKAGES[:database].last.should == pkg
+      Sprinkle::Package::PACKAGES.count.should == 1
     end
 
   end
@@ -457,7 +456,7 @@ CODE
     end
 
     it 'should select package for an array' do
-      @a.should_receive(:select_package).with(:virtual, [@v1,@v2]).and_return(@v1)
+      Sprinkle::Package::Chooser.should_receive(:select_package).with(:virtual, [@v1,@v2]).and_return(@v1)
       @a.tree do; end
     end
   end

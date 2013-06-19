@@ -40,7 +40,7 @@ describe Sprinkle::Policy do
       p = policy @name, :roles => :app do; end
       p.requires :appserver, :version => 2
       p.packages.should == [ :appserver ]
-      pending 'requires version checking implementation'
+      # pending 'requires version checking implementation'
     end
 
     it 'should add itself to the global policy list' do
@@ -100,30 +100,31 @@ describe Sprinkle::Policy do
 
     describe 'containing package dependencies with versions' do
 
-      it 'should be invalid if the specified package does not exist' do
-        pending
-      end
-      it 'should ignore any packages of the same name that have other versions' do
-        pending
-      end
       it 'should select the correct package version when applying' do
-        pending
+        @my3 = package :mysql do; version 3; end
+        @my4 = package :mysql do; version 4; end
+        @my5 = package :mysql do; version 5; end
+        @e = package :e do; requires :mysql, :version => "4"; end
+        @policy.requires :e
+        @e.stub!(:instance).and_return @e
+        @my4.stub!(:instance).and_return @my4
+        @my3.should_not_receive(:process)
+        @my5.should_not_receive(:process)
+        @my4.should_receive(:process)
       end
-
     end
 
     describe 'containing virtual packages' do
 
       it 'should automatically select a concrete package implementation for a virtual one when there exists only one possible selection' do
         @policy = policy :virtual, :roles => :app do; requires :xyz; end
-        Sprinkle::Package::PACKAGES[:xyz].should == [ @b ]
+        @b.should_receive(:process)
       end
 
       it 'should ask the user for the concrete package implementation to use for a virtual one when more than one possible choice exists' do
         @policy = policy :virtual, :roles => :app do; requires :abc; end
-        Sprinkle::Package::PACKAGES[:abc].should include(@c)
-        Sprinkle::Package::PACKAGES[:abc].should include(@d)
         $terminal.should_receive(:choose).and_return(:c)
+        @c.should_receive(:process)
       end
 
     end
