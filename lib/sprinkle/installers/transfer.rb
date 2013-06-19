@@ -1,48 +1,3 @@
-# Blatantly stole this from Chef
-class TemplateError < RuntimeError
-  attr_reader :original_exception, :context
-  SOURCE_CONTEXT_WINDOW = 2 unless defined? SOURCE_CONTEXT_WINDOW
-
-  def initialize(original_exception, template, context)
-    @original_exception, @template, @context = original_exception, template, context
-  end
-
-  def message
-    @original_exception.message
-  end
-
-  def line_number
-    @line_number ||= $1.to_i if original_exception.backtrace.find {|line| line =~ /\(erubis\):(\d+)/ }
-  end
-
-  def source_location
-    "on line ##{line_number}"
-  end
-
-  def source_listing
-    return nil if line_number.nil?
-
-    @source_listing ||= begin
-      line_index = line_number - 1
-      beginning_line = line_index <= SOURCE_CONTEXT_WINDOW ? 0 : line_index - SOURCE_CONTEXT_WINDOW
-      source_size = SOURCE_CONTEXT_WINDOW * 2 + 1
-      lines = @template.split(/\n/)
-      contextual_lines = lines[beginning_line, source_size]
-      output = []
-      contextual_lines.each_with_index do |line, index|
-        line_number = (index+beginning_line+1).to_s.rjust(3)
-        output << "#{line_number}: #{line}"
-      end
-      output.join("\n")
-    end
-  end
-
-  def to_s
-    "\n\n#{self.class} (#{message}) #{source_location}:\n\n" +
-      "#{source_listing}\n\n  #{original_exception.backtrace.join("\n  ")}\n\n"
-  end
-end
-
 module Sprinkle
   module Installers
     # = File transfer installer
@@ -90,7 +45,7 @@ module Sprinkle
       
       api do
         def transfer(source, destination, options = {}, &block)
-          options.merge!(:binding => binding())
+          options.reverse_merge!(:binding => binding())
           install Transfer.new(self, source, destination, options, &block)
         end
       end
@@ -129,25 +84,16 @@ module Sprinkle
         :TRANSFER
       end
 
-      def self.render_template(template, context, prefix)
+      def render_template(template, context, prefix)
         require 'tempfile'
         require 'erubis'
 
-        begin
-          eruby = Erubis::Eruby.new(template)
-          output = eruby.result(context)
-        rescue Object => e
-          raise TemplateError.new(e, template, context)
-        end
+        output = @package.template(template, context)
 
         final_tempfile = Tempfile.new(prefix.to_s)
         final_tempfile.print(output)
         final_tempfile.close
         final_tempfile
-      end
-
-      def render_template(template, context, prefix)
-        self.class.render_template(template, context, prefix)
       end
 
       def render_template_file(path, context, prefix)
@@ -166,6 +112,8 @@ module Sprinkle
         return if Sprinkle::OPTIONS[:testing]
 
         if options[:render]
+          ActiveSupport::Deprecation.warn("transfer :render is depreciated, please use the `file` installer now.")
+          ActiveSupport::Deprecation.warn("transfer :render will be removed from Sprinkle v0.8")
           if options[:locals]
             context = {}
             options[:locals].each_pair do |k,v|
@@ -176,18 +124,12 @@ module Sprinkle
               end
             end
           else
-            # context = binding()
             context = @binding
           end
 
           tempfile = render_template_file(@source, context, @package.name)
           @sourcepath = tempfile.path
-          if source_is_template?
-            logger.debug "Rendering inline template to temporary file #{sourcepath}"
-          else
-            logger.debug "Rendering template #{@source} to temporary file #{sourcepath}"
-          end
-          recursive = false
+          @options[:recursive] = false
         else
           @sourcepath = @source
         end

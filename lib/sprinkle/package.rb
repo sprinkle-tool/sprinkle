@@ -107,6 +107,8 @@ module Sprinkle
       cattr_reader :installer_methods
       @@installer_methods = []
       
+      include Rendering
+      
       def self.add_api(&block)
         before = self.instance_methods
         self.class_eval &block
