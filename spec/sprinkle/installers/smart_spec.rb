@@ -48,13 +48,6 @@ describe Sprinkle::Installers::Smart do
         'smart install ruby -y 2>&1 | tee -a /var/log/smart-sprinkle', 'op2' ]
     end
 
-    it 'should specify a non interactive mode to the apt installer' do
-      pending
-    end
-    it 'should install a specific version if defined' do
-      pending
-    end
-
   end
 
 end

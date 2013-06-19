@@ -35,7 +35,8 @@ describe Sprinkle::Installers::Source do
   end
 
   def create_source(source, version = nil, &block)
-    @package = mock(Sprinkle::Package, :name => 'package', :version => version)
+    @package = mock(Sprinkle::Package, :name => 'package', :version => version,
+    :installer_methods => [])
 
     Sprinkle::Installers::Source.new(@package, source, &block)
   end
@@ -329,7 +330,9 @@ describe Sprinkle::Installers::Source do
     end
     
     it "should be logged" do
-      pending
+      @commands.each do |k, v|
+        @installer.send(:pre_commands, k).join.should =~ />>.*#{k}.log/i
+      end
     end
 
     it 'should be run relative to the source build area' do
