@@ -71,6 +71,17 @@ module Sprinkle
     #     end
     #   end
     #
+    # Sixth, specifying custom configure, build, and install commands:
+    #
+    #   package :mysql_build do
+    #     source 'http://dev.mysql.com/get/Downloads/MySQL-5.5/mysql-5.5.25a.tar.gz/from/http://cdn.mysql.com/' do
+    #       custom_archive 'mysql-5.5.25a.tar.gz'
+    #       configure_command 'cmake .'
+    #       build_command 'make'             # This is actually the default command but could be set to something else here.
+    #       install_command 'make install'   # This is actually the default command but could be set to something else here.
+    #     end
+    #   end
+    #
     # As you can see, setting options is as simple as creating a
     # block and calling the option as a method with the value as
     # its parameter.
