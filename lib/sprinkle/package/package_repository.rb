@@ -6,6 +6,10 @@ module Sprinkle::Package
       clear
     end
     
+    def clear
+      @packages = []
+    end
+    
     # adds a single package to the repository
     def add(package)
       @packages << package
@@ -23,20 +27,16 @@ module Sprinkle::Package
       find_all_by_provides(name, opts)].flatten.compact
       filter(all, opts)
     end
-    
-    def find_all_by_provides(name, opts={})
-      @packages.select {|x| x.provides and x.provides.to_s == name.to_s }
-    end
-    
-    def clear
-      @packages = []
-    end
-    
+            
     def count
       @packages.size
     end
     
   private
+  
+    def find_all_by_provides(name, opts={})
+      @packages.select {|x| x.provides and x.provides.to_s == name.to_s }
+    end
     
     def filter(all, opts)
       all = all.select {|x| "#{x.version}" == opts[:version].to_s} if opts[:version]
