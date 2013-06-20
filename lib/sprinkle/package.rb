@@ -172,9 +172,9 @@ module Sprinkle
         raise ContextError, "Cannot call get inside a package, must be inside an Installer block"
       end
       
-      # meta installer
-      # TODO - fix to be atomic
+      # TODO - remove
       def push_file(file, options ={}, &block)
+        ActiveSupport::Deprecation.warn("push_file is depreciated and will be removed in v0.9.  Use the new `file` installer instead.")
         raise "need content" unless options[:content]
         runner "#{"sudo " if sudo?}rm -f #{file}"
         push_text options[:content], file, options, &block
