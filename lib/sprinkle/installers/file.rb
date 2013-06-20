@@ -39,7 +39,7 @@ module Sprinkle
       #       # ./templates/nginx.conf.erb or 
       #       # ./templates/nginx.conf should contain the erb template
       #   end
-      attr_reader :sourcepath, :destination
+      attr_reader :sourcepath, :destination, :contents
       
       api do
         def file(destination, options = {}, &block)
@@ -67,12 +67,12 @@ module Sprinkle
             
       def owner(owner)
         @owner = owner
-        post :install, "#{sudo_cmd}chown #{owner} #{@orig_destination}"
+        post :install, "#{sudo_cmd}chown #{owner} #{@destination}"
       end
       
       def mode(mode)
         @mode = mode
-        post :install, "#{sudo_cmd}chmod #{mode} #{@orig_destination}"
+        post :install, "#{sudo_cmd}chmod #{mode} #{@destination}"
       end
       
       private
