@@ -60,6 +60,7 @@ module Sprinkle
   #   end
   class Verify
     include Sprinkle::Attributes
+    include Sprinkle::Package::Rendering::Helpers
     attr_accessor :package, :description, :commands #:nodoc:
     
     delegate :opts, :to => :package

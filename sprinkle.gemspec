@@ -30,6 +30,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency(%q<rspec>, [">= 2.5"])
   s.add_development_dependency(%q<rake>, [">= 0.8.7"])
   s.add_development_dependency(%q<rdoc>, [">= 3.12"])
+  s.add_runtime_dependency(%q<erubis>, [">= 2.7.0"])
   s.add_runtime_dependency(%q<open4>, [">= 1.1.0"])
   s.add_runtime_dependency(%q<activesupport>, [">= 2.0.2"])
   s.add_runtime_dependency(%q<highline>, [">= 1.4.0"])
