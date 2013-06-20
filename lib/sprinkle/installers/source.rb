@@ -91,7 +91,7 @@ module Sprinkle
       
       api do
         def source(source, options = {}, &block)
-          @recommends << :build_essential # Ubuntu/Debian
+          recommends :build_essential # Ubuntu/Debian
           install Source.new(self, source, options, &block)
         end
       end

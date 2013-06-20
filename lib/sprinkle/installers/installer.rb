@@ -53,6 +53,8 @@ module Sprinkle
     class Installer
       include Sprinkle::Attributes      
       
+      delegate :version, :to => :package
+      
       attr_accessor :delivery, :package, :options, :pre, :post #:nodoc:
 
       def initialize(package, options = {}, &block) #:nodoc:

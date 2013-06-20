@@ -30,7 +30,7 @@ module Sprinkle
       
       api do
         def gem(name, options = {}, &block)
-          @recommends << :rubygems
+          recommends :rubygems
           install Gem.new(self, name, options, &block)
         end
       end

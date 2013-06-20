@@ -119,7 +119,7 @@ module Sprinkle
         end
 
         def normalize(all, &block)
-          all = all.flatten.uniq
+          all = all.flatten.uniq {|x| [x.name, x.version] }
           cloud_info "--> Normalized installation order for all packages: #{all.collect(&:name).join(', ')}\n"
           all.each &block
         end

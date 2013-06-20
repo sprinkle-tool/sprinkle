@@ -17,12 +17,12 @@
 #  set of metadata including its installer type (eg. apt, source, gem, etc). Packages can have
 #  relationships to each other via dependencies.
 
-require 'packages/essential'
-require 'packages/rails'
-require 'packages/database'
-require 'packages/server'
-require 'packages/search'
-require 'packages/scm'
+require './packages/essential'
+require './packages/rails'
+require './packages/database'
+require './packages/server'
+require './packages/search'
+require './packages/scm'
 
 
 # Policies

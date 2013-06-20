@@ -23,7 +23,8 @@ module Sprinkle::Package
     
     # returns all packages matching the name and options given (including via provides)
     def find_all(name, opts={})
-      all=[@packages.select {|x| x.name.to_s == name.to_s },
+      # opts ||= {}
+      all = [@packages.select {|x| x.name.to_s == name.to_s },
       find_all_by_provides(name, opts)].flatten.compact
       filter(all, opts)
     end

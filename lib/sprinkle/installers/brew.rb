@@ -19,7 +19,7 @@ module Sprinkle
 
       api do
         def brew(*names, &block)
-          @recommends << :homebrew
+          recommends :homebrew
           install_package(*names, &block)
         end
       end
