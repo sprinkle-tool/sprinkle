@@ -25,7 +25,8 @@ describe Sprinkle::Deployment do
 
     it 'should optionally accept installer defaults' do 
       @deployment = create_deployment
-      @deployment.should respond_to(:source)
+      @deployment.source do; end
+      @deployment.defaults.keys.should == [:source]
     end
     
     it 'should provide installer defaults as a proc when requested' do 

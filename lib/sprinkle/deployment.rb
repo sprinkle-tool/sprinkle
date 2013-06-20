@@ -67,9 +67,9 @@ module Sprinkle
         @defaults[sym] = block
       end
 
-      def respond_to?(sym) #:nodoc:
-        !!@defaults[sym]
-      end
+      # def respond_to?(sym) #:nodoc:
+      #   !!@defaults[sym]
+      # end
       
       def active_policies #:nodoc:
         if role=Sprinkle::OPTIONS[:only_role]
