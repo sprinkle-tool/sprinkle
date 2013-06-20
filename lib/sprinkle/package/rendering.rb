@@ -3,6 +3,11 @@ require 'digest/md5'
 
 module Sprinkle::Package
   module Rendering
+    extend ActiveSupport::Concern
+    
+    included do
+      self.send :include, Helpers
+    end
     
     def template(src, bound=binding)
       eruby = Erubis::Eruby.new(src)
@@ -17,8 +22,14 @@ module Sprinkle::Package
     end
     
     # helper
-    def md5(s)
-      Digest::MD5.hexdigest(s)
+    # def md5(s)
+    #   Digest::MD5.hexdigest(s)
+    # end
+    
+    module Helpers
+      def md5(s)
+        Digest::MD5.hexdigest(s)
+      end
     end
     
     private 
