@@ -13,7 +13,6 @@ module Sprinkle
     module File
       Sprinkle::Verify.register(Sprinkle::Verifiers::File)
       
-      # Checks to make sure <tt>path</tt> is a file on the remote server.
       def has_file(path)
         test "-f #{path}"
       end
@@ -29,9 +28,13 @@ module Sprinkle
       def file_contains(path, text)
         @commands << "grep '#{text}' #{path}"
       end
+      
+      # TODO: remove 0.9
       def user_present(username) 
+        ActiveSupport::Deprecation.warn("user_present is depreciated.  Use has_user instead.")  
         has_user username
       end
+      
       def matches_local(localfile, remotefile, mode=nil)
         raise "Couldn't find local file #{localfile}" unless ::File.exists?(localfile)
         require 'digest/md5'

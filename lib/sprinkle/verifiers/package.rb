@@ -1,3 +1,4 @@
+# TODO: remove
 module Sprinkle
   module Verifiers
     module Package
