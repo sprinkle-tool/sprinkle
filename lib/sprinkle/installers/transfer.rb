@@ -31,15 +31,8 @@ module Sprinkle
     # 
     # == Rendering templates
     #
-    # If you pass the option :render => true, this tells transfer that the source file
-    # is an ERB template to be rendered locally before being transferred (you can declare
-    # variables in the package scope). When render is true, recursive is turned off. Note
-    # you can also explicitly pass locals in to render with the :locals option.
-    #
-    #   package :nginx_conf do
-    #     nginx_port = 8080
-    #     transfer 'files/nginx.conf', '/etc/nginx.conf', :render => true
-    #   end
+    # Rendering templates with transfer has been depreciated.  Please see the file
+    # installer if you want to use templates.
     class Transfer < Installer
       attr_accessor :source, :destination, :sourcepath #:nodoc:
       
