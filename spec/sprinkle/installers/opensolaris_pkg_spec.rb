@@ -42,10 +42,6 @@ describe Sprinkle::Installers::OpensolarisPkg do
       @installer.send(:install_sequence).should == [ 'op1', 'pkg install ruby', 'op2' ]
     end
 
-    it 'should install a specific version if defined' do
-      pending
-    end
-
   end
 
 end

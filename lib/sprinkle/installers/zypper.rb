@@ -19,7 +19,11 @@ module Sprinkle
     #     zypper "magic_beans", "magic_sauce"
     #   end
     class Zypper < PackageInstaller
-      
+    
+      ##
+      # installs the ZYpp packages passed
+      # :method: zypper
+      # :call-seq: zypper(*packages)
       auto_api
 
       protected

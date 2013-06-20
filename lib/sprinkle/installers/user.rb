@@ -1,6 +1,6 @@
 module Sprinkle
   module Installers
-    # The user installer helps add users.  You may pass flags as an option.
+    # The user installer add users.  You may pass :flags as an option.
     # 
     # == Example Usage
     #
@@ -8,7 +8,7 @@ module Sprinkle
     #     add_user 'admin', :flags => "--disabled-password"
     #
     #     verify do
-    #       has_user 'admin', :in_group = "root"
+    #       has_user 'admin', :in_group => "root"
     #     end
     #   end
     

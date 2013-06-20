@@ -21,6 +21,10 @@ module Sprinkle
     #   end
     class Yum < PackageInstaller
 
+      ##
+      # installs the RPM packages passed
+      # :method: yum
+      # :call-seq: yum(*packages)
       auto_api
 
       verify_api do
