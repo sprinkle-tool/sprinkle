@@ -1,6 +1,6 @@
 module Sprinkle
   module Installers
-    class InstallPackage < Installer
+    class InstallPackage < Installer #:nodoc:
       cattr_accessor :installer
       attr_accessor :packages #:nodoc:
 

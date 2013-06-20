@@ -24,9 +24,6 @@ describe Sprinkle::Verify do
         # Check for a user
         has_user "bob"
         
-        # Check for user with old API
-        user_present "someuser"
-        
         # Check for user in a group
         has_user "alf", :in_group => "alien"
         
@@ -99,10 +96,6 @@ describe Sprinkle::Verify do
       @verification.commands.should include('id bob')
     end
     
-    it 'should use id to check for user via user_present' do
-      @verification.commands.should include('id someuser')
-    end
-
     it 'should use id to check for group' do
       @verification.commands.should include('id -g bobgroup')
     end

@@ -61,10 +61,10 @@ module Sprinkle
       end
     end
     
-    class Policy #:nodoc:
+    class Policy
       attr_reader :name, :roles
 
-      def initialize(name, metadata = {}, &block)
+      def initialize(name, metadata = {}, &block) #:nodoc:
         raise 'No name provided' unless name
         raise 'No roles provided' unless metadata[:roles]
 
@@ -74,15 +74,19 @@ module Sprinkle
         self.instance_eval(&block)
       end
 
+      # tell a policy which packages are required
       def requires(package, opts={})
         @packages << [package, opts]
       end
       
-      def packages; @packages.map {|x| x.first }; end
+      def packages #:nodoc:
+         @packages.map {|x| x.first }
+       end
 
-      def to_s; name; end
+      def to_s #:nodoc:
+         name; end
 
-      def process(deployment)
+      def process(deployment) #:nodoc:
         raise NoMatchingServersError.new(@name, @roles) unless deployment.style.servers_for_role?(@roles)
         
         all = []

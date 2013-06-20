@@ -11,16 +11,13 @@ module Sprinkle
     # Installing a nginx.conf onto remote servers
     #
     #   package :nginx_conf do
-    #     file '/etc/nginx.conf', :content => File.read('files/nginx.conf')
+    #     file '/etc/nginx.conf', :content => File.read('files/nginx.conf'),
+    #       :sudo => true
     #   end
     #
-    # If you user has access to 'sudo' and theres a file that requires
-    # priveledges to install, you can pass :sudo => true
-    #
-    #   package :nginx_conf do
-    #     file '/etc/nginx.conf', :sudo => true,
-    #       :content => File.read('files/nginx.conf')
-    #   end
+    # Sudo is only necessary when the user your sprinkle is running as does
+    # not have necessarily permissions to create the file on its own.
+    # Such as when the file is in /etc.
     #
     # Should you need to run commands before or after the file transfer (making
     # directories or changing permissions), you can use the pre/post :install directives.
