@@ -14,7 +14,7 @@ describe Sprinkle::Installers::FileInstaller do
     @roles = []
     @deployment = deployment do
       delivery :capistrano
-      installer do; prefix '/usr/bin'; end
+      source do; prefix '/usr/bin'; end
     end
   end
 
