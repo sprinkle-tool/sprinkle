@@ -1,7 +1,7 @@
 require File.expand_path("../spec_helper", File.dirname(__FILE__))
 
 describe Sprinkle::Policy do
-  include Sprinkle::Policy
+  include Sprinkle::Core
 
   before do
     @name = 'a policy'
@@ -14,7 +14,7 @@ describe Sprinkle::Policy do
     
     it "should raise an error" do
       @deployment = mock(:style => Sprinkle::Actors::Dummy.new {})
-      lambda { @policy.process(@deployment) }.should raise_error(Sprinkle::Policy::NoMatchingServersError)
+      lambda { @policy.process(@deployment) }.should raise_error(Sprinkle::NoMatchingServersError)
     end
   end
 
@@ -44,10 +44,10 @@ describe Sprinkle::Policy do
     end
 
     it 'should add itself to the global policy list' do
-      sz = Sprinkle::Policy::POLICIES.size
+      sz = Sprinkle::POLICIES.size
       p = policy @name, :roles => :app do; end
-      Sprinkle::Policy::POLICIES.size.should == sz + 1
-      Sprinkle::Policy::POLICIES.last.should == p
+      Sprinkle::POLICIES.size.should == sz + 1
+      Sprinkle::POLICIES.last.should == p
     end
 
   end

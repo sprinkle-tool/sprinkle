@@ -63,8 +63,9 @@ describe Sprinkle::Deployment do
   describe 'when processing policies' do 
     
     before do 
-      @policy = mock(Policy, :process => true)
-      POLICIES = [ @policy ]
+      @policy = mock(Sprinkle::Policy, :process => true)
+      Sprinkle::POLICIES.clear
+      Sprinkle::POLICIES << @policy 
       @deployment = create_deployment
     end
     

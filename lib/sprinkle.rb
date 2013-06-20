@@ -34,7 +34,7 @@ end
 # Define a logging target and understand packages, policies and deployment DSL
 #++
 class Object #:nodoc:
-  include Sprinkle::Package, Sprinkle::Policy
+  include Sprinkle::Package, Sprinkle::Core
 
   def logger # :nodoc:
     # ActiveSupport::BufferedLogger was deprecated and replaced by ActiveSupport::Logger in Rails 4.
