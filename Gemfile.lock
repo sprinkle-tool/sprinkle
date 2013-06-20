@@ -46,8 +46,8 @@ GEM
       pry
     pry_debug (0.1.0)
       pry (~> 0.9.0)
-    rake (10.0.4)
-    rdoc (4.0.1)
+    rake (10.1.0)
+    rdoc (3.10)
       json (~> 1.4)
     rspec (2.13.0)
       rspec-core (~> 2.13.0)
@@ -57,9 +57,9 @@ GEM
     rspec-expectations (2.13.0)
       diff-lcs (>= 1.1.3, < 2.0)
     rspec-mocks (2.13.1)
-    sdoc (0.2.19)
+    sdoc (0.3.20)
       json (>= 1.1.3)
-      rdoc (>= 2.4.2)
+      rdoc (~> 3.10)
     slop (3.4.5)
 
 PLATFORMS
@@ -70,7 +70,7 @@ DEPENDENCIES
   pry-rescue
   pry_debug
   rake (>= 0.8.7)
-  rdoc (>= 3.12)
+  rdoc (= 3.10)
   rspec (>= 2.5)
   sdoc
   sprinkle!

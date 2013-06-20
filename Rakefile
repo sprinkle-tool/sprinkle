@@ -1,4 +1,6 @@
 require 'rubygems'
+require 'bundler/setup'
+
 require 'rake'
 require 'rspec/core/rake_task'
 require 'sdoc'
@@ -36,7 +38,7 @@ RDoc::Task.new do |rdoc|
   
   rdoc.options << '-e' << 'UTF-8'
   rdoc.options << '-f' << 'sdoc'
-  # rdoc.options << "-T" << "rails"
+  rdoc.options << "-T" << "rails"
   
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = "sprinkle #{version}"

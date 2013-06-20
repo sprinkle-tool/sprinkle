@@ -3,6 +3,10 @@ module Sprinkle
     # The pacman installer installs Pacman packages
     class Pacman < PackageInstaller
       
+      ##
+      # installs the Pacman packages passed
+      # :method: pacman
+      # :call-seq: pacman(*packages)
       auto_api
 
       protected

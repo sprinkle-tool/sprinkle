@@ -47,7 +47,7 @@ module Sprinkle
         @path = path
       end
 
-      def announce
+      def announce #:nodoc:
         log "--> Append '#{@text}' to file #{@path}"
       end
 

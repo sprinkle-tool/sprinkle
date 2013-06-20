@@ -16,8 +16,8 @@ module Sprinkle
       # automatically sets up the api for package installation based on the class name
       #
       # Apt becomes the method `apt`, etc
-      def self.auto_api
-        method_name = self.to_s.underscore.split("/").last
+      def self.auto_api(*args)
+        method_name = args.first || self.to_s.underscore.split("/").last
         class_name = self.to_s
         api do
           method="def #{method_name}(*names, &block)
