@@ -1,5 +1,6 @@
 module Sprinkle
-  POLICIES = [] #:nodoc:
+  # stores the global list of policies as they are defined
+  POLICIES = []
   
   module Core
     # Defines a single policy. Currently the only option, which is also
