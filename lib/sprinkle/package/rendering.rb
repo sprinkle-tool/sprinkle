@@ -21,11 +21,6 @@ module Sprinkle::Package
       template(contents)
     end
     
-    # helper
-    # def md5(s)
-    #   Digest::MD5.hexdigest(s)
-    # end
-    
     module Helpers
       def md5(s)
         Digest::MD5.hexdigest(s)
