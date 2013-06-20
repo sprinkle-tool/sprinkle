@@ -29,8 +29,8 @@ module Sprinkle
       # == Rendering templates
       #
       # Use the template render helper to render an ERB template to a remote file (you 
-      # can use variables to your templates by setting them as instance variables inside
-      # your package.
+      # can use variables in your templates by setting them as instance variables inside
+      # your package.  Templates have access to package methods such as opts, args, etc.
       #
       #   package :nginx_conf do
       #     @nginx_port = 8080
