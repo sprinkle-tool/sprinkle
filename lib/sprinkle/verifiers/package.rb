@@ -1,10 +1,10 @@
 # TODO: remove
 module Sprinkle
   module Verifiers
-    module Package
+    module Package #:nodoc:
       Sprinkle::Verify.register(Sprinkle::Verifiers::Package)
 
-      def has_package(*packages)
+      def has_package(*packages) 
         puts "has_package and has_packages are depreciated"
         raise "please use has_yum and friends instead"
       end

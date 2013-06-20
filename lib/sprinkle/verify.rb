@@ -1,5 +1,5 @@
 module Sprinkle
-  # = Verification Methods
+  # = Verify Blocks
   #
   # As documented in Sprinkle::Package, you may define a block on a package
   # which verifies that a package was installed correctly. If this verification
@@ -49,7 +49,7 @@ module Sprinkle
   #
   # To register your verifier, call the register method on Sprinkle::Verify:
   #
-  #   Sprinle::Verify.register(MagicBeansVerifier)
+  #   Sprinkle::Verify.register(MagicBeansVerifier)
   #
   # And now you may use it like any other verifier:
   #

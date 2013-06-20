@@ -5,6 +5,7 @@ source "https://rubygems.org"
 gemspec
 
 group :development do
+  gem 'sdoc'
   gem 'pry'
   gem 'pry_debug'
   gem 'pry-rescue'

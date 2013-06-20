@@ -1,5 +1,5 @@
 module Sprinkle
-  module Errors
+  module Errors #:nodoc:
     
     class PrettyFailure < StandardError #:nodoc:
       

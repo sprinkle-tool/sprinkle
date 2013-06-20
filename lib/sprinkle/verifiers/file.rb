@@ -12,9 +12,25 @@ module Sprinkle
     #
     module File
       Sprinkle::Verify.register(Sprinkle::Verifiers::File)
-      
+
+      # tests that the file <tt>path</tt> exists
       def has_file(path)
         test "-f #{path}"
+      end
+      
+      # Tests that the directory <tt>dir</tt> exists.
+      def has_directory(dir)
+        test "-d #{dir}"
+      end
+      
+      # Checks that <tt>symlink</tt> is a symbolic link. If <tt>file</tt> is 
+      # given, it checks that <tt>symlink</tt> points to <tt>file</tt>
+      def has_symlink(symlink, file = nil)
+        if file.nil?
+          test "-L #{symlink}"
+        else
+          test "'#{file}' = `readlink #{symlink}`"
+        end
       end
       
       def no_file(path)

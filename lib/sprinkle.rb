@@ -33,7 +33,7 @@ end
 #--
 # Define a logging target and understand packages, policies and deployment DSL
 #++
-class Object
+class Object #:nodoc:
   include Sprinkle::Package, Sprinkle::Policy
 
   def logger # :nodoc:

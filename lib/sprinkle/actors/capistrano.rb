@@ -38,16 +38,16 @@ module Sprinkle
         end
       end
       
-      def sudo?
+      def sudo? #:nodoc:
         @config.fetch(:run_method, :run) == :sudo
       end
       
-      def sudo_command
+      def sudo_command #:nodoc:
         @config.sudo
       end
       
       # Determines if there are any servers for the given roles
-      def servers_for_role?(roles)
+      def servers_for_role?(roles) #:nodoc:
         roles=Array(roles)
         roles.any? { |r| @config.roles.keys.include?(r) }
       end

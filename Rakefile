@@ -1,6 +1,7 @@
 require 'rubygems'
 require 'rake'
 require 'rspec/core/rake_task'
+require 'sdoc'
 require 'rdoc/task'
 require './lib/sprinkle/version'
 
@@ -24,9 +25,19 @@ RSpec::Core::RakeTask.new(:coverage) do |t|
   t.rcov_opts = ['--exclude', 'spec']
 end
 
+class RDoc::Comment
+  def gsub(*args)
+    @text.gsub(*args)
+  end
+end
+
 RDoc::Task.new do |rdoc|
   version = Sprinkle::Version
-
+  
+  rdoc.options << '-e' << 'UTF-8'
+  rdoc.options << '-f' << 'sdoc'
+  # rdoc.options << "-T" << "rails"
+  
   rdoc.rdoc_dir = 'rdoc'
   rdoc.title = "sprinkle #{version}"
   rdoc.rdoc_files.include('README*')

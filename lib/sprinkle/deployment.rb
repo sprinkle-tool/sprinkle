@@ -1,4 +1,6 @@
 module Sprinkle
+  # = Deployments
+  #
   # Deployment blocks specify deployment specific information about a 
   # sprinkle script. An example:
   #
@@ -69,7 +71,7 @@ module Sprinkle
         !!@defaults[sym]
       end
       
-      def active_policies
+      def active_policies #:nodoc:
         if role=Sprinkle::OPTIONS[:only_role]
           role=role.to_sym
           POLICIES.select {|x| [x.roles].flatten.include?(role) }

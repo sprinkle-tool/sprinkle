@@ -62,18 +62,18 @@ end
 module Sprinkle
   module Package
     class Package
-      def install_package(*names, &block)
+      def install_package(*names, &block) #:nodoc:
         ActiveSupport::Deprecation.warn("install_package will be removed from sprinkle 0.8, please use yum or smart installers instead.")
         @installers << Sprinkle::Installers::InstallPackage.new(self, names, &block)
       end
 
-      def uninstall_package(*names, &block)
+      def uninstall_package(*names, &block) #:nodoc:
         ActiveSupport::Deprecation.warn("uninstall_package will be removed from sprinkle 0.8, please use yum or smart installers instead.")
         @installers << Sprinkle::Installers::UninstallPackage.new(self, names, &block)
       end
 
-      alias_method :install_packages, :install_package
-      alias_method :uninstall_packages, :uninstall_package
+      alias_method :install_packages, :install_package #:nodoc:
+      alias_method :uninstall_packages, :uninstall_package #:nodoc:
     end
   end
 end

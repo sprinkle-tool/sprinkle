@@ -12,9 +12,9 @@ module Sprinkle
   # == A Basic Example
   #
   #   policy :blog, :roles => :app do
-  #     require :webserver
-  #     require :database
-  #     require :rails
+  #     requires :webserver
+  #     requires :database
+  #     requires :rails
   #   end
   #
   # This says that for the blog on the app role, it requires certain 

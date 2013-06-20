@@ -18,14 +18,18 @@ module Sprinkle
     # local system was a member of all roles defined.
     class Local < Actor
       
-      class LocalCommandError < StandardError; end
       
-      def servers_for_role?(role)
+      class LocalCommandError < StandardError #:nodoc:
+      end
+      
+      def servers_for_role?(role) #:nodoc:
         true
       end
       
-      def sudo?; false; end
-      def sudo_command; nil; end
+      def sudo? #:nodoc:; 
+        false; end 
+      def sudo_command #:nodoc:; 
+        nil; end 
       
       def install(installer, roles, opts = {}) #:nodoc:
         # all local installer cares about is the commands
@@ -62,7 +66,7 @@ module Sprinkle
         return true
       end
       
-      def run_command(cmd)
+      def run_command(cmd) #:nodoc:
         @log_recorder.reset cmd
         pid, stdin, out, err = Open4.popen4(cmd)
         ignored, status = Process::waitpid2 pid
@@ -71,7 +75,7 @@ module Sprinkle
         @log_recorder.code = status.to_i
       end
       
-      def raise_error(e)
+      def raise_error(e) #:nodoc:
         raise Sprinkle::Errors::RemoteCommandFailure.new(@installer, @log_recorder.hash, e)
       end
       

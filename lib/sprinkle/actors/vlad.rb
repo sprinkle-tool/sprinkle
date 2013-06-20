@@ -23,17 +23,17 @@ module Sprinkle
         self.instance_eval &block if block
       end
       
-      def servers_for_role?
+      def servers_for_role? #:nodoc:
         raise "The vlad actor needs a maintainer.  "+
         "Please file an issue on github.com/sprinkle-tool/sprinkle if you can help."
       end
       
-      def sudo?
+      def sudo? #:nodoc:
         # TODO
         raise
       end
       
-      def sudo_command
+      def sudo_command #:nodoc:
         "sudo"
       end
 
@@ -53,7 +53,7 @@ module Sprinkle
         @loaded_recipes << name
       end
       
-      def install(installer, roles, opts={})
+      def install(installer, roles, opts={}) #:nodoc:
         @installer=installer
         if installer.install_sequence.include?(:TRANSFER)
           process_with_transfer(installer.package.name, installer.install_sequence, roles, opts)
@@ -67,7 +67,7 @@ module Sprinkle
         @installer = nil
       end
       
-      def verify(verifier, roles, opts={})
+      def verify(verifier, roles, opts={}) #:nodoc:
         process(verifier.package.name, commands, roles, 
           :suppress_and_return_failures => true)
       end
@@ -97,7 +97,7 @@ module Sprinkle
         invoke(task)
       end
       
-      def invoke(t)
+      def invoke(t) #:nodoc:
         t.invoke
         return true
       rescue ::Rake::CommandFailedError => e
@@ -108,7 +108,7 @@ module Sprinkle
 
       private
 
-        def task_sym(name)
+        def task_sym(name) #:nodoc:
           "install_#{name.to_task_name}".to_sym
         end
     end
