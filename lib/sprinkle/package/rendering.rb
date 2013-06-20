@@ -35,6 +35,7 @@ module Sprinkle::Package
     private 
     
     def expand_filename(n)
+      return n.to_s if n.to_s.starts_with? "/"
       ["./templates/#{n}","./templates/#{n}.erb"].each do |f|
         return f if File.exist?(f)
       end
