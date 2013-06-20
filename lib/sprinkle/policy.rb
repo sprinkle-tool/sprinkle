@@ -104,7 +104,7 @@ module Sprinkle
         all << tree
       end
 
-      normalize(all) do |package|
+      normalize(all).each do |package|
         package.process(deployment, @roles)
       end
     end
@@ -118,7 +118,7 @@ module Sprinkle
       def normalize(all, &block)
         all = all.flatten.uniq
         cloud_info "--> Normalized installation order for all packages: #{all.collect(&:name).join(', ')}\n"
-        all.each &block
+        all
       end
   end
 end
