@@ -64,6 +64,8 @@ module Sprinkle
     
     delegate :opts, :to => :package
     delegate :args, :to => :package
+    delegate :version, :to => :package
+    delegate :description, :to => :package
 
     class <<self
       # Register a verification module
