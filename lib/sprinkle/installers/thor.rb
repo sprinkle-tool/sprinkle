@@ -2,7 +2,7 @@ module Sprinkle
   module Installers
     # = Thor Installer
     #
-    # This installer runs a thor command.
+    # This installer runs a thor task.
     # 
     # == Example Usage
     #
@@ -15,29 +15,28 @@ module Sprinkle
     # 
     # Specify a Thorfile with the :thorfile option.
     #
-    #   package :spec, :thorfile => "/var/setup/Thorfile" do
-    #     thor 'spec'
+    #   package :spec do
+    #     thor 'spec', :file => "/var/setup/Thorfile"
     #   end
      
-    class Thor < Installer
+    class Thor < Rake
       
       api do
-        def thor(name, options = {}, &block)
-          install Thor.new(self, name, options, &block)
+        def thor(task, options = {}, &block)
+          install Thor.new(self, task, options, &block)
         end  
       end
       
-      def initialize(parent, commands, options = {}, &block) #:nodoc:
-        super parent, options, &block
-        @commands = commands
-      end
-
       protected
 
-        def install_commands #:nodoc:
-          file = @options[:thorfile] ? "-f #{@options[:thorfile]} " : ""
-          "thor #{file}#{@commands}"
-        end
+      def executable #:nodoc:
+        "thor"
+      end
+      
+      def taskfile #:nodoc:
+        file = @options[:thorfile] || @options[:file] 
+        file ? "-f #{file} " : ""
+      end
 
     end
   end

@@ -1,6 +1,6 @@
 module Sprinkle
   module Installers
-    # This installer runs a rake command.
+    # This installer runs a rake task.
     # 
     # == Example Usage
     #
@@ -9,13 +9,13 @@ module Sprinkle
     # the :rakefile option.
     #
     #   package :spec do
-    #     rake 'spec', :rakefile => "/var/setup/Rakefile"
+    #     rake 'spec', :file => "/var/setup/Rakefile"
     #   end
     class Rake < Installer
       
       api do
-        def rake(name, options = {}, &block)
-          install Rake.new(self, name, options, &block)
+        def rake(task, options = {}, &block)
+          install Rake.new(self, task, options, &block)
         end    
       end
       
@@ -27,8 +27,16 @@ module Sprinkle
       protected
 
         def install_commands #:nodoc:
-          file = @options[:rakefile] ? "-f #{@options[:rakefile]} " : ""
-          "rake #{file}#{@commands}"
+          "#{executable} #{taskfile}#{@commands}"
+        end
+        
+        def executable #:nodoc:
+          "rake"
+        end
+        
+        def taskfile #:nodoc:
+          file = @options[:rakefile] || @options[:file] 
+          file ? "-f #{file} " : ""
         end
 
     end
