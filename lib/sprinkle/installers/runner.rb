@@ -23,8 +23,9 @@ module Sprinkle
           install Runner.new(self, cmds, options, &block)
         end
         
-        def noop(&block)
-          install Runner.new(self, "echo noop", &block)
+        # runs 'echo noop' on the remote host
+        def noop
+          install Runner.new(self, "echo noop")
         end
       end
       
