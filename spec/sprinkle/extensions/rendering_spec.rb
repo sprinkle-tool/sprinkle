@@ -13,9 +13,16 @@ describe Sprinkle::Package::Rendering, 'rendering' do
   
   it "should allow passing locals to template" do
     t=@package.template("hello <%= world %>", :world => "world")
+  end
+
+  it "should allow access to the package context by default" do
+    @package = package :new do
+    end.instance
+    @package.opts[:world]="world"
+    t=@package.template("hello <%= opts[:world] %>")
     t.should == "hello world"
   end
-  
+        
   it "should be able to render a file from absolute path" do
     path=File.join(__FILE__, "../../templates/test.erb")
     t=@package.render("test")

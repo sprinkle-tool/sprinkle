@@ -12,13 +12,14 @@ module Sprinkle::Package
     def template(src, bound=binding)
       eruby = Erubis::Eruby.new(src)
       output = eruby.result(bound)
+      # output = eruby.evaluate(bound)
     rescue Object => e
       raise Sprinkle::Errors::TemplateError.new(e, src, bound)
     end
     
-    def render(filename)
+    def render(filename, context=binding)
       contents=File.read(expand_filename(filename))
-      template(contents)
+      template(contents, context)
     end
     
     # Helper methods can be called from inside your package and 
