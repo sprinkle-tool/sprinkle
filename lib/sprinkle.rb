@@ -12,7 +12,7 @@ end
 #ActiveSupport::Dependencies::RAILS_DEFAULT_LOGGER = Logger.new($stdout)
 #ActiveSupport::Dependencies.log_activity = true
 
-def require_all(*args)
+def require_all(*args) # :nodoc:
   args.each { |f|
     Dir[File.dirname(__FILE__) + "/sprinkle/#{f}"].each { |e| require e } }
 end
