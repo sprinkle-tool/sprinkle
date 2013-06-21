@@ -37,6 +37,20 @@ module Sprinkle
   # provision the server with Ruby to make sure the requirements are met.
   # In turn, if ruby has requirements, it installs those first, and so on.
   #
+  # == Defaults
+  #
+  # Packages can be given defaults.
+  # These default options are available as a hash in opts.
+  #
+  #   package :deploy_user do
+  #     defaults :username => 'deploy'
+  #     add_user opts[:username]
+  #   end
+  #
+  # Options given when requiring a package are merged over the defaults
+  #
+  #   requires :deploy_user, :username => 'deployer'
+  #
   # == Verifications
   #
   # Most of the time its important to know whether the software you're 
