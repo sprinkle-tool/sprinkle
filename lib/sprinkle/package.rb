@@ -1,3 +1,4 @@
+# encoding: utf-8
 module Sprinkle
   # = Packages
   #
@@ -35,6 +36,20 @@ module Sprinkle
   # In this case, when rubygems is being installed, Sprinkle will first
   # provision the server with Ruby to make sure the requirements are met.
   # In turn, if ruby has requirements, it installs those first, and so on.
+  #
+  # == Defaults
+  #
+  # Packages can be given defaults.
+  # These default options are available as a hash in opts.
+  #
+  #   package :deploy_user do
+  #     defaults :username => 'deploy'
+  #     add_user opts[:username]
+  #   end
+  #
+  # Options given when requiring a package are merged over the defaults
+  #
+  #   requires :deploy_user, :username => 'deployer'
   #
   # == Verifications
   #
@@ -142,7 +157,7 @@ module Sprinkle
       
       def instance(*args)
         p=Package.new(name, @metadata) {}
-        p.opts = args.extract_options!
+        p.opts = defaults.merge(args.extract_options!)
         p.args = args
         p.instance_variable_set("@block", @block)
         p.instance_eval &@block
@@ -156,13 +171,17 @@ module Sprinkle
       def use_sudo(flag=true)
         @use_sudo = flag
       end
-            
+
+      def defaults(s=nil)
+        s ? @defaults = s : @defaults ||= Hash.new
+      end
+
       def args
-        @args || []
+        @args ||= []
       end
       
       def opts
-        @opts || {}
+        @opts ||= defaults.clone
       end
       
       class ContextError < StandardError #:nodoc:
@@ -182,11 +201,20 @@ module Sprinkle
                   
       def verify(description = '', &block)
         @verifications << Sprinkle::Verify.new(self, description, &block)
-      end  
+      end
       
       def process(deployment, roles)
         logger.info "  * #{name}"
         return if meta_package?
+        unless opts.empty?
+          opts.each_with_index do |(k, v), index| 
+            if index == opts.size - 1
+              logger.info "    └─ #{k}: #{v}" 
+            else
+              logger.info "    ├─ #{k}: #{v}" 
+            end
+          end
+        end
         
         # Run a pre-test to see if the software is already installed. If so,
         # we can skip it, unless we have the force option turned on!
@@ -224,7 +252,7 @@ module Sprinkle
           v.process(roles)
         end
       end
-                  
+
       def requires(*packages)
         add_dependencies packages, :dependencies
       end

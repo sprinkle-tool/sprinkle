@@ -66,6 +66,37 @@ CODE
       pkg.version.should == '2.0.2'
     end
 
+    it 'should optionally accept configuration defaults' do
+      pkg = package @name do
+        defaults :some_option => 123, :some_other_option => true
+      end
+      pkg.defaults.should_not be_empty
+      pkg.opts.should eql({:some_option => 123, :some_other_option => true})
+    end
+
+    it 'should merge configuration defaults and additional opts' do
+      pkg = package @name do
+        defaults :some_option => 123, :some_other_option => true
+      end
+      instance = pkg.instance({:some_option => 345, :extra_option => false})
+      instance.opts.should eql({:some_option => 345, :some_other_option => true, :extra_option => false})
+    end
+
+    it 'should be able to use default option as installer argument' do
+      pkg = package @name do
+        defaults :username => 'deploy'
+        add_user opts[:username]
+      end
+      pkg.installers.first.class.should == Sprinkle::Installers::User
+      install_commands = pkg.installers.first.send :install_commands
+      install_commands.should == 'adduser  --gecos ,,, deploy'
+
+      instance = pkg.instance :username => 'deployer'
+
+      install_commands = instance.installers.first.send :install_commands
+      install_commands.should == 'adduser  --gecos ,,, deployer'
+    end
+
     it 'should optionally accept an installer' do
       pkg = package @name do
         gem 'rails'
