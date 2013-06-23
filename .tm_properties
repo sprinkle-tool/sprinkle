@@ -1,3 +1,5 @@
+projectDirectory = "$CWD"
+
 stockFiles = "{Gemfile.lock,test.rb}"
 
 excludeDirectories = "{rdoc,work}"
