@@ -1,0 +1,3 @@
+[mysqld]
+<%= "innodb_file_per_table" if opts[:innodb_file_per_table] %>
+innodb_buffer_pool_size = <%= opts[:innodb_buffer_pool_size] %>
