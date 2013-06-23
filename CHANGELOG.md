@@ -1,3 +1,7 @@
+*   Default package options (see Package docs)
+
+    *Koen Punt*
+
 *   Officially depreciate transfer :render and the ability to render just by passing
     a multi-line string as the transfer source.  If you want to render templates see the
     new `render()` and `template()` (rendering.rb) helpers and the `file` installer.
