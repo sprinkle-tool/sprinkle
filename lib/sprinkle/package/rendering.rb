@@ -10,10 +10,8 @@ module Sprinkle::Package
     end
 
     def template(src, context=binding)
-      # context.reverse_merge!(opts)
       eruby = Erubis::Eruby.new(src)
       output = eruby.result(context)
-      # output = eruby.evaluate(context)
     rescue Object => e
       raise Sprinkle::Errors::TemplateError.new(e, src, context)
     end
@@ -25,12 +23,6 @@ module Sprinkle::Package
     
     # Helper methods can be called from inside your package and 
     # verification code
-
-    def render(file, context={})
-      contents=File.read(expand_filename(file))
-      template(contents, context)
-    end
-
     module Helpers
       # return the md5 of a string (as a hex string)
       def md5(s)
