@@ -4,7 +4,7 @@ Sprinkle is a software provisioning tool you can use to build remote servers wit
 system has been installed. For example, to install a Rails or Merb stack on a brand new slice directly after
 its been created.
 
-[![Build Status](https://travis-ci.org/sprinkle-tool/sprinkle.png?branch=master)](https://travis-ci.org/sprinkle-tool/sprinkle)
+[![Build Status](https://travis-ci.org/sprinkle-tool/sprinkle.png?branch=master)](https://travis-ci.org/sprinkle-tool/sprinkle) [![Code Climate](https://codeclimate.com/github/sprinkle-tool/sprinkle.png)](https://codeclimate.com/github/sprinkle-tool/sprinkle/)
 
   * `#sprinkle` channel on the Freenode IRC Network
   * <http://redartisan.com/2008/5/27/sprinkle-intro>
