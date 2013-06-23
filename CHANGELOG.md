@@ -1,6 +1,10 @@
 *   Default package options (see Package docs)
 
     *Koen Punt*
+    
+*   Add the file installer so we can stop doing templates with `transfer`
+
+    *Josh Goebel*
 
 *   Officially depreciate transfer :render and the ability to render just by passing
     a multi-line string as the transfer source.  If you want to render templates see the
