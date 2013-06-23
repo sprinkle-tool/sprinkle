@@ -1,3 +1,3 @@
 module Sprinkle
-  Version = "0.7.1.1"
+  Version = "0.7.2"
 end
