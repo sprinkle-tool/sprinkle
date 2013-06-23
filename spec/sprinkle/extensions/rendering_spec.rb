@@ -19,10 +19,11 @@ describe Sprinkle::Package::Rendering, 'rendering' do
 
   it "should allow access to the package context by default" do
     @package = package :new do
+      @wowser = "wowser"
     end.instance
     @package.opts[:world]="world"
-    t=@package.template("hello <%= opts[:world] %>")
-    t.should == "hello world"
+    t=@package.template("hello <%= opts[:world] %> <%= @wowser %>")
+    t.should == "hello world wowser"
   end
         
   it "should be able to render a file from templates" do
