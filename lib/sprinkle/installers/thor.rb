@@ -18,7 +18,6 @@ module Sprinkle
     #   package :spec do
     #     thor 'spec', :file => "/var/setup/Thorfile"
     #   end
-     
     class Thor < Rake
       
       api do

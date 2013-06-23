@@ -1,5 +1,6 @@
 require 'net/ssh/gateway'
 require 'net/scp'
+require File.dirname(__FILE__) + "/ssh/connection_cache"
 
 module Sprinkle
   module Actors
@@ -43,20 +44,10 @@ module Sprinkle
       class SSHCommandFailure < StandardError #:nodoc:
         attr_accessor :details
       end
-      
-      class SSHConnectionCache #:nodoc:
-        def initialize; @cache={}; end
-        def start(host, user, opts={})
-          key="#{host}#{user}#{opts.to_s}"
-          @cache[key] ||= Net::SSH.start(host,user,opts)
-        end
-      end
-      
-      
+            
       def initialize(options = {}, &block) #:nodoc:
         @options = options.update(:user => 'root')
         @roles = {}
-        @connection_cache = SSHConnectionCache.new
         self.instance_eval &block if block
         raise "You must define at least a single role." if @roles.empty?
       end
@@ -115,24 +106,17 @@ module Sprinkle
       def sudo_command #:nodoc:
         "sudo"
       end
-
-      def setup_gateway #:nodoc:
-        @gateway ||= Net::SSH::Gateway.new(@options[:gateway], @options[:user]) if @options[:gateway]
-      end
       
       def teardown #:nodoc:
-        @gateway.shutdown! if @gateway
+        connections.shutdown!
       end
       
-      def verify(verifier, roles, opts = {}) #:nodoc:
-        @verifier = verifier
+      def verify(verifier, roles) #:nodoc:
         # issue all the verification steps in a single SSH command
         commands=[verifier.commands.join(" && ")]
         process(verifier.package.name, commands, roles)
       rescue SSHCommandFailure => e
         false
-      ensure
-        @verifier = nil
       end
       
       def install(installer, roles, opts = {}) #:nodoc:
@@ -144,24 +128,20 @@ module Sprinkle
         @installer = nil
       end
 
-      protected
+      private
       
         def raise_error(e) #:nodoc:
           raise Sprinkle::Errors::RemoteCommandFailure.new(@installer, e.details, e)
         end
       
-        def process(name, commands, roles, opts = {}) #:nodoc:
-          setup_gateway
-          r=execute_on_role(commands, roles)
-          logger.debug green "process returning #{r}"
-          return r
+        def process(name, commands, roles) #:nodoc:
+          execute_on_role(commands, roles)
         end      
       
         def execute_on_role(commands, role) #:nodoc:
           hosts = @roles[role]
           Array(hosts).each do |host| 
             success = execute_on_host(commands, host)
-            return false unless success
           end
         end
         
@@ -174,33 +154,28 @@ module Sprinkle
         end
         
         def execute_on_host(commands,host) #:nodoc:
-          session = ssh_session(host)
-          @log_recorder = Sprinkle::Utility::LogRecorder.new
           prepare_commands(commands).each do |cmd|
-            if cmd == :TRANSFER
-              transfer_to_host(@installer.sourcepath, @installer.destination, session, 
-                :recursive => @installer.options[:recursive])
-              next
-            elsif cmd == :RECONNECT
-              session.close # disconnenct
-              session = ssh_session(host) # reconnect
-              next
-            end
-            @log_recorder.reset cmd
-            res = ssh(session, cmd)
-            if res != 0 
-              fail=SSHCommandFailure.new
-              fail.details = @log_recorder.hash.merge(:hosts => host)
-              raise fail
+            case cmd
+              when :RECONNECT
+                reconnect host
+              when :TRANSFER
+                transfer_to_host(@installer.sourcepath, @installer.destination, host, 
+                  :recursive => @installer.options[:recursive])
+              else  
+                run_command cmd, host
             end
           end
-          true
         end
         
-        def ssh(host, cmd, opts={}) #:nodoc:
-          session = host.is_a?(Net::SSH::Connection::Session) ? host : ssh_session(host)
+        def run_command(cmd,host) #:nodoc:
+          @log_recorder= Sprinkle::Utility::LogRecorder.new(cmd)
+          session = ssh_session(host)
           logger.debug "[#{session.host}] ssh: #{cmd}"
-          channel_runner(session, cmd)
+          if channel_runner(session, cmd) != 0 
+            fail=SSHCommandFailure.new
+            fail.details = @log_recorder.hash.merge(:hosts => host)
+            raise fail
+          end
         end
         
         def channel_runner(session, command) #:nodoc:
@@ -244,7 +219,7 @@ module Sprinkle
         
         def transfer_to_host(source, destination, host, opts={}) #:nodoc:
           logger.debug "upload: #{destination}"
-          session = host.is_a?(Net::SSH::Connection::Session) ? host : ssh_session(host)
+          session = ssh_session(host)
           scp = Net::SCP.new(session)
           scp.upload! source, destination, :recursive => opts[:recursive], :chunk_size => 32.kilobytes
         rescue RuntimeError => e
@@ -256,28 +231,32 @@ module Sprinkle
         end
         
         def ssh_session(host) #:nodoc:
-          if @gateway
-            gateway.ssh(host, @options[:user])
-          else
-            @connection_cache.start(host, @options[:user],:password => @options[:password], :keys => @options[:keys])
-          end
-        end        
+          connections.start(host, @options[:user], @options.slice(:password, :keys))
+        end       
+
+        def reconnect(host) #:nodoc:
+          connections.reconnect host
+        end
+        
+        def connections #:nodoc:
+          @connection_cache ||= SSHConnectionCache.new @options.slice(:gateway, :user)
+        end 
         
         private
-        def color(code, s)
-          "\033[%sm%s\033[0m"%[code,s]
+        def color(code, text)
+          "\033[%sm%s\033[0m"%[code,text]
         end
-        def red(s)
-          color(31, s)
+        def red(text)
+          color(31, text)
         end
-        def yellow(s)
-          color(33, s)
+        def yellow(text)
+          color(33, text)
         end
-        def green(s)
-          color(32, s)
+        def green(text)
+          color(32, text)
         end
-        def blue(s)
-          color(34, s)
+        def blue(text)
+          color(34, text)
         end
     end
   end

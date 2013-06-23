@@ -11,7 +11,6 @@ module Sprinkle
     #       has_user 'admin', :in_group => "root"
     #     end
     #   end
-    
     class User < Installer
       
       api do

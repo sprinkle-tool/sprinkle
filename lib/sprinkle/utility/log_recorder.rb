@@ -4,8 +4,8 @@ module Sprinkle
       
       attr_accessor :err, :out, :command, :code
       
-      def initialize
-        reset
+      def initialize(cmd=nil)
+        reset(cmd)
       end
             
       def log(stream, data)
