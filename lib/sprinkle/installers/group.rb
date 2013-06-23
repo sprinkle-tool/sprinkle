@@ -1,18 +1,17 @@
 module Sprinkle
   module Installers
+    # The user installer helps add groups.  You may pass flags as an option.
+    # 
+    # == Example Usage
+    #
+    #   package :users do
+    #     add_group 'webguys', :flags => "--shell /usr/bin/zsh"
+    #
+    #     verify do
+    #       has_group 'webguys'
+    #     end
+    #   end
     class Group < Installer
-      # The user installer helps add groups.  You may pass flags as an option.
-      # 
-      # == Example Usage
-      #
-      #   package :users do
-      #     add_group 'webguys', :flags => "--shell /usr/bin/zsh"
-      #
-      #     verify do
-      #       has_group 'webguys'
-      #     end
-      #   end
-      
       api do
         def add_group(group, options={},  &block)
           install Group.new(self, group, options, &block)

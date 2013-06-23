@@ -7,14 +7,11 @@ module Sprinkle
     # Installing the magic_beans RPM via Yum. Its all the craze these days.
     #
     #   package :magic_beans do
-    #     yum 'magic_beans'
-    #     verify { has_yum 'magic_beans' }
-    #   end
-    #
-    # You may also specify multiple rpms as arguments or an array:
-    #
-    #   package :magic_beans do
-    #     yum "magic_beans", "magic_sauce"
+    #     yum 'magic_beans', 'magic_corn'
+    #     verify do
+    #       has_yum 'magic_beans' 
+    #       has_yum 'magic_corn' 
+    #     end
     #   end
     #
     # To install a specific version just add that version after the name
@@ -24,6 +21,10 @@ module Sprinkle
     #   end
     class Yum < PackageInstaller
 
+      ##
+      # installs the RPM packages passed
+      # :method: yum
+      # :call-seq: yum(*packages)
       auto_api
 
       verify_api do

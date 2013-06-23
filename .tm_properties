@@ -1,0 +1,5 @@
+stockFiles = "{Gemfile.lock,test.rb}"
+
+excludeDirectories = "{rdoc,work}"
+# excludeInFolderSearch = "${excludeDirectories}"
+excludeFiles = "{*.gem,$stockFiles}"

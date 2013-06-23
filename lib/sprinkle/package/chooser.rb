@@ -1,5 +1,5 @@
 module Sprinkle::Package
-  class Chooser
+  class Chooser #:nodoc:
     def self.select_package(name, packages)
       if packages.size <= 1
         package = packages.first

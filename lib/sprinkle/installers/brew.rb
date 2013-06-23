@@ -1,7 +1,5 @@
 module Sprinkle
   module Installers
-    # = Homebrew Package Installer
-    #
     # The Homebrew package installer uses the +brew+ command to install
     # packages on OSX.
     # 

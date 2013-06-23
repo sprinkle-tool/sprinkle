@@ -1,8 +1,6 @@
 require 'rubygems'
 require 'active_support/all'
 
-# Use active supports auto load mechanism
-require 'active_support/version'
 if ActiveSupport::VERSION::MAJOR > 2
   require 'active_support/dependencies'
   ActiveSupport::Dependencies.autoload_paths << File.dirname(__FILE__)
@@ -14,27 +12,24 @@ end
 #ActiveSupport::Dependencies::RAILS_DEFAULT_LOGGER = Logger.new($stdout)
 #ActiveSupport::Dependencies.log_activity = true
 
-require File.dirname(__FILE__) + "/sprinkle/version.rb"
+def require_all(*args) # :nodoc:
+  args.each { |f|
+    Dir[File.dirname(__FILE__) + "/sprinkle/#{f}"].each { |e| require e } }
+end
 
-# Load up extensions to existing classes
-Dir[File.dirname(__FILE__) + '/sprinkle/extensions/*.rb'].each { |e| require e }
-# Load up the verifiers so they can register themselves
-Dir[File.dirname(__FILE__) + '/sprinkle/verifiers/*.rb'].each { |e| require e }
-# Load up the installers so they can register themselves
-Dir[File.dirname(__FILE__) + '/sprinkle/installers/*.rb'].each { |e| require e }
+require_all "version.rb", "extensions/*.rb", "verifiers/*.rb", "installers/*.rb"
 
-# Configuration options
 module Sprinkle
+  # Configuration options
   OPTIONS = { :testing => false, :verbose => false, :force => false }
 end
 
-# Object is extended to Add the package and policy methods. To read about 
-# each method, see the corresponding module which is included.
+# Object is extended with a few helper methods.  Please see Sprinkle::Core.
 #--
 # Define a logging target and understand packages, policies and deployment DSL
 #++
 class Object
-  include Sprinkle::Package, Sprinkle::Policy
+  include Sprinkle::Package, Sprinkle::Core
 
   def logger # :nodoc:
     # ActiveSupport::BufferedLogger was deprecated and replaced by ActiveSupport::Logger in Rails 4.

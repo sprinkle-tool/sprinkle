@@ -1,7 +1,7 @@
 module Sprinkle
-  # = Programmatically Run Sprinkle
+  # = Scripting
   #
-  # Sprinkle::Script gives you a way to programatically run a given
+  # Script gives you a way to programatically run a given
   # sprinkle script. 
   class Script
     include Sprinkle::Deployment

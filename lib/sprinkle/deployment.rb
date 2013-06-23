@@ -1,4 +1,6 @@
 module Sprinkle
+  # = Deployments
+  #
   # Deployment blocks specify deployment specific information about a 
   # sprinkle script. An example:
   #
@@ -62,14 +64,14 @@ module Sprinkle
       end
 
       def method_missing(sym, *args, &block) #:nodoc:
-        @defaults[sym] = block
+        if Sprinkle::Package::Package.installer_methods.include?(sym)
+          @defaults[sym] = block
+        else
+          super sym, *args, &block
+        end
       end
 
-      def respond_to?(sym) #:nodoc:
-        !!@defaults[sym]
-      end
-      
-      def active_policies
+      def active_policies #:nodoc:
         if role=Sprinkle::OPTIONS[:only_role]
           role=role.to_sym
           POLICIES.select {|x| [x.roles].flatten.include?(role) }

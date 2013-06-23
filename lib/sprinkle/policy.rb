@@ -1,20 +1,31 @@
 require 'highline/import'
 
 module Sprinkle
+  class NoMatchingServersError < StandardError #:nodoc:
+    def initialize(name, roles)
+      @name = name
+      @roles = roles
+    end
+    
+    def to_s
+      "Policy #{@name} is to be installed on #{@roles.inspect} but no server has such a role."
+    end
+  end
+
   # = Policies
   #
-  # A policy defines a set of packages which are required for a certain
+  # Policies define a set of packages which are required for a certain
   # role (app, database, etc.). All policies defined will be run and all
   # packages required by the policy will be installed. So whereas defining
   # a Sprinkle::Package merely defines it, defining a Sprinkle::Policy 
   # actually causes those packages to install. 
   #
-  # == A Basic Example
+  # == Example
   #
   #   policy :blog, :roles => :app do
-  #     require :webserver
-  #     require :database
-  #     require :rails
+  #     requires :webserver
+  #     requires :database
+  #     requires :rails
   #   end
   #
   # This says that for the blog on the app role, it requires certain 
@@ -38,91 +49,77 @@ module Sprinkle
   # no software will be installed twice, so you may require a webserver on
   # multiple packages within the same role without having to wait for
   # that package to install repeatedly.
-  module Policy
-    POLICIES = [] #:nodoc:
+  class Policy
+    attr_reader :name 
+    # roles for which a policy should be installed [required]
+    attr_reader :roles 
 
-    # Defines a single policy. Currently the only option, which is also
-    # required, is :roles, which defines which servers a policy is
-    # used on.
-    def policy(name, options = {}, &block)
-      p = Policy.new(name, options, &block)
-      POLICIES << p
-      p
+    # creates a new policy, 
+    # although policies are typically not created directly but
+    # rather via the Core#policy helper.
+    def initialize(name, metadata = {}, &block)
+      raise 'No name provided' unless name
+      raise 'No roles provided' unless metadata[:roles]
+
+      @name = name
+      @roles = metadata[:roles]
+      @packages = []
+      self.instance_eval(&block)
+    end
+
+    # tell a policy which packages are required
+    def requires(package, opts={})
+      @packages << [package, opts]
     end
     
-    class NoMatchingServersError < StandardError #:nodoc:
-      def initialize(name, roles)
-        @name = name
-        @roles = roles
-      end
+    def packages #:nodoc:
+       @packages.map {|x| x.first }
+     end
+
+    def to_s #:nodoc:
+       name; end
+
+    def process(deployment) #:nodoc:
+      raise NoMatchingServersError.new(@name, @roles) unless deployment.style.servers_for_role?(@roles)
       
-      def to_s
-        "Policy #{@name} is to be installed on #{@roles.inspect} but no server has such a role."
+      all = []
+      
+      logger.info "[#{name}]"
+
+      cloud_info "--> Cloud hierarchy for policy #{@name}"
+
+      @packages.each do |p, args|
+        cloud_info "  * requires package #{p}"
+
+        package = Sprinkle::Package::PACKAGES.find_all(p, args)
+        raise "Package definition not found for key: #{p}" unless package
+        package = Sprinkle::Package::Chooser.select_package(p, package) if package.is_a? Array # handle virtual package selection
+        # get an instance of the package and pass our config options
+        package = package.instance(*args)
+
+        tree = package.tree do |parent, child, depth|
+          indent = "\t" * depth; cloud_info "#{indent}Package #{parent.name} requires #{child.name}"
+        end
+
+        all << tree
+      end
+
+      normalize(all).each do |package|
+        package.process(deployment, @roles)
       end
     end
-    
-    class Policy #:nodoc:
-      attr_reader :name, :roles
 
-      def initialize(name, metadata = {}, &block)
-        raise 'No name provided' unless name
-        raise 'No roles provided' unless metadata[:roles]
+    private
 
-        @name = name
-        @roles = metadata[:roles]
-        @packages = []
-        self.instance_eval(&block)
+      def normalize(all, &block)
+        all = all.flatten.uniq {|x| [x.name, x.version] }
+        cloud_info "--> Normalized installation order for all packages: #{all.collect(&:name).join(', ')}\n"
+        all
       end
 
-      def requires(package, opts={})
-        @packages << [package, opts]
-      end
-      
-      def packages; @packages.map {|x| x.first }; end
-
-      def to_s; name; end
-
-      def process(deployment)
-        raise NoMatchingServersError.new(@name, @roles) unless deployment.style.servers_for_role?(@roles)
-        
-        all = []
-        
-        logger.info "[#{name}]"
-
-        cloud_info "--> Cloud hierarchy for policy #{@name}"
-
-        @packages.each do |p, args|
-          cloud_info "  * requires package #{p}"
-
-          package = Sprinkle::Package::PACKAGES.find_all(p, args)
-          raise "Package definition not found for key: #{p}" unless package
-          package = Sprinkle::Package::Chooser.select_package(p, package) if package.is_a? Array # handle virtual package selection
-          # get an instance of the package and pass our config options
-          package = package.instance(*args)
-
-          tree = package.tree do |parent, child, depth|
-            indent = "\t" * depth; cloud_info "#{indent}Package #{parent.name} requires #{child.name}"
-          end
-
-          all << tree
-        end
-
-        normalize(all) do |package|
-          package.process(deployment, @roles)
-        end
+      def cloud_info(message)
+        logger.info(message) if Sprinkle::OPTIONS[:cloud] or logger.debug?
       end
 
-      private
-
-        def cloud_info(message)
-          logger.info(message) if Sprinkle::OPTIONS[:cloud] or logger.debug?
-        end
-
-        def normalize(all, &block)
-          all = all.flatten.uniq {|x| [x.name, x.version] }
-          cloud_info "--> Normalized installation order for all packages: #{all.collect(&:name).join(', ')}\n"
-          all.each &block
-        end
-    end
   end
 end

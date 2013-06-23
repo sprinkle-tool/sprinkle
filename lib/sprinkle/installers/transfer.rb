@@ -79,7 +79,6 @@ module Sprinkle
 
       def render_template(template, context, prefix)
         require 'tempfile'
-        require 'erubis'
 
         output = @package.template(template, context)
 

@@ -18,6 +18,10 @@ module Sprinkle
     #
     class FreebsdPkg < PackageInstaller
       
+      ##
+      # installs the FreeBSD packages passed
+      # :method: freebsd_pkg
+      # :call-seq: freebsd_pkg(*packages)
       auto_api
 
       protected

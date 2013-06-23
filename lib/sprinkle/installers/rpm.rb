@@ -20,6 +20,11 @@ module Sprinkle
     #   end
     class Rpm < PackageInstaller
 
+      ##
+      # install RPM packages
+      # :method: rpm
+      # :call-seq:
+      #   rpm(*packages)
       auto_api
       
       verify_api do

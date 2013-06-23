@@ -1,5 +1,5 @@
 module Sprinkle::Package
-  class PackageRepository
+  class PackageRepository #:nodoc:
     
     # sets up an empty repository
     def initialize

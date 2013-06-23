@@ -1,5 +1,5 @@
 module Sprinkle
-  module Utility
+  module Utility #:nodoc:
     class LogRecorder #:nodoc:
       
       attr_accessor :err, :out, :command, :code

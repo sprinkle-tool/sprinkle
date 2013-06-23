@@ -1,6 +1,6 @@
 module Sprinkle::Errors
   # Blatantly stole this from Chef
-  class TemplateError < RuntimeError
+  class TemplateError < RuntimeError #:nodoc:
     attr_reader :original_exception, :context
     SOURCE_CONTEXT_WINDOW = 2 unless defined? SOURCE_CONTEXT_WINDOW
 

@@ -44,7 +44,7 @@ module Sprinkle
         attr_accessor :details
       end
       
-      class SSHConnectionCache
+      class SSHConnectionCache #:nodoc:
         def initialize; @cache={}; end
         def start(host, user, opts={})
           key="#{host}#{user}#{opts.to_s}"
@@ -64,12 +64,12 @@ module Sprinkle
       # Define a whole host of roles at once
       #
       # This is depreciated - you should be using role instead.
-      def roles(roles)
+      def roles(roles) #:nodoc:
         @roles = roles
       end
       
       # Determines if there are any servers for the given roles
-      def servers_for_role?(roles)
+      def servers_for_role?(roles) #:nodoc:
         roles=Array(roles)
         roles.any? { |r| @roles.keys.include? (r) }
       end
@@ -108,11 +108,11 @@ module Sprinkle
         @options[:use_sudo] = value
       end
       
-      def sudo?
+      def sudo? #:nodoc:
         @options[:use_sudo]
       end
       
-      def sudo_command
+      def sudo_command #:nodoc:
         "sudo"
       end
 
@@ -146,7 +146,7 @@ module Sprinkle
 
       protected
       
-        def raise_error(e)
+        def raise_error(e) #:nodoc:
           raise Sprinkle::Errors::RemoteCommandFailure.new(@installer, e.details, e)
         end
       
@@ -165,7 +165,7 @@ module Sprinkle
           end
         end
         
-        def prepare_commands(commands)
+        def prepare_commands(commands) #:nodoc:
           return commands unless sudo?
           commands.map do |command| 
             next command if command.is_a?(Symbol)
@@ -255,7 +255,7 @@ module Sprinkle
           end          
         end
         
-        def ssh_session(host)
+        def ssh_session(host) #:nodoc:
           if @gateway
             gateway.ssh(host, @options[:user])
           else

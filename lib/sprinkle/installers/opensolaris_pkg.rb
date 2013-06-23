@@ -13,7 +13,7 @@ module Sprinkle
     # You may also specify multiple packages as an array:
     #
     #   package :magic_beans do
-    #     opensolaris_pkg %w(magic_beans magic_sauce)
+    #     opensolaris_pkg 'magic_beans', 'magic_sauce'
     #   end
     #
     # == Note
@@ -24,6 +24,10 @@ module Sprinkle
     #   set :sudo_prompt, ''
     class OpensolarisPkg < PackageInstaller
       
+      ##
+      # installs the OpenSolaris packages passed
+      # :method: opensolaris_pkg
+      # :call-seq: opensolaris_pkg(*packages)
       auto_api
 
       protected

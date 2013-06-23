@@ -11,8 +11,12 @@ module Sprinkle
     #   end
     #
     class Deb < PackageInstaller
-      
-      auto_api
+
+      ##
+      # install deb packages from an external URL
+      # :call-seq:
+      #   deb(*package_urls)
+      auto_api :deb
 
       protected
 
