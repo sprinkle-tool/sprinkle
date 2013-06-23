@@ -6,3 +6,6 @@ pkg
 coverage/*
 rdoc
 .ruby-version
+
+work
+config
