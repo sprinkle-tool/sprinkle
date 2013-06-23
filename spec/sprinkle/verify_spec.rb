@@ -54,6 +54,11 @@ describe Sprinkle::Verify do
 
         # Check for a certain RPM package
         has_rpm 'ntp'
+        
+        belongs_to_user "/etc/", "me"
+        belongs_to_user "/etc/", 2
+        belongs_to_group "/etc/", "root"
+        belongs_to_group "/etc/", 0
       end
     end
     @verification = @package.verifications[0]
@@ -68,6 +73,13 @@ describe Sprinkle::Verify do
   end
 
   describe 'with checks' do
+    it "should test that a file belongs to a given user or group" do
+      @verification.commands.should include("find /etc/ -maxdepth 0 -user me | egrep '.*'")
+      @verification.commands.should include("find /etc/ -maxdepth 0 -uid 2 | egrep '.*'")
+      @verification.commands.should include("find /etc/ -maxdepth 0 -group root | egrep '.*'")
+      @verification.commands.should include("find /etc/ -maxdepth 0 -gid 0 | egrep '.*'")
+    end
+    
     it 'should do a "test -f" on the has_file check' do
       @verification.commands.should include('test -f my_file.txt')
     end

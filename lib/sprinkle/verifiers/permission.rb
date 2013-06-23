@@ -20,19 +20,13 @@ module Sprinkle
       end
 
       def belongs_to_user(path, user)
-        if user.is_a?(Integer)
-          @commands << "find #{path} -maxdepth 0 -uid #{user} | egrep '.*'"
-        else
-          @commands << "find #{path} -maxdepth 0 -user #{user} | egrep '.*'"
-        end
+        arg = user.is_a?(Integer) ? "-uid" : "-user"
+        @commands << "find #{path} -maxdepth 0 #{arg} #{user} | egrep '.*'"
       end
 
       def belongs_to_group(path, group)
-        if group.is_a?(Integer)
-          @commands << "find #{path} -maxdepth 0 -gid #{group} | egrep '.*'"
-        else
-          @commands << "find #{path} -maxdepth 0 -group #{group} | egrep '.*'"
-        end
+        arg = group.is_a?(Integer) ? "-gid" : "-group"
+        @commands << "find #{path} -maxdepth 0 #{arg} #{group} | egrep '.*'"
       end
 
     end
