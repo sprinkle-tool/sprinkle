@@ -68,8 +68,8 @@ module Sprinkle
     end
 
     # tell a policy which packages are required
-    def requires(package, opts={})
-      @packages << [package, opts]
+    def requires(package, *args)
+      @packages << [package, args]
     end
     
     def packages #:nodoc:
@@ -91,7 +91,8 @@ module Sprinkle
       @packages.each do |p, args|
         cloud_info "  * requires package #{p}"
 
-        package = Sprinkle::Package::PACKAGES.find_all(p, args)
+        opts = args.clone.extract_options!
+        package = Sprinkle::Package::PACKAGES.find_all(p, opts)
         raise "Package definition not found for key: #{p}" unless package
         package = Sprinkle::Package::Chooser.select_package(p, package) if package.is_a? Array # handle virtual package selection
         # get an instance of the package and pass our config options
