@@ -7,8 +7,8 @@ describe Sprinkle::Installers::FileInstaller do
     @package = mock(Sprinkle::Package, :name => 'package', :sudo? => false)
     @empty = Proc.new { }
     @delivery = mock(Sprinkle::Deployment, :install => true)
-		@source = 'source'
-		@destination = 'destination'
+    @source = 'source'
+    @destination = 'destination'
     @contents = "hi"
     @installer = create_file_installer(@destination, :contents => @contents)
     @roles = []
@@ -21,7 +21,7 @@ describe Sprinkle::Installers::FileInstaller do
   def create_file_installer(dest, options={}, &block)
     i = Sprinkle::Installers::FileInstaller.new(@package, dest, options, &block)
     i.delivery = @delivery
-		i
+    i
   end
 
   describe 'when created' do
@@ -34,23 +34,64 @@ describe Sprinkle::Installers::FileInstaller do
   describe 'during installation' do
 
     context "setting mode and owner" do
-      before do 
+      before do
         @installer = create_file_installer @destination, :content => @contents do
           mode "744"
           owner "root"
         end
         @installer_commands = @installer.install_sequence
       end
-      
+
       it "should include command to set owner" do
         @installer_commands.should include("chmod 744 #{@destination}")
       end
-      
+
       it "should include command to set mode" do
         @installer_commands.should include("chown root #{@destination}")
       end
-      
+
     end
+
+    context "setting mode and owner with sudo" do
+      before do
+        @installer = create_file_installer @destination, :content => @contents do
+          @options[:sudo]= true
+          mode "744"
+          owner "root"
+        end
+        @installer_commands = @installer.install_sequence
+      end
+
+      it "should run commands in correct order" do
+        @installer_commands.should == [
+          :TRANSFER,
+          "sudo mv /tmp/sprinkle_#{@destination} #{@destination}",
+          "sudo chmod 744 #{@destination}",
+          "sudo chown root #{@destination}"
+        ]
+      end
+    end
+
+    context "setting mode and owner with sudo as options" do
+      before do
+        @installer = create_file_installer @destination, :content => @contents,
+          :mode => "744", :owner => "root" do
+          @options[:sudo]= true
+        end
+        @installer_commands = @installer.install_sequence
+      end
+
+      it "should run commands in correct order" do
+        @installer_commands.should == [
+          :TRANSFER,
+          "sudo mv /tmp/sprinkle_#{@destination} #{@destination}",
+          "sudo chown root #{@destination}",
+          "sudo chmod 744 #{@destination}"
+        ]
+      end
+
+    end
+
 
     context 'single pre/post commands' do
       before do
@@ -67,7 +108,7 @@ describe Sprinkle::Installers::FileInstaller do
       end
 
     end
-    
+
     context 'pre/post with sudo' do
       before do
         @installer = create_file_installer @destination, :content => @contents do
@@ -80,7 +121,7 @@ describe Sprinkle::Installers::FileInstaller do
       end
 
       it "should call the pre and post install commands around the file transfer" do
-        @installer_commands.should == ["op1",:TRANSFER, 
+        @installer_commands.should == ["op1",:TRANSFER,
           "sudo mv /tmp/sprinkle_destination destination", "op2"]
       end
     end
@@ -101,7 +142,7 @@ describe Sprinkle::Installers::FileInstaller do
 
     end
 
-		after do
+    after do
       @installer.process @roles
     end
   end
