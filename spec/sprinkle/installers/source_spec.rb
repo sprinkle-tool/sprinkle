@@ -237,9 +237,9 @@ describe Sprinkle::Installers::Source do
       end
 
       it 'should store the custom commands' do
-        @installer.options[:configure_command].first.should == './custom-configure'
-        @installer.options[:build_command].first.should     == 'custom-make'
-        @installer.options[:install_command].first.should   == 'custom-make install'
+        @installer.options[:configure_command].should == './custom-configure'
+        @installer.options[:build_command].should     == 'custom-make'
+        @installer.options[:install_command].should   == 'custom-make install'
       end
 
       it 'should use the custom commands' do
