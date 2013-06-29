@@ -61,7 +61,8 @@ module Sprinkle
   class Verify
     include Sprinkle::Attributes
     include Sprinkle::Package::Rendering::Helpers
-    attr_accessor :package, :description, :commands #:nodoc:
+    include Sprinkle::Sudo
+    attr_accessor :package, :description, :commands, :options #:nodoc:
     
     delegate :opts, :to => :package
     delegate :args, :to => :package

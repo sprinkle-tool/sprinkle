@@ -62,8 +62,25 @@ describe Sprinkle::Verify do
       end
     end
     @verification = @package.verifications[0]
-    @delivery = mock(Sprinkle::Deployment, :process => true)
+    @delivery = mock(Sprinkle::Deployment, :process => true, :sudo_command => "sudo")
     @verification.delivery = @delivery
+  end
+  
+  describe "with sudo" do
+    before do
+      @package = package @name do
+        use_sudo true
+        gem 'nonexistent'
+        verify 'moo' do
+          md5_of_file "/etc/secret", "123abc"
+        end
+      end
+      @verification = @package.verifications[0]
+      @verification.delivery = @delivery
+    end
+    it "should run sudo when necessary" do
+      @verification.commands.should include(%{test "`sudo md5sum /etc/secret | cut -f1 -d' '`" = "123abc"})
+    end
   end
 
   describe 'when created' do
@@ -89,7 +106,7 @@ describe Sprinkle::Verify do
     end
 
     it 'should do a md5sum to see if a file matches local file' do
-      @verification.commands.should include(%{[ "X$(md5sum my_file.txt|cut -d\\  -f 1)" = "Xed20d984b757ad5291963389fc209864" ]})
+      @verification.commands.should include(%{test "`md5sum my_file.txt | cut -f1 -d' '`" = "ed20d984b757ad5291963389fc209864"})
     end
 
     it 'should do a "test -d" on the has_directory check' do

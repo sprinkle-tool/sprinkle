@@ -51,7 +51,8 @@ module Sprinkle
     # or post :install. If this is the case, it will be documented on
     # the installation method's corresponding documentation page. 
     class Installer
-      include Sprinkle::Attributes      
+      include Sprinkle::Attributes
+      include Sprinkle::Sudo
       
       delegate :version, :to => :package
       
@@ -84,14 +85,6 @@ module Sprinkle
         end
       end
             
-      def sudo_cmd
-        return "#{@delivery.try(:sudo_command) || "sudo"} " if sudo?
-      end
-
-      def sudo?
-        options[:sudo] or package.sudo? or @delivery.try(:sudo?)
-      end
-
       def escape_shell_arg(str)
         str.gsub("'", "'\\\\''").gsub("\n", '\n')
       end
