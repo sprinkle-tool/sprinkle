@@ -118,7 +118,7 @@ module Sprinkle
 
     class Package #:nodoc:
       attr_accessor :name, :provides, :installers, :verifications
-      attr_accessor :args, :opts
+      attr_internal :args, :opts
       cattr_reader :installer_methods
       @@installer_methods = []
       
@@ -177,11 +177,11 @@ module Sprinkle
       end
 
       def args
-        @args ||= []
+        @_args ||= []
       end
       
       def opts
-        @opts ||= defaults.clone
+        @_opts ||= defaults.clone
       end
       
       class ContextError < StandardError #:nodoc:
