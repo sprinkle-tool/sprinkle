@@ -3,7 +3,7 @@ module Sprinkle
     # = RPM Package Installer
     #
     # The RPM package installer installs RPM packages.
-    # 
+    #
     # == Example Usage
     #
     # Installing the magic_beans RPM. Its all the craze these days.
@@ -26,7 +26,7 @@ module Sprinkle
       # :call-seq:
       #   rpm(*packages)
       auto_api
-      
+
       verify_api do
         def has_rpm(package)
           @commands << "rpm -qa | grep #{package}"
