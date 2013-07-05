@@ -34,18 +34,20 @@ module Sprinkle::Package
     private 
     
     def search_paths(n)
-      return [n] if File.exist?(n)
+      # if we are given an absolute path, return just that path
+      return [File.dirname(n)] if n.starts_with? "/"
       p = []
       package_dir = File.dirname(caller[2].split(":").first)
       # if ./ is used assume the path is relative to the package
-      return [package_dir] if n =~ %r{./}
+      return [package_dir] if n =~ %r{./}r
+      # otherwise search template folders
       p << File.join(cwd,"templates")
       p << File.expand_path("./templates")
       p.uniq
     end
     
     def expand_filename(n) #:nodoc:
-      name = n
+      name = File.basename(n)
       paths = search_paths(n).map do |p| 
         [File.join(p,name),File.join(p,"#{name}.erb")]
       end.flatten
