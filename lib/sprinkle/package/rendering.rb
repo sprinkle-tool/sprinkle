@@ -1,3 +1,4 @@
+require 'pp'
 require 'erubis'
 require 'digest/md5'
 
@@ -32,12 +33,28 @@ module Sprinkle::Package
     
     private 
     
+    def search_paths(n)
+      return [n] if File.exist?(n)
+      p = []
+      package_dir = File.dirname(caller[2].split(":").first)
+      # if ./ is used assume the path is relative to the package
+      return [package_dir] if n =~ %r{./}
+      p << File.join(cwd,"templates")
+      p << File.expand_path("./templates")
+      p.uniq
+    end
+    
     def expand_filename(n) #:nodoc:
-      return n.to_s if n.to_s.starts_with? "/"
-      ["./templates/#{n}","./templates/#{n}.erb"].each do |f|
+      name = n
+      paths = search_paths(n).map do |p| 
+        [File.join(p,name),File.join(p,"#{name}.erb")]
+      end.flatten
+      paths.each do |f|
         return f if File.exist?(f)
       end
-      raise "template file not found"
+      puts "RESOLVED SEARCH PATHS"
+      pp paths
+      raise "template not found: #{n}"
     end
 
   end

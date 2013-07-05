@@ -5,7 +5,7 @@ package :mysql, :provides => :database do
     :innodb_buffer_pool_size => "512MB"
     
   file "/etc/my.cnf", 
-    :contents => render("mysql.cnf"),
+    :contents => render("./x/mysql.cnf"),
     :sudo => true
   
   apt %w( mysql-server mysql-client )
