@@ -11,6 +11,7 @@ module Sprinkle
     #     delivery :ssh do
     #       user "rails"
     #       password "leetz"
+    #       port 2222
     #
     #       role :app, "app.myserver.com"
     #     end
@@ -46,7 +47,7 @@ module Sprinkle
       end
             
       def initialize(options = {}, &block) #:nodoc:
-        @options = options.update(:user => 'root')
+        @options = options.update(:user => 'root', :port => 22)
         @roles = {}
         self.instance_eval &block if block
         raise "You must define at least a single role." if @roles.empty?
@@ -88,6 +89,11 @@ module Sprinkle
       # Set the SSH password
       def password(password)
         @options[:password] = password
+      end
+
+      # Set the SSH port
+      def port(port)
+        @options[:port] = port
       end
 
       def keys(keys)
@@ -231,7 +237,7 @@ module Sprinkle
         end
         
         def ssh_session(host) #:nodoc:
-          connections.start(host, @options[:user], @options.slice(:password, :keys))
+          connections.start(host, @options[:user], @options.slice(:password, :keys, :port))
         end       
 
         def reconnect(host) #:nodoc:
