@@ -39,10 +39,11 @@ module Sprinkle::Package
       p = []
       package_dir = File.dirname(caller[2].split(":").first)
       # if ./ is used assume the path is relative to the package
-      return [package_dir] if n =~ %r{./}r
+      return [package_dir] if n =~ %r{./}
+      dir = File.dirname(n)
       # otherwise search template folders
-      p << File.join(cwd,"templates")
-      p << File.expand_path("./templates")
+      p << File.join(package_dir,"templates", dir)
+      p << File.expand_path("./templates", dir)
       p.uniq
     end
     
