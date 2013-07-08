@@ -103,7 +103,7 @@ module Sprinkle
 
       multi_attributes :enable, :disable, :with, :without, :option,
         :custom_install
-      attributes :configure_command, :build_command, :install_command
+      attributes :configure_command, :build_command, :install_command, :custom_archive
 
       def install_sequence #:nodoc:
         prepare + download + extract + configure + build + install
@@ -220,11 +220,7 @@ module Sprinkle
         end
 
         def archive_name #:nodoc:
-          name = @source.split('/').last
-          if options[:custom_archive]
-            name = options[:custom_archive]
-            name = name.join if name.is_a? Array
-          end
+          name = options[:custom_archive] || @source.split('/').last
           raise "Unable to determine archive name for source: #{source}, please update code knowledge" unless name
           name
         end
