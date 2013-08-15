@@ -3,7 +3,7 @@ require File.expand_path("../../spec_helper", File.dirname(__FILE__))
 describe Sprinkle::Installers::Rpm do
 
   before do
-    @package = mock(Sprinkle::Package, :name => 'package')
+    @package = double(Sprinkle::Package, :name => 'package')
   end
 
   def create_rpm(debs, &block)

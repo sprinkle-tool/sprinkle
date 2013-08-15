@@ -48,6 +48,7 @@ module Sprinkle
 
       def initialize(&block) #:nodoc:
         @defaults = {}
+        @style = nil
         self.instance_eval(&block)
         raise 'No delivery mechanism defined' unless @style
       end
@@ -60,7 +61,7 @@ module Sprinkle
       def delivery(type, &block) #:doc:
         type=type.to_s.titleize
         type="SSH" if type=="Ssh"
-        @style = ("Sprinkle::Actors::" + type).constantize.new &block
+        @style = ("Sprinkle::Actors::" + type).constantize.new(&block)
       end
 
       def method_missing(sym, *args, &block) #:nodoc:

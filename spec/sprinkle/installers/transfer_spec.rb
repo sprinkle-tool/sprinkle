@@ -5,11 +5,11 @@ describe Sprinkle::Installers::Transfer do
   include Sprinkle::Deployment
 
   before do
-    @package = mock(Sprinkle::Package, :name => 'package', :sudo? => false)
+    @package = double(Sprinkle::Package, :name => 'package', :sudo? => false)
     @empty = Proc.new { }
-    @delivery = mock(Sprinkle::Deployment, :install => true)
-		@source = 'source'
-		@destination = 'destination'
+    @delivery = double(Sprinkle::Deployment, :install => true)
+    @source = 'source'
+    @destination = 'destination'
     @installer = create_transfer(@source, @destination)
     @roles = []
     @deployment = deployment do
@@ -21,13 +21,13 @@ describe Sprinkle::Installers::Transfer do
   def create_transfer(source, dest, options={}, &block)
     i = Sprinkle::Installers::Transfer.new(@package, source, dest, options, &block)
     i.delivery = @delivery
-		i
+    i
   end
 
   describe 'when created' do
     it 'should accept a source and destination to install' do
-      @installer.source.should == @source
-      @installer.destination.should == @destination
+      @installer.source.should eq @source
+      @installer.destination.should eq @destination
     end
   end
 
@@ -63,7 +63,7 @@ describe Sprinkle::Installers::Transfer do
       end
 
       it "should call the pre and post install commands around the file transfer" do
-        @installer_commands.should == ["op1",:TRANSFER, "op2"]
+        @installer_commands.should eq ["op1",:TRANSFER, "op2"]
       end
 
       # it "should call transfer with recursive defaulted to nil" do
@@ -85,7 +85,7 @@ describe Sprinkle::Installers::Transfer do
       end
 
       it "should call the pre and post install commands around the file transfer" do
-        @installer_commands.should == ["op1",:TRANSFER, 
+        @installer_commands.should eq ["op1",:TRANSFER, 
           "sudo mv /tmp/sprinkle_destination destination", "op2"]
       end
     end
@@ -101,52 +101,52 @@ describe Sprinkle::Installers::Transfer do
       end
 
       it "should call the pre and post install commands around the file transfer" do
-        @installer_commands.should == ["op1","op1-1",:TRANSFER, "op2","op2-1"]
+        @installer_commands.should eq ["op1","op1-1",:TRANSFER, "op2","op2-1"]
       end
 
     end
 
-		after do
+    after do
       @installer.process @roles
     end
   end
 
-	describe "if the :render flag is true" do
-		before do
+  describe "if the :render flag is true" do
+    before do
+      allow(::ActiveSupport::Deprecation).to receive(:warn)
       @installer = create_transfer @source, @destination, :render => true
-			@delivery = @installer.delivery
-			@delivery.stub!(:render_template_file)
+      @delivery = @installer.delivery
+      @delivery.stub(:render_template_file)
+      @tempfile = Tempfile.new("foo")
     end
 
-		it "should render the source file as a template to a tempfile" do
-			@tempfile = Tempfile.new("foo")
-			@installer.should_receive(:render_template_file).with(@source, anything, @package.name).and_return(@tempfile)
-			@delivery.stub!(:transfer)
-		end
+    it "should render the source file as a template to a tempfile" do
+      @installer.should_receive(:render_template_file).with(@source, anything, @package.name).and_return(@tempfile)
+      @delivery.stub(:transfer)
+    end
 
-		it "should call transfer with recursive set to false" do
-			@tempfile = Tempfile.new("foo")
-			@installer.should_receive(:render_template_file).with(@source, anything, @package.name).and_return(@tempfile)
-			@installer.options[:recursive].should == false
-		end
+    it "should call transfer with recursive set to false" do
+      @installer.should_receive(:render_template_file).with(@source, anything, @package.name).and_return(@tempfile)
+      @installer.options[:recursive].should eq false
+    end
 
-		after do
+    after do
       @installer.process @roles
     end
-	end
+  end
 
-	describe "if the :recursive flag is explicitly set to false" do
-		before do
+  describe "if the :recursive flag is explicitly set to false" do
+    before do
       @installer = create_transfer @source, @destination, :recursive => false
     end
 
-		it "should call transfer with recursive set to false" do
-			delivery = @installer.delivery
-			@installer.options[:recursive].should == false
-		end
+    it "should call transfer with recursive set to false" do
+      @installer.delivery
+      @installer.options[:recursive].should eq false
+    end
 
-		after do
+    after do
       @installer.process @roles
     end
-	end
+  end
 end

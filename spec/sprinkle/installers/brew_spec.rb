@@ -3,7 +3,7 @@ require File.dirname(__FILE__) + '/../../spec_helper'
 describe Sprinkle::Installers::Brew do
 
   before do
-    @formula = mock(Sprinkle::Package, :name => 'formula', :sudo? => false)
+    @formula = double(Sprinkle::Package, :name => 'formula', :sudo? => false)
   end
 
   def create_brew(*formulas, &block)

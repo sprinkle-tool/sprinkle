@@ -21,6 +21,7 @@ module Sprinkle
       attr_accessor :config, :loaded_recipes #:nodoc:
 
       def initialize(&block) #:nodoc:
+        @installer = nil
         @config = ::Capistrano::Configuration.new
         @config.logger.level = Sprinkle::OPTIONS[:verbose] ? ::Capistrano::Logger::INFO : ::Capistrano::Logger::IMPORTANT
         @config.set(:password) { ::Capistrano::CLI.password_prompt }
@@ -32,7 +33,7 @@ module Sprinkle
         end
 
         if block
-          @config.instance_eval &block
+          @config.instance_eval(&block)
         else
           @config.load "Capfile" if File.exist?("Capfile")
         end

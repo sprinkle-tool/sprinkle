@@ -5,12 +5,12 @@ describe Sprinkle::Actors::Capistrano do
   before do
     @recipes = 'deploy'
     @cap = ::Capistrano::Configuration.new
-    ::Capistrano::Configuration.stub!(:new).and_return(@cap)
-    @cap.stub!(:load).and_return
+    ::Capistrano::Configuration.stub(:new).and_return(@cap)
+    @cap.stub(:load).and_return
   end
 
   def create_cap(&block)
-    Sprinkle::Actors::Capistrano.new &block
+    Sprinkle::Actors::Capistrano.new(&block)
   end
 
   describe 'when created' do
@@ -63,7 +63,7 @@ describe Sprinkle::Actors::Capistrano do
     describe 'without a block' do
 
       it 'should automatically load the default capistrano configuration' do
-        File.stub!(:exist?).with("Capfile").and_return true
+        File.stub(:exist?).with("Capfile").and_return true
         @cap.should_receive(:load).with('Capfile').and_return
       end
 
@@ -94,19 +94,19 @@ describe Sprinkle::Actors::Capistrano do
     before do
       @commands = %w( op1 op2 )
       @roles    = %w( app )
-      @package = stub(:name => "name")
+      @package = double(:name => "name")
       @cap = create_cap 
-      @verifier = stub(:package => @package, :commands => ["op1", "op2"])
+      @verifier = double(:package => @package, :commands => ["op1", "op2"])
     end
     
     it "should return true if successful" do
-      @cap.stub!(:run).and_return
+      @cap.stub(:run).and_return
       res = @cap.verify(@verifier, @roles)
       res.should == true
     end
     
     it "should return false if there was an error" do
-      @cap.stub!(:run).and_raise(::Capistrano::CommandError)
+      @cap.stub(:run).and_raise(::Capistrano::CommandError)
       res = @cap.verify(@verifier, @roles)
       res.should == false
     end
@@ -121,7 +121,7 @@ describe Sprinkle::Actors::Capistrano do
       @name     = 'name'
 
       @cap = create_cap do; recipes 'deploy'; end
-      @cap.stub!(:run).and_return
+      @cap.stub(:run).and_return
       
       @testing_errors = false
     end
@@ -130,8 +130,8 @@ describe Sprinkle::Actors::Capistrano do
       # pretend the package or installer has also added sudo
       @commands =["sudo op1"]
       @cap.stub(:sudo_command).and_return("sudo")
-      @cap.config.stub!(:fetch).and_return(:sudo)
-      @cap.unstub!(:run)
+      @cap.config.stub(:fetch).and_return(:sudo)
+      @cap.unstub(:run)
       @cap.config.should_receive(:invoke_command).with('op1', :via => :sudo).ordered.and_return
     end
 
@@ -166,7 +166,7 @@ describe Sprinkle::Actors::Capistrano do
       @name     = 'name'
 
       @cap = create_cap do; recipes 'deploy'; end
-      @cap.stub!(:run).and_return
+      @cap.stub(:run).and_return
       
       @package = Package.new(@name) {}
       @installer = Sprinkle::Installers::Transfer.new(@package, "file.txt","/tmp/file.txt")
@@ -202,7 +202,7 @@ describe Sprinkle::Actors::Capistrano do
       @name     = 'name'
 
       @cap = create_cap do; recipes 'deploy'; end
-      @cap.config.stub!(:invoke_command).and_return
+      @cap.config.stub(:invoke_command).and_return
     end
 
     it 'should run the supplied commands by default' do
@@ -217,7 +217,7 @@ describe Sprinkle::Actors::Capistrano do
     end
 
     it 'should be applicable for the supplied roles' do
-      @cap.stub!(:run).and_return
+      @cap.stub(:run).and_return
       @cap.config.should_receive(:task).with(:install_name, :roles => @roles).and_return
     end
 
@@ -235,7 +235,7 @@ describe Sprinkle::Actors::Capistrano do
       @name     = 'name'
 
       @cap = create_cap do; recipes 'deploy'; end
-      @cap.config.stub!(:upload).and_return
+      @cap.config.stub(:upload).and_return
       
       @package = Package.new(@name) {}
       @installer = Sprinkle::Installers::Transfer.new(@package, @source, @dest, :recursive => true)
@@ -247,7 +247,7 @@ describe Sprinkle::Actors::Capistrano do
     end
 
     it 'should be applicable for the supplied roles' do
-      @cap.stub!(:run).and_return
+      @cap.stub(:run).and_return
       @cap.config.should_receive(:task).with(:install_name, :roles => @roles).and_return
     end
 
@@ -265,7 +265,7 @@ describe Sprinkle::Actors::Capistrano do
       @name     = 'name'
 
       @cap = create_cap do; recipes 'deploy'; end
-      @cap.config.stub!(:upload).and_return
+      @cap.config.stub(:upload).and_return
       
       @package = Package.new(@name) {}
       @installer = Sprinkle::Installers::Transfer.new(@package, @source,@dest, :recursive => false)
@@ -277,7 +277,7 @@ describe Sprinkle::Actors::Capistrano do
     end
 
     it 'should be applicable for the supplied roles' do
-      @cap.stub!(:run).and_return
+      @cap.stub(:run).and_return
       @cap.config.should_receive(:task).with(:install_name, :roles => @roles).and_return
     end
 

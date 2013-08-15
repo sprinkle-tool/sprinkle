@@ -13,7 +13,7 @@ describe Sprinkle::Installers::Apt do
   end
 
   def create_apt(*debs, &block)
-    installer=@package.apt *debs, &block
+    @package.apt(*debs, &block)
   end
 
   describe 'when created' do

@@ -8,7 +8,7 @@ module Sprinkle
       def initialize(&block) #:nodoc:
         # @config.set(:_sprinkle_actor, self)
         @roles={}
-        self.instance_eval &block
+        self.instance_eval(&block)
       end
 
       def role(role, server, opts={})
@@ -23,7 +23,7 @@ module Sprinkle
       end
       
       def install(installer, roles, opts={})
-        if per_host=opts.delete(:per_host)
+        if self.per_host=opts.delete(:per_host)
           servers_per_role(roles).each do |server|
             installer.reconfigure_for(server)
             installer.announce

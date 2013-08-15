@@ -86,6 +86,7 @@ module Sprinkle
       @commands = []
       @options ||= {}
       @options[:padding] = 4
+      @delivery = nil
       
       self.instance_eval(&block)
     end

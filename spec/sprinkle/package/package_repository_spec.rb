@@ -14,30 +14,30 @@ describe Sprinkle::Package::PackageRepository do
 
   it 'should allow adding a package' do
     @repository.add @test_package
-    @repository.count.should == 1
+    @repository.count.should eq 1
   end
   
   it 'should allow clearing' do
     @repository.add @test_package
     @repository.clear
-    @repository.count.should == 0
+    @repository.count.should eq 0
   end
   
   it "should find by provides" do
     @repository.add @mysql_package
-    @repository.find_all("db").should == [ @mysql_package ]
+    @repository.find_all("db").should eq [ @mysql_package ]
   end
   
   it "should find by name" do
     @repository.add @test_package
-    @repository.find_all("test").should == [ @test_package ]
+    @repository.find_all("test").should eq [ @test_package ]
   end
   
   it "should filter by version" do
     @repository.add @test_package
     @repository.add @test_v2_package
-    @repository.find_all("test").size.should == 2
-    @repository.first("test", :version => "2").should == @test_v2_package
+    @repository.find_all("test").size.should eq 2
+    @repository.first("test", :version => "2").should eq @test_v2_package
   end
 
   after do

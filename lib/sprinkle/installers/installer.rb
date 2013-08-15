@@ -62,6 +62,7 @@ module Sprinkle
         @package = package
         @options = options || {}
         @pre = {}; @post = {}
+        @delivery = nil
         self.instance_eval(&block) if block
       end
             
@@ -73,11 +74,11 @@ module Sprinkle
         end
         
         def api(&block)
-          Sprinkle::Package::Package.add_api &block
+          Sprinkle::Package::Package.add_api(&block)
         end
         
         def verify_api(&block)
-          Sprinkle::Verify.class_eval &block
+          Sprinkle::Verify.class_eval(&block)
         end
 
         def inherited(base)
@@ -120,7 +121,6 @@ module Sprinkle
       
       def per_host?
         return false
-        @per_host
       end
       
       # Called right before an installer is exected, can be used for logging
