@@ -89,12 +89,12 @@ CODE
       end
       pkg.installers.first.class.should eq Sprinkle::Installers::User
       install_commands = pkg.installers.first.send :install_commands
-      install_commands.should eq 'adduser  --gecos ,,, deploy'
+      install_commands.should == 'adduser --gecos ,,, deploy'
 
       instance = pkg.instance :username => 'deployer'
 
       install_commands = instance.installers.first.send :install_commands
-      install_commands.should eq 'adduser  --gecos ,,, deployer'
+      install_commands.should == 'adduser --gecos ,,, deployer'
     end
 
     it 'should optionally accept an installer' do
