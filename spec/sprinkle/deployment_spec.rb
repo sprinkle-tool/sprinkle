@@ -39,8 +39,8 @@ describe Sprinkle::Deployment do
   describe 'delivery specification' do
     
     before do
-      @actor = mock(Sprinkle::Actors::Capistrano)
-      Sprinkle::Actors::Capistrano.stub!(:new).and_return(@actor)
+      @actor = double(Sprinkle::Actors::Capistrano)
+      Sprinkle::Actors::Capistrano.stub(:new).and_return(@actor)
     end
 
     it 'should automatically instantiate the delivery type' do 
@@ -64,7 +64,7 @@ describe Sprinkle::Deployment do
   describe 'when processing policies' do 
     
     before do 
-      @policy = mock(Sprinkle::Policy, :process => true)
+      @policy = double(Sprinkle::Policy, :process => true)
       Sprinkle::POLICIES.clear
       Sprinkle::POLICIES << @policy 
       @deployment = create_deployment

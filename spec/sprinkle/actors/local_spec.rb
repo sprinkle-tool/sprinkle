@@ -16,7 +16,7 @@ describe Sprinkle::Actors::Local do
       @roles    = %w( app )
       @name     = 'name'
 
-      @local.stub!(:run_command).and_return(0)
+      @local.stub(:run_command).and_return(0)
     end
 
     it 'should run the commands on the local system' do
@@ -36,13 +36,13 @@ describe Sprinkle::Actors::Local do
     end
     
     it 'should return false when verification fails' do
-      @local.stub!(:run_command).and_return(1)
+      @local.stub(:run_command).and_return(1)
       res = @local.verify @verifier, @roles
       res.should == false
     end
 
     it 'should run the commands on the local system' do
-      @local.stub!(:run_command).and_return(0)
+      @local.stub(:run_command).and_return(0)
       res = @local.verify @verifier, @roles
       res.should == true
     end

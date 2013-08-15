@@ -71,10 +71,10 @@ module Sprinkle
     def requires(package, *args)
       @packages << [package, args]
     end
-    
+
     def packages #:nodoc:
-       @packages.map {|x| x.first }
-     end
+      @packages.map {|x| x.first }
+    end
 
     def to_s #:nodoc:
        name; end

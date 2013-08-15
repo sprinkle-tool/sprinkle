@@ -4,10 +4,10 @@ describe Sprinkle::Installers::Installer do
   include Sprinkle::Deployment
 
   before do
-    @package = mock(Sprinkle::Package, :name => 'package')
+    @package = double(Sprinkle::Package, :name => 'package')
     @empty = Proc.new { }
     @sequence = ['op1', 'op2']
-    @delivery = mock(Sprinkle::Deployment, :process => true, :install => true, 
+    @delivery = double(Sprinkle::Deployment, :process => true, :install => true,
       :sudo_command => "sudo")
     @installer = create_installer
     @installer.delivery = @delivery
@@ -20,7 +20,7 @@ describe Sprinkle::Installers::Installer do
 
   def create_installer(&block)
     installer = Sprinkle::Installers::Installer.new @package, &block
-    installer.stub!(:puts).and_return
+    installer.stub(:puts).and_return
 
     # this is actually an abstract class so we'll insert a few fake install sequences
     class << installer
@@ -69,7 +69,7 @@ describe Sprinkle::Installers::Installer do
 
       before do
         Sprinkle::OPTIONS[:testing] = true
-        @logger = mock(:debug => true, :debug? => true)
+        @logger = double(:debug => true, :debug? => true)
       end
 
       it 'should not invoke the delivery mechanism with the install sequence' do
@@ -84,7 +84,7 @@ describe Sprinkle::Installers::Installer do
     
     describe "with sudo from package level" do
       before do
-        @installer.package = mock(Sprinkle::Package, :name => 'package', :sudo? => true)
+        @installer.package = double(Sprinkle::Package, :name => 'package', :sudo? => true)
       end
       
       it "should know it uses sudo" do
@@ -103,7 +103,7 @@ describe Sprinkle::Installers::Installer do
       end
       
       it "should use sudo command from actor" do
-        @installer.delivery = mock(Sprinkle::Deployment, :process => true, :install => true, 
+        @installer.delivery = double(Sprinkle::Deployment, :process => true, :install => true,
           :sudo_command => "sudo -p blah")
         @installer.sudo_cmd.should =~ /sudo -p blah /  
       end
@@ -122,25 +122,24 @@ describe Sprinkle::Installers::Installer do
         @delivery.should_receive(:install).with(@installer, @roles, :per_host => false)
       end
     end
-    
+
     describe "with a pre command" do
-      
       def create_installer_with_pre_command(cmd = nil, &block)
         installer = Sprinkle::Installers::Installer.new @package do
           pre :install, cmd if cmd
-          
+
           def install_commands
             ["installer"]
-          end          
+          end
         end
-        installer.instance_eval &block if block
-        installer.stub!(:puts).and_return
+        installer.instance_eval(&block) if block
+        installer.stub(:puts).and_return
         installer.delivery = @delivery
         installer
       end
       before do
         @installer = create_installer_with_pre_command('run')
-        @package.stub!(:installers).and_return []
+        @package.stub(:installers).and_return []
       end
       describe "string commands" do
         it "should insert the pre command for the specific package in the installation process" do

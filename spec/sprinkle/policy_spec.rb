@@ -13,7 +13,7 @@ describe Sprinkle::Policy do
     end
     
     it "should raise an error" do
-      @deployment = mock(:style => Sprinkle::Actors::Dummy.new {})
+      @deployment = double(:style => Sprinkle::Actors::Dummy.new {})
       lambda { @policy.process(@deployment) }.should raise_error(Sprinkle::NoMatchingServersError)
     end
   end
@@ -33,21 +33,21 @@ describe Sprinkle::Policy do
       p = policy @name, :roles => :app do; end
       p.should respond_to(:requires)
       p.requires :appserver
-      p.packages.should == [ :appserver ]
+      p.packages.should eq [ :appserver ]
     end
 
     it 'should optionally accept package dependencies with versions' do
       p = policy @name, :roles => :app do; end
       p.requires :appserver, :version => 2
-      p.packages.should == [ :appserver ]
+      p.packages.should eq [ :appserver ]
       # pending 'requires version checking implementation'
     end
 
     it 'should add itself to the global policy list' do
       sz = Sprinkle::POLICIES.size
       p = policy @name, :roles => :app do; end
-      Sprinkle::POLICIES.size.should == sz + 1
-      Sprinkle::POLICIES.last.should == p
+      Sprinkle::POLICIES.size.should eq sz + 1
+      Sprinkle::POLICIES.last.should eq p
     end
 
   end
@@ -56,9 +56,9 @@ describe Sprinkle::Policy do
     include Sprinkle::Package
 
     before do
-      @deployment = mock(Sprinkle::Deployment)
-      actor = mock(:servers_for_role? => true)
-      @deployment.stub!(:style).and_return(actor)
+      @deployment = double(Sprinkle::Deployment)
+      actor = double(:servers_for_role? => true)
+      @deployment.stub(:style).and_return(actor)
       Sprinkle::Package::PACKAGES.clear # reset full package list before each spec is run
 
       @a = package :a do; requires :b; requires :c; end
@@ -66,13 +66,13 @@ describe Sprinkle::Policy do
       @c = package :c, :provides => :abc do; end
       @d = package :d, :provides => :abc do; end
       
-      @a.stub!(:instance).and_return(@a)
-      @b.stub!(:instance).and_return(@b)
-      @c.stub!(:instance).and_return(@c)
-      @d.stub!(:instance).and_return(@d)
+      @a.stub(:instance).and_return(@a)
+      @b.stub(:instance).and_return(@b)
+      @c.stub(:instance).and_return(@c)
+      @d.stub(:instance).and_return(@d)
 
       @policy = policy :test, :roles => :app do; requires :a; end
-      $terminal.stub!(:choose).and_return(:c) # stub out highline asking questions
+      $terminal.stub(:choose).and_return(:c) # stub out highline asking questions
     end
 
     describe 'when applying' do
@@ -88,7 +88,7 @@ describe Sprinkle::Policy do
       it 'should normalize (ie remove duplicates from) the installation order of all packages including dependencies' do
         @e = package :e do; requires :b; end
         @policy.requires :e
-        @e.stub!(:instance).and_return(@e)
+        @e.stub(:instance).and_return(@e)
 
         @a.should_receive(:process).once.and_return
         @b.should_receive(:process).once.and_return
@@ -106,8 +106,8 @@ describe Sprinkle::Policy do
         @my5 = package :mysql do; version 5; end
         @e = package :e do; requires :mysql, :version => "4"; end
         @policy.requires :e
-        @e.stub!(:instance).and_return @e
-        @my4.stub!(:instance).and_return @my4
+        @e.stub(:instance).and_return @e
+        @my4.stub(:instance).and_return @my4
         @my3.should_not_receive(:process)
         @my5.should_not_receive(:process)
         @my4.should_receive(:process)
@@ -138,13 +138,13 @@ end
 describe Sprinkle::Policy, 'with missing packages' do
 
   before do
-    @deployment = mock(Sprinkle::Deployment)
-    actor = mock(:servers_for_role? => true)
-    @deployment.stub!(:style).and_return(actor)
+    @deployment = double(Sprinkle::Deployment)
+    actor = double(:servers_for_role? => true)
+    @deployment.stub(:style).and_return(actor)
     Sprinkle::Package::PACKAGES.clear # reset full package list before each spec is run
 
     @policy = policy :test, :roles => :app do; requires :z; end
-    $terminal.stub!(:choose).and_return(:c) # stub out highline asking questions
+    $terminal.stub(:choose).and_return(:c) # stub out highline asking questions
   end
 
   it 'should raise an error if a package is missing' do

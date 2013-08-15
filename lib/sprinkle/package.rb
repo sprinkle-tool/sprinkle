@@ -126,7 +126,7 @@ module Sprinkle
       
       def self.add_api(&block)
         before = self.instance_methods
-        self.class_eval &block
+        self.class_eval(&block)
         added = self.instance_methods - before
         @@installer_methods += added.map(&:to_sym)
       end
@@ -143,8 +143,10 @@ module Sprinkle
         @verifications = []
         @installers = []
         @block = block
+        @use_sudo = false
+        @version = nil
         # this should probably not be done twice
-        self.instance_eval &block
+        self.instance_eval(&block)
       end
       
       def description(s=nil)
@@ -160,7 +162,7 @@ module Sprinkle
         p.opts = defaults.merge(args.extract_options!)
         p.args = args
         p.instance_variable_set("@block", @block)
-        p.instance_eval &@block
+        p.instance_eval(&@block)
         p
       end
       
@@ -196,7 +198,7 @@ module Sprinkle
         ActiveSupport::Deprecation.warn("push_file is depreciated and will be removed in v0.9.  Use the new `file` installer instead.")
         raise "need content" unless options[:content]
         runner "#{"sudo " if sudo?}rm -f #{file}"
-        push_text options[:content], file, options, &block
+        push_text(options[:content], file, options, &block)
       end
                   
       def verify(description = '', &block)
@@ -219,7 +221,7 @@ module Sprinkle
             
             logger.info "    --> already installed for roles: #{roles}"
             return
-          rescue Sprinkle::VerificationFailed => e
+          rescue Sprinkle::VerificationFailed
             # Continue
           end
         end

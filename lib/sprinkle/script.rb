@@ -5,7 +5,11 @@ module Sprinkle
   # sprinkle script. 
   class Script
     include Sprinkle::Deployment
-    
+
+    def initialize
+      @deployment = nil
+    end
+
     # Run a given sprinkle script. This method is <b>blocking</b> so
     # it will not return until the sprinkling is complete or fails.
     #--

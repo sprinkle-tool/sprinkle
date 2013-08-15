@@ -11,7 +11,7 @@ module Sprinkle::Package
 
     def template(src, context=binding)
       eruby = Erubis::Eruby.new(src)
-      output = eruby.result(context)
+      eruby.result(context)
     rescue Object => e
       raise Sprinkle::Errors::TemplateError.new(e, src, context)
     end
