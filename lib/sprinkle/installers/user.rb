@@ -1,7 +1,7 @@
 module Sprinkle
   module Installers
     # The user installer add users.  You may pass :flags as an option.
-    # 
+    #
     # == Example Usage
     #
     #   package :users do
@@ -12,13 +12,13 @@ module Sprinkle
     #     end
     #   end
     class User < Installer
-      
+
       api do
         def add_user(username, options={},  &block)
           install User.new(self, username, options, &block)
         end
       end
-      
+
       verify_api do
         def has_user(user, opts = {})
           if opts[:in_group]
@@ -34,14 +34,15 @@ module Sprinkle
         @username = username
       end
 
-      protected 
-      
+    protected
+
       def install_commands #:nodoc:
         noninteractive = " --gecos ,,,"
         flags = @options[:flags] || ""
         flags << noninteractive unless flags =~ /--gecos/
-        "adduser #{flags} #{@username}"
+        "#{sudo_cmd}adduser #{flags.strip} #{@username}"
       end
+
     end
   end
 end
