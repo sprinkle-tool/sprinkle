@@ -4,7 +4,7 @@ describe Sprinkle::Actors::Local do
 
   before do
     @local = Sprinkle::Actors::Local.new
-    
+
     @package = Package.new("super") {}
   end
 
@@ -25,16 +25,16 @@ describe Sprinkle::Actors::Local do
     end
 
   end
-  
+
   describe 'when verifying' do
-    
+
     before do
       @verifier = Sprinkle::Verify::new(@package) {}
       @verifier.commands += ["test","test"]
       @roles    = %w( app )
       @name     = 'name'
     end
-    
+
     it 'should return false when verification fails' do
       @local.stub!(:run_command).and_return(1)
       res = @local.verify @verifier, @roles
@@ -46,7 +46,7 @@ describe Sprinkle::Actors::Local do
       res = @local.verify @verifier, @roles
       res.should == true
     end
-    
+
   end
 
 end

@@ -8,7 +8,7 @@ describe Sprinkle::Package do
     @empty = Proc.new { }
     @opts = { }
   end
-  
+
   after do
     Sprinkle::Package::PACKAGES.clear
   end
@@ -430,7 +430,7 @@ CODE
       @c.should_receive(:instance).any_number_of_times.and_return(@ci)
       @d.should_receive(:instance).any_number_of_times.and_return(@di)
       @e.should_receive(:instance).any_number_of_times.and_return(@ei)
-      
+
       @a.tree.flatten.should == [ @d, @c, @b, @a ]
       @b.tree.flatten.should == [ @d, @c, @b ]
       @c.tree.flatten.should == [ @d, @c ]

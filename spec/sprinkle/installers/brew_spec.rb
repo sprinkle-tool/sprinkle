@@ -48,17 +48,17 @@ describe Sprinkle::Installers::Brew do
     end
 
   end
-  
+
   # describe 'during dependencies only installation' do
-  # 
+  #
   #   before do
   #     @installer = create_apt('ruby') { dependencies_only true }
   #     @install_commands = @installer.send :install_commands
   #   end
-  # 
+  #
   #   it 'should invoke the apt installer with build-dep command for all specified packages' do
   #     @install_commands.should =~ /apt-get --force-yes -qyu build-dep ruby/
   #   end
-  #   
+  #
   # end
 end

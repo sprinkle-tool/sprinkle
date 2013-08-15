@@ -81,37 +81,37 @@ describe Sprinkle::Installers::Installer do
       end
 
     end
-    
+
     describe "with sudo from package level" do
       before do
         @installer.package = mock(Sprinkle::Package, :name => 'package', :sudo? => true)
       end
-      
+
       it "should know it uses sudo" do
         @installer.sudo?.should == true
       end
-      
+
       it "should offer up the sudo command" do
         @installer.sudo_cmd.should =~ /sudo /
-      end      
+      end
     end
-    
+
     describe "with sudo" do
       before do
         @installer = Sprinkle::Installers::Installer.new @package, :sudo => true
         @installer.delivery = @delivery
       end
-      
+
       it "should use sudo command from actor" do
         @installer.delivery = mock(Sprinkle::Deployment, :process => true, :install => true, 
           :sudo_command => "sudo -p blah")
-        @installer.sudo_cmd.should =~ /sudo -p blah /  
+        @installer.sudo_cmd.should =~ /sudo -p blah /
       end
-      
+
       it "should know it uses sudo" do
         @installer.sudo?.should == true
       end
-      
+
       it "should offer up the sudo command" do
         @installer.sudo_cmd.should =~ /sudo /
       end
@@ -122,16 +122,16 @@ describe Sprinkle::Installers::Installer do
         @delivery.should_receive(:install).with(@installer, @roles, :per_host => false)
       end
     end
-    
+
     describe "with a pre command" do
-      
+
       def create_installer_with_pre_command(cmd = nil, &block)
         installer = Sprinkle::Installers::Installer.new @package do
           pre :install, cmd if cmd
-          
+
           def install_commands
             ["installer"]
-          end          
+          end
         end
         installer.instance_eval &block if block
         installer.stub!(:puts).and_return
@@ -164,7 +164,7 @@ describe Sprinkle::Installers::Installer do
         end
       end
       describe "blocks as commands" do
-        before(:each) do          
+        before(:each) do
           @package = Package.new("package") do; end
           @installer = create_installer_with_pre_command do
             pre :install do

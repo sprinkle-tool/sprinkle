@@ -17,16 +17,16 @@ describe Sprinkle::Verify do
 
         # Check a directory exists
         has_directory 'mydir'
-        
+
         # generic test
         test "`version` == \"one\""
-        
+
         # Check for a user
         has_user "bob"
-        
+
         # Check for user in a group
         has_user "alf", :in_group => "alien"
-        
+
         # Check for a group
         has_group "bobgroup"
 
@@ -54,7 +54,7 @@ describe Sprinkle::Verify do
 
         # Check for a certain RPM package
         has_rpm 'ntp'
-        
+
         belongs_to_user "/etc/", "me"
         belongs_to_user "/etc/", 2
         belongs_to_group "/etc/", "root"
@@ -65,7 +65,7 @@ describe Sprinkle::Verify do
     @delivery = mock(Sprinkle::Deployment, :process => true, :sudo_command => "sudo")
     @verification.delivery = @delivery
   end
-  
+
   describe "with sudo" do
     before do
       @package = package @name do
@@ -96,7 +96,7 @@ describe Sprinkle::Verify do
       @verification.commands.should include("find /etc/ -maxdepth 0 -group root | egrep '.*'")
       @verification.commands.should include("find /etc/ -maxdepth 0 -gid 0 | egrep '.*'")
     end
-    
+
     it 'should do a "test -f" on the has_file check' do
       @verification.commands.should include('test -f my_file.txt')
     end
@@ -112,19 +112,19 @@ describe Sprinkle::Verify do
     it 'should do a "test -d" on the has_directory check' do
       @verification.commands.should include('test -d mydir')
     end
-    
+
     it 'should include the generic test' do
       @verification.commands.should include("test `version` == \"one\"")
     end
-    
+
     it 'should use to check for user in group' do
       @verification.commands.should include("id -nG alf | xargs -n1 echo | grep alien")
     end
-    
+
     it 'should use id to check for user' do
       @verification.commands.should include('id bob')
     end
-    
+
     it 'should use id to check for group' do
       @verification.commands.should include('id -g bobgroup')
     end

@@ -21,7 +21,7 @@ describe Sprinkle::Installers::Rpm do
       @installer = create_rpm %w( gcc gdb g++ )
       @installer.packages.should == ['gcc', 'gdb', 'g++']
     end
-    
+
     it 'should accept a list of packages to install' do
       @installer = Sprinkle::Installers::Rpm.new(@package, "gcc", "gdb", "g++")
       @installer.packages.should == ['gcc', 'gdb', 'g++']

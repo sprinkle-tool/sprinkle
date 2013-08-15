@@ -88,29 +88,29 @@ describe Sprinkle::Actors::Capistrano do
     end
 
   end
-  
+
   describe 'verifications' do
-    
+
     before do
       @commands = %w( op1 op2 )
       @roles    = %w( app )
       @package = stub(:name => "name")
-      @cap = create_cap 
+      @cap = create_cap
       @verifier = stub(:package => @package, :commands => ["op1", "op2"])
     end
-    
+
     it "should return true if successful" do
       @cap.stub!(:run).and_return
       res = @cap.verify(@verifier, @roles)
       res.should == true
     end
-    
+
     it "should return false if there was an error" do
       @cap.stub!(:run).and_raise(::Capistrano::CommandError)
       res = @cap.verify(@verifier, @roles)
       res.should == false
     end
-    
+
   end
 
   describe 'processing commands' do
@@ -122,10 +122,10 @@ describe Sprinkle::Actors::Capistrano do
 
       @cap = create_cap do; recipes 'deploy'; end
       @cap.stub!(:run).and_return
-      
+
       @testing_errors = false
     end
-    
+
     it "should strip excessive occurrences of sudo" do
       # pretend the package or installer has also added sudo
       @commands =["sudo op1"]
@@ -142,14 +142,14 @@ describe Sprinkle::Actors::Capistrano do
     it 'should invoke capistrano task after creation' do
       @cap.should_receive(:run).with(@name).and_return
     end
-    
+
     it 'should raise capistrano errors when suppressing parameter is not set' do
       @testing_errors = true
-      
+
       @cap.should_receive(:run).and_raise(::Capistrano::CommandError)
       lambda { @cap.process @name, @commands, @roles }.should raise_error(::Capistrano::CommandError)
     end
-    
+
     after do
       @cap.process @name, @commands, @roles unless @testing_errors
     end
@@ -167,10 +167,10 @@ describe Sprinkle::Actors::Capistrano do
 
       @cap = create_cap do; recipes 'deploy'; end
       @cap.stub!(:run).and_return
-      
+
       @package = Package.new(@name) {}
       @installer = Sprinkle::Installers::Transfer.new(@package, "file.txt","/tmp/file.txt")
-      
+
       @testing_errors = false
     end
 
@@ -181,14 +181,14 @@ describe Sprinkle::Actors::Capistrano do
     it 'should invoke capistrano task after creation' do
       @cap.should_receive(:run).with(@name).and_return
     end
-    
+
     it 'should raise capistrano errors when suppressing parameter is not set' do
       @testing_errors = true
-      
+
       @cap.should_receive(:run).and_raise(::Capistrano::CommandError)
       lambda { @cap.process @name, @commands, @roles }.should raise_error(::Capistrano::CommandError)
     end
-    
+
     after do
       @cap.process @package.name, @installer.install_sequence, @roles
     end
@@ -236,7 +236,7 @@ describe Sprinkle::Actors::Capistrano do
 
       @cap = create_cap do; recipes 'deploy'; end
       @cap.config.stub!(:upload).and_return
-      
+
       @package = Package.new(@name) {}
       @installer = Sprinkle::Installers::Transfer.new(@package, @source, @dest, :recursive => true)
       @cap.instance_variable_set("@installer", @installer)
@@ -266,7 +266,7 @@ describe Sprinkle::Actors::Capistrano do
 
       @cap = create_cap do; recipes 'deploy'; end
       @cap.config.stub!(:upload).and_return
-      
+
       @package = Package.new(@name) {}
       @installer = Sprinkle::Installers::Transfer.new(@package, @source,@dest, :recursive => false)
       @cap.instance_variable_set("@installer", @installer)

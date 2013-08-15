@@ -34,22 +34,22 @@ describe Sprinkle::Installers::Transfer do
   describe 'during installation' do
 
     context "setting mode and owner" do
-      before do 
+      before do
         @installer = create_transfer @source, @destination do
           mode "744"
           owner "root"
         end
         @installer_commands = @installer.install_sequence
       end
-      
+
       it "should include command to set owner" do
         @installer_commands.should include("chmod 744 #{@destination}")
       end
-      
+
       it "should include command to set mode" do
         @installer_commands.should include("chown root #{@destination}")
       end
-      
+
     end
 
     context 'single pre/post commands' do
@@ -72,7 +72,7 @@ describe Sprinkle::Installers::Transfer do
       # end
 
     end
-    
+
     context 'pre/post with sudo' do
       before do
         @installer = create_transfer @source, @destination do
@@ -85,7 +85,7 @@ describe Sprinkle::Installers::Transfer do
       end
 
       it "should call the pre and post install commands around the file transfer" do
-        @installer_commands.should == ["op1",:TRANSFER, 
+        @installer_commands.should == ["op1",:TRANSFER,
           "sudo mv /tmp/sprinkle_destination destination", "op2"]
       end
     end

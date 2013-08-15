@@ -2,11 +2,11 @@ require File.expand_path("../spec_helper", File.dirname(__FILE__))
 
 describe Sprinkle::Deployment do
   include Sprinkle::Deployment
-  
+
   def create_deployment(&block)
     deployment do
       delivery :capistrano, &block
-      
+
       source do
         prefix '/usr/local'
       end
@@ -23,27 +23,27 @@ describe Sprinkle::Deployment do
       lambda { @deployment = deployment do; end }.should raise_error
     end
 
-    it 'should optionally accept installer defaults' do 
+    it 'should optionally accept installer defaults' do
       @deployment = create_deployment
       @deployment.source do; end
       @deployment.defaults.keys.should == [:source]
     end
-    
-    it 'should provide installer defaults as a proc when requested' do 
+
+    it 'should provide installer defaults as a proc when requested' do
       @deployment = create_deployment
       @deployment.defaults[:source].class.should == Proc
     end
-    
-  end 
-  
+
+  end
+
   describe 'delivery specification' do
-    
+
     before do
       @actor = mock(Sprinkle::Actors::Capistrano)
       Sprinkle::Actors::Capistrano.stub!(:new).and_return(@actor)
     end
 
-    it 'should automatically instantiate the delivery type' do 
+    it 'should automatically instantiate the delivery type' do
       @deployment = create_deployment
       @deployment.style.should == @actor
     end
@@ -60,20 +60,20 @@ describe Sprinkle::Deployment do
 
     end
   end
-  
-  describe 'when processing policies' do 
-    
-    before do 
+
+  describe 'when processing policies' do
+
+    before do
       @policy = mock(Sprinkle::Policy, :process => true)
       Sprinkle::POLICIES.clear
-      Sprinkle::POLICIES << @policy 
+      Sprinkle::POLICIES << @policy
       @deployment = create_deployment
     end
-    
+
     it 'should apply all policies, passing itself as the deployment context' do
       @policy.should_receive(:process).with(@deployment).and_return
     end
-    
+
     after do
       @deployment.process
     end
