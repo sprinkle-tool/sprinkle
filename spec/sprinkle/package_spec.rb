@@ -56,14 +56,14 @@ CODE
       pkg = package @name do
         description 'my package description'
       end
-      pkg.description.should == 'my package description'
+      pkg.description.should eq 'my package description'
     end
 
     it 'should optionally accept a version' do
       pkg = package @name do
         version '2.0.2'
       end
-      pkg.version.should == '2.0.2'
+      pkg.version.should eq '2.0.2'
     end
 
     it 'should optionally accept configuration defaults' do
@@ -87,14 +87,14 @@ CODE
         defaults :username => 'deploy'
         add_user opts[:username]
       end
-      pkg.installers.first.class.should == Sprinkle::Installers::User
+      pkg.installers.first.class.should eq Sprinkle::Installers::User
       install_commands = pkg.installers.first.send :install_commands
-      install_commands.should == 'adduser  --gecos ,,, deploy'
+      install_commands.should eq 'adduser  --gecos ,,, deploy'
 
       instance = pkg.instance :username => 'deployer'
 
       install_commands = instance.installers.first.send :install_commands
-      install_commands.should == 'adduser  --gecos ,,, deployer'
+      install_commands.should eq 'adduser  --gecos ,,, deployer'
     end
 
     it 'should optionally accept an installer' do
@@ -108,31 +108,31 @@ CODE
       pkg = package @name do
         requires :webserver, :database
       end
-      pkg.dependencies.should == [:webserver, :database]
+      pkg.dependencies.should eq [:webserver, :database]
     end
 
     it 'should optionally accept recommended dependencies' do
       pkg = package @name do
         recommends :webserver, :database
       end
-      pkg.recommends.should == [:webserver, :database]
+      pkg.recommends.should eq [:webserver, :database]
     end
 
     it 'should optionally accept optional dependencies' do
       pkg = package @name do
         optional :webserver_configuration, :database_configuration
       end
-      pkg.optional.should == [:webserver_configuration, :database_configuration]
+      pkg.optional.should eq [:webserver_configuration, :database_configuration]
     end
 
     it 'should optionally define a virtual package implementation' do
       pkg = package @name, :provides => :database do; end
-      pkg.provides.should == :database
+      pkg.provides.should eq :database
     end
 
     it 'should be able to represent itself as a string' do
       pkg = package @name do; end
-      pkg.to_s.should == @name.to_s
+      pkg.to_s.should eq @name.to_s
     end
 
   end
@@ -140,8 +140,8 @@ CODE
   describe 'helper method' do
 
     it 'should add new packages to the global package repository' do
-      pkg = package @name do; end
-      Sprinkle::Package::PACKAGES.count.should == 1
+      package @name do; end
+      Sprinkle::Package::PACKAGES.count.should eq 1
     end
 
   end
@@ -153,7 +153,7 @@ CODE
         apt %w( deb1 deb2 )
       end
       pkg.should respond_to(:apt)
-      pkg.installers.first.class.should == Sprinkle::Installers::Apt
+      pkg.installers.first.class.should eq Sprinkle::Installers::Apt
     end
 
     it 'should optionally accept an rpm installer' do
@@ -161,7 +161,7 @@ CODE
         rpm %w( rpm1 rpm2 )
       end
       pkg.should respond_to(:rpm)
-      pkg.installers.first.class.should == Sprinkle::Installers::Rpm
+      pkg.installers.first.class.should eq Sprinkle::Installers::Rpm
     end
 
     it 'should optionally accept a gem installer' do
@@ -169,7 +169,7 @@ CODE
         gem 'gem'
       end
       pkg.should respond_to(:gem)
-      pkg.installers.first.class.should == Sprinkle::Installers::Gem
+      pkg.installers.first.class.should eq Sprinkle::Installers::Gem
     end
 
     it 'should optionally accept a noop installer' do
@@ -178,10 +178,10 @@ CODE
         end
       end
       pkg.should respond_to(:noop)
-      pkg.installers.first.class.should == Sprinkle::Installers::Runner
+      pkg.installers.first.class.should eq Sprinkle::Installers::Runner
       @installer = pkg.installers.first
       @install_commands = @installer.send :install_commands
-      @install_commands.should == ['echo noop']
+      @install_commands.should eq ['echo noop']
     end
 
     it 'should optionally accept an group installer' do
@@ -189,7 +189,7 @@ CODE
         add_group 'bob'
       end
       pkg.should respond_to(:add_group)
-      pkg.installers.first.class.should == Sprinkle::Installers::Group
+      pkg.installers.first.class.should eq Sprinkle::Installers::Group
     end
 
     it 'should optionally accept a source installer' do
@@ -197,7 +197,7 @@ CODE
         source 'archive'
       end
       pkg.should respond_to(:source)
-      pkg.installers.first.class.should == Sprinkle::Installers::Source
+      pkg.installers.first.class.should eq Sprinkle::Installers::Source
     end
 
     it 'should optionally accept an user installer' do
@@ -205,7 +205,7 @@ CODE
         add_user 'bob'
       end
       pkg.should respond_to(:add_user)
-      pkg.installers.first.class.should == Sprinkle::Installers::User
+      pkg.installers.first.class.should eq Sprinkle::Installers::User
     end
 
     it 'should allow multiple installer steps to be defined and respect order' do
@@ -214,9 +214,9 @@ CODE
         gem 'momoney'
       end
 
-      pkg.installers.length.should == 2
-      pkg.installers[0].class.should == Sprinkle::Installers::Source
-      pkg.installers[1].class.should == Sprinkle::Installers::Gem
+      pkg.installers.length.should eq 2
+      pkg.installers[0].class.should eq Sprinkle::Installers::Source
+      pkg.installers[1].class.should eq Sprinkle::Installers::Gem
     end
 
 		it 'should optionally accept a runner installer' do
@@ -224,7 +224,7 @@ CODE
 				runner 'obscure_installer_by_custom_cmd'
 			end
 			pkg.should respond_to(:runner)
-			pkg.installers.first.class.should == Sprinkle::Installers::Runner
+			pkg.installers.first.class.should eq Sprinkle::Installers::Runner
 		end
   end
 
@@ -235,7 +235,7 @@ CODE
         source 'archive' do; end
       end
       pkg.should respond_to(:source)
-      pkg.installers.first.class.should == Sprinkle::Installers::Source
+      pkg.installers.first.class.should eq Sprinkle::Installers::Source
     end
 
     it 'should forward block to installer superclass' do
@@ -281,9 +281,9 @@ CODE
   describe 'when processing' do
 
     before do
-      @deployment = mock(Sprinkle::Deployment)
+      @deployment = double(Sprinkle::Deployment)
       @roles = [ :app, :db ]
-      @installer = mock(Sprinkle::Installers::Installer, :defaults => true, :process => true)
+      @installer = double(Sprinkle::Installers::Installer, :defaults => true, :process => true)
       @package = package @name do; end
     end
 
@@ -319,8 +319,8 @@ CODE
       before do
         @pkg = create_package_with_blank_verify(3)
         @pkg.installers = [ @installer ]
-        @installer.stub!(:defaults)
-        @installer.stub!(:process)
+        @installer.stub(:defaults)
+        @installer.stub(:process)
       end
 
       describe 'with forcing' do
@@ -366,7 +366,8 @@ CODE
         after do
           begin
             @pkg.process(@deployment, @roles)
-          rescue Sprinkle::VerificationFailed => e; end
+          rescue Sprinkle::VerificationFailed
+          end
         end
       end
     end
@@ -375,35 +376,35 @@ CODE
 
   describe 'when processing verifications' do
     before do
-      @deployment = mock(Sprinkle::Deployment)
+      @deployment = double(Sprinkle::Deployment)
       @roles = [ :app, :db ]
-      @installer = mock(Sprinkle::Installers::Installer, :defaults => true, :process => true)
+      @installer = double(Sprinkle::Installers::Installer, :defaults => true, :process => true)
       @pkg = create_package_with_blank_verify(3)
       @pkg.installers = [ @installer ]
-      @installer.stub!(:defaults)
-      @installer.stub!(:process)
-      @logger = mock(:debug => true, :debug? => true)
-      @logger.stub!(:info)
+      @installer.stub(:defaults)
+      @installer.stub(:process)
+      @logger = double(:debug => true, :debug? => true)
+      @logger.stub(:info)
     end
 
     it 'should request _each_ verification to configure itself against the deployment context' do
       @pkg.verifications.each do |v|
         v.should_receive(:defaults).with(@deployment).once
-        v.stub!(:process)
+        v.stub(:process)
       end
     end
 
     it 'should request _each_ verification to process' do
       @pkg.verifications.each do |v|
-        v.stub!(:defaults)
+        v.stub(:defaults)
         v.should_receive(:process).with(@roles).once
       end
     end
 
     it 'should enter a log info event to notify user whats happening' do
       @pkg.verifications.each do |v|
-        v.stub!(:defaults)
-        v.stub!(:process)
+        v.stub(:defaults)
+        v.stub(:process)
       end
 
       @pkg.should_receive(:logger).once.and_return(@logger)
@@ -426,16 +427,15 @@ CODE
 
     it 'should be able to return a dependency hierarchy tree' do
       @ai, @bi, @ci, @di, @ei = @a, @b, @c, @d, @e
-      @b.should_receive(:instance).any_number_of_times.and_return(@bi)
-      @c.should_receive(:instance).any_number_of_times.and_return(@ci)
-      @d.should_receive(:instance).any_number_of_times.and_return(@di)
-      @e.should_receive(:instance).any_number_of_times.and_return(@ei)
-      
-      @a.tree.flatten.should == [ @d, @c, @b, @a ]
-      @b.tree.flatten.should == [ @d, @c, @b ]
-      @c.tree.flatten.should == [ @d, @c ]
-      @d.tree.flatten.should == [ @d ]
-      @e.tree.flatten.should == [ @e, @d ]
+      @b.should_receive(:instance).at_least(:once).and_return(@bi)
+      @c.should_receive(:instance).at_least(:once).and_return(@ci)
+      @d.should_receive(:instance).at_least(:once).and_return(@di)
+
+      @a.tree.flatten.should eq [ @d, @c, @b, @a ]
+      @b.tree.flatten.should eq [ @d, @c, @b ]
+      @c.tree.flatten.should eq [ @d, @c ]
+      @d.tree.flatten.should eq [ @d ]
+      @e.tree.flatten.should eq [ @e, @d ]
     end
 
     describe 'with missing recommendations' do
@@ -445,7 +445,7 @@ CODE
       end
 
       it 'should ignore missing recommendations' do
-        @d.tree.flatten.should == [ @d ]
+        @d.tree.flatten.should eq [ @d ]
       end
 
     end
@@ -457,7 +457,7 @@ CODE
       end
 
       it 'should ignore missing recommendations' do
-        @d.tree.flatten.should == [ @d ]
+        @d.tree.flatten.should eq [ @d ]
       end
 
     end
@@ -467,11 +467,11 @@ CODE
       @a.tree do
         @count += 1
       end
-      @count.should == 3
+      @count.should eq 3
     end
 
     it 'should maintain a depth count of how deep the hierarchy is' do
-      instance=mock
+      instance=double
       @b.should_receive(:instance).and_return(instance)
       instance.should_receive(:tree).with(2).and_return([@b])
       @a.tree do; end

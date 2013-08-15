@@ -68,8 +68,8 @@ module Sprinkle
       
       def run_command(cmd) #:nodoc:
         @log_recorder.reset cmd
-        pid, stdin, out, err = Open4.popen4(cmd)
-        ignored, status = Process::waitpid2 pid
+        pid, _, out, err = Open4.popen4(cmd)
+        _, status = Process::waitpid2 pid
         @log_recorder.log :err, err.read
         @log_recorder.log :out, out.read
         @log_recorder.code = status.to_i
@@ -80,13 +80,11 @@ module Sprinkle
       end
       
       def transfer(source, destination, roles, opts ={}) #:nodoc:
-			  opts.reverse_merge!(:recursive => true)
-				flags = "-R " if opts[:recursive]
-				
-				run_command "cp #{flags}#{source} #{destination}"
-			end
-      
-      
+        opts.reverse_merge!(:recursive => true)
+        flags = "-R " if opts[:recursive]
+
+        run_command "cp #{flags}#{source} #{destination}"
+      end
     end
   end
 end

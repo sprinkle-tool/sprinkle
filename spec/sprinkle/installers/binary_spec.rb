@@ -23,7 +23,7 @@ describe Sprinkle::Installers::Binary do
   end
 
   def create_binary(binary, version = nil, &block)
-    @package = mock(Sprinkle::Package, :name => 'package', :version => version)
+    @package = double(Sprinkle::Package, :name => 'package', :version => version)
     Sprinkle::Installers::Binary.new(@package, binary, &block)
   end
 

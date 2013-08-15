@@ -9,7 +9,7 @@ describe Sprinkle::Installers::Gem do
   end
 
   def create_gem(gem, version = nil, options = {}, &block)
-    # @package = mock(Sprinkle::Package, :name => gem, :version => version)
+    # @package = double(Sprinkle::Package, :name => gem, :version => version)
     @package = Package.new "test" do; end
     @package.version version
     Sprinkle::Installers::Gem.new(@package, gem, options, &block)

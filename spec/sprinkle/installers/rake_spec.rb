@@ -3,7 +3,7 @@ require File.expand_path("../../spec_helper", File.dirname(__FILE__))
 describe Sprinkle::Installers::Rake do
 
   before do
-    @package = mock(Sprinkle::Package, :name => 'spec')
+    @package = double(Sprinkle::Package, :name => 'spec')
   end
 
   def create_rake(names, options = {}, &block)

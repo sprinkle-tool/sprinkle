@@ -19,7 +19,7 @@ describe Sprinkle::Script, 'when given a script' do
     @filename = 'filename'
     
     @sprinkle = Sprinkle::Script.new
-    Sprinkle::Script.stub!(:new).and_return(@sprinkle)
+    Sprinkle::Script.stub(:new).and_return(@sprinkle)
   end
 
   it 'should create a new sprinkle instance' do

@@ -62,7 +62,7 @@ describe Sprinkle::Verify do
       end
     end
     @verification = @package.verifications[0]
-    @delivery = mock(Sprinkle::Deployment, :process => true, :sudo_command => "sudo")
+    @delivery = double(Sprinkle::Deployment, :process => true, :sudo_command => "sudo")
     @verification.delivery = @delivery
   end
   
@@ -201,7 +201,7 @@ describe Sprinkle::Verify do
     describe 'when testing' do
       before do
         Sprinkle::OPTIONS[:testing] = true
-        @logger = mock(:debug => true, :debug? => true)
+        @logger = double(:debug => true, :debug? => true)
       end
 
       it 'should not call process on the delivery' do

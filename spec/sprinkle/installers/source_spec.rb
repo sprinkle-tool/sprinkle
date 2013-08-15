@@ -35,7 +35,7 @@ describe Sprinkle::Installers::Source do
   end
 
   def create_source(source, version = nil, &block)
-    @package = mock(Sprinkle::Package, :name => 'package', :version => version,
+    @package = double(Sprinkle::Package, :name => 'package', :version => version,
     :installer_methods => [])
 
     Sprinkle::Installers::Source.new(@package, source, &block)
@@ -44,7 +44,7 @@ describe Sprinkle::Installers::Source do
   describe 'when created' do
 
     it 'should accept a source archive name to install' do
-      @installer.source.should == @source
+      @installer.source.should eq @source
     end
 
   end
@@ -77,35 +77,35 @@ describe Sprinkle::Installers::Source do
   describe 'customized configuration' do
 
     it 'should support specification of "enable" options' do
-      @installer.enable.should == %w( headers ssl deflate so )
+      @installer.enable.should eq %w( headers ssl deflate so )
     end
 
     it 'should support specification of "disable" options' do
-      @installer.disable.should == %w( cache proxy rewrite )
+      @installer.disable.should eq %w( cache proxy rewrite )
     end
 
     it 'should support specification of "with" options' do
-      @installer.with.should == %w( debug extras )
+      @installer.with.should eq %w( debug extras )
     end
 
     it 'should support specification of "without" options' do
-      @installer.without.should == %w( fancyisms pandas )
+      @installer.without.should eq %w( fancyisms pandas )
     end
 
     it 'should support specification of "option" options' do
-      @installer.option.should == %w( foo bar baz )
+      @installer.option.should eq %w( foo bar baz )
     end
 
     it 'should support customized build area' do
-      @installer.prefix.should == '/usr/local'
+      @installer.prefix.should eq '/usr/local'
     end
 
     it 'should support customized source area' do
-      @installer.archives.should == '/usr/local/archives'
+      @installer.archives.should eq '/usr/local/archives'
     end
 
     it 'should support customized install area' do
-      @installer.builds.should == '/usr/local/builds'
+      @installer.builds.should eq '/usr/local/builds'
     end
   end
 
@@ -116,8 +116,7 @@ describe Sprinkle::Installers::Source do
     end
 
     it "should prepare the build, installation and source archives area with correct paths" do
-      @installer.send(:prepare).should ==
-      [
+      @installer.send(:prepare).should eq [
          'mkdir -p /usr/local',
          'mkdir -p /usr/local/builds',
          'mkdir -p /usr/local/archives'
@@ -129,8 +128,7 @@ describe Sprinkle::Installers::Source do
     end
 
     it 'should download the source archive to the correct path' do
-      @installer.send(:download).should ==
-        [
+      @installer.send(:download).should eq [
          "wget -cq -O '/usr/local/archives/#{@source.split('/').last}' #{@source}"
         ]
     end
@@ -140,8 +138,7 @@ describe Sprinkle::Installers::Source do
     end
 
     it 'should extract the source to the correct path' do
-      @installer.send(:extract).should ==
-        [
+      @installer.send(:extract).should eq [
          "bash -c 'cd /usr/local/builds && tar xzf /usr/local/archives/ruby-1.8.6-p111.tar.gz'"
         ]
     end
@@ -177,8 +174,7 @@ describe Sprinkle::Installers::Source do
     end
 
     it 'should build the source in the correct build path' do
-      @installer.send(:build).should ==
-        [
+      @installer.send(:build).should eq [
          "bash -c 'cd /usr/local/builds/#{@filename} && make > #{@package.name}-build.log 2>&1'"
         ]
     end
@@ -188,8 +184,7 @@ describe Sprinkle::Installers::Source do
     end
 
     it 'should install the source from the correct build path' do
-      @installer.send(:install).should ==
-        [
+      @installer.send(:install).should eq [
          "bash -c 'cd /usr/local/builds/#{@filename} && make install > #{@package.name}-install.log 2>&1'"
         ]
     end
@@ -237,9 +232,9 @@ describe Sprinkle::Installers::Source do
       end
 
       it 'should store the custom commands' do
-        @installer.options[:configure_command].should == './custom-configure'
-        @installer.options[:build_command].should     == 'custom-make'
-        @installer.options[:install_command].should   == 'custom-make install'
+        @installer.options[:configure_command].should eq './custom-configure'
+        @installer.options[:build_command].should     eq 'custom-make'
+        @installer.options[:install_command].should   eq 'custom-make install'
       end
 
       it 'should use the custom commands' do
@@ -261,7 +256,7 @@ describe Sprinkle::Installers::Source do
       end
 
       it 'should store the custom install commands' do
-        @installer.options[:custom_install].first.should == 'ruby setup.rb'
+        @installer.options[:custom_install].first.should eq 'ruby setup.rb'
       end
 
       it 'should identify as having a custom install command' do
@@ -295,7 +290,7 @@ describe Sprinkle::Installers::Source do
         end
 
         it 'should store the custom build dir path' do
-          @installer.options[:custom_dir].should == 'test'
+          @installer.options[:custom_dir].should eq 'test'
         end
 
       end
@@ -424,7 +419,7 @@ describe Sprinkle::Installers::Source do
     end
 
     after do
-      @installer.send(:extract_command).should == @extraction
+      @installer.send(:extract_command).should eq @extraction
     end
 
   end
@@ -435,7 +430,7 @@ describe Sprinkle::Installers::Source do
 
       it "should recognize #{archive} style archives" do
         @installer.source = "blah.#{archive}"
-        @installer.send(:base_dir).should == 'blah'
+        @installer.send(:base_dir).should eq 'blah'
       end
 
     end

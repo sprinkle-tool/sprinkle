@@ -49,7 +49,7 @@ module Sprinkle
       def initialize(options = {}, &block) #:nodoc:
         @options = options.update(:user => 'root', :port => 22)
         @roles = {}
-        self.instance_eval &block if block
+        self.instance_eval(&block) if block
         raise "You must define at least a single role." if @roles.empty?
       end
 
@@ -121,7 +121,7 @@ module Sprinkle
         # issue all the verification steps in a single SSH command
         commands=[verifier.commands.join(" && ")]
         process(verifier.package.name, commands, roles)
-      rescue SSHCommandFailure => e
+      rescue SSHCommandFailure
         false
       end
       
@@ -146,8 +146,8 @@ module Sprinkle
       
         def execute_on_role(commands, role) #:nodoc:
           hosts = @roles[role]
-          Array(hosts).each do |host| 
-            success = execute_on_host(commands, host)
+          Array(hosts).each do |host|
+            execute_on_host(commands, host)
           end
         end
         

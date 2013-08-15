@@ -4,9 +4,9 @@ describe Sprinkle::Installers::FileInstaller do
   include Sprinkle::Deployment
 
   before do
-    @package = mock(Sprinkle::Package, :name => 'package', :sudo? => false)
+    @package = double(Sprinkle::Package, :name => 'package', :sudo? => false)
     @empty = Proc.new { }
-    @delivery = mock(Sprinkle::Deployment, :install => true)
+    @delivery = double(Sprinkle::Deployment, :install => true)
     @source = 'source'
     @destination = 'destination'
     @contents = "hi"
@@ -26,8 +26,8 @@ describe Sprinkle::Installers::FileInstaller do
 
   describe 'when created' do
     it 'should accept a source and destination to install' do
-      @installer.contents.should == @contents
-      @installer.destination.should == @destination
+      @installer.contents.should eq @contents
+      @installer.destination.should eq @destination
     end
   end
 
@@ -63,7 +63,7 @@ describe Sprinkle::Installers::FileInstaller do
       end
 
       it "should run commands in correct order" do
-        @installer_commands.should == [
+        @installer_commands.should eq [
           :TRANSFER,
           "sudo mv /tmp/sprinkle_#{@destination} #{@destination}",
           "sudo chmod 744 #{@destination}",
@@ -82,7 +82,7 @@ describe Sprinkle::Installers::FileInstaller do
       end
 
       it "should run commands in correct order" do
-        @installer_commands.should == [
+        @installer_commands.should eq [
           :TRANSFER,
           "sudo mv /tmp/sprinkle_#{@destination} #{@destination}",
           "sudo chown root #{@destination}",
@@ -104,7 +104,7 @@ describe Sprinkle::Installers::FileInstaller do
       end
 
       it "should call the pre and post install commands around the file transfer" do
-        @installer_commands.should == ["op1",:TRANSFER, "op2"]
+        @installer_commands.should eq ["op1",:TRANSFER, "op2"]
       end
 
     end
@@ -121,7 +121,7 @@ describe Sprinkle::Installers::FileInstaller do
       end
 
       it "should call the pre and post install commands around the file transfer" do
-        @installer_commands.should == ["op1",:TRANSFER,
+        @installer_commands.should eq ["op1",:TRANSFER,
           "sudo mv /tmp/sprinkle_destination destination", "op2"]
       end
     end
@@ -137,7 +137,7 @@ describe Sprinkle::Installers::FileInstaller do
       end
 
       it "should call the pre and post install commands around the file transfer" do
-        @installer_commands.should == ["op1","op1-1",:TRANSFER, "op2","op2-1"]
+        @installer_commands.should eq ["op1","op1-1",:TRANSFER, "op2","op2-1"]
       end
 
     end
