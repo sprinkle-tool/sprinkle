@@ -1,7 +1,7 @@
 require File.expand_path("../../spec_helper", File.dirname(__FILE__))
 
 describe Sprinkle::Package::PackageRepository do
-  
+
   before do
     @repository = PackageRepository.new {}
     @test_package = Package.new(:test) {}
@@ -16,23 +16,23 @@ describe Sprinkle::Package::PackageRepository do
     @repository.add @test_package
     @repository.count.should == 1
   end
-  
+
   it 'should allow clearing' do
     @repository.add @test_package
     @repository.clear
     @repository.count.should == 0
   end
-  
+
   it "should find by provides" do
     @repository.add @mysql_package
     @repository.find_all("db").should == [ @mysql_package ]
   end
-  
+
   it "should find by name" do
     @repository.add @test_package
     @repository.find_all("test").should == [ @test_package ]
   end
-  
+
   it "should filter by version" do
     @repository.add @test_package
     @repository.add @test_v2_package
@@ -42,5 +42,5 @@ describe Sprinkle::Package::PackageRepository do
 
   after do
   end
-  
+
 end

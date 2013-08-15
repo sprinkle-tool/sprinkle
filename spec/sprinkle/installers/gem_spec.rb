@@ -20,7 +20,7 @@ describe Sprinkle::Installers::Gem do
     before do
       @installer = create_gem @gem, @version, @options
     end
-    
+
     it "should return nil if no source is not configured" do
       @options.delete(:source)
       @installer = create_gem @gem, @version, @options
@@ -42,7 +42,7 @@ describe Sprinkle::Installers::Gem do
     it 'should optionally store the repository location where gems are to be installed' do
       @installer.repository.should == @options[:repository]
     end
-    
+
     it 'should optionally store the build flags' do
       @installer.build_flags.should == @options[:build_flags]
     end
@@ -50,7 +50,7 @@ describe Sprinkle::Installers::Gem do
     it 'should optionally store the http proxy' do
       @installer.http_proxy.should == @options[:http_proxy]
     end
-    
+
   end
 
   describe 'during installation' do
@@ -85,31 +85,31 @@ describe Sprinkle::Installers::Gem do
       end
 
     end
-    
+
     describe 'with build flags' do
-      
+
       before do
         @installer = create_gem @gem, nil, :build_flags => '--option=foo'
       end
-      
+
       it 'should install with defined build flags' do
         @installer.send(:install_commands).should == "gem install #{@gem} --no-rdoc --no-ri -- --option=foo"
       end
-      
+
     end
-    
+
     describe 'with http proxy' do
-      
+
       before do
         @installer = create_gem @gem, nil, :http_proxy => 'http://proxy:8080'
       end
-      
+
       it 'should install with defined build flags' do
         @installer.send(:install_commands).should == "gem install #{@gem} --no-rdoc --no-ri --http-proxy http://proxy:8080"
       end
-      
+
     end
-    
+
   end
 
 end

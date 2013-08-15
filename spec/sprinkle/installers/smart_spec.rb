@@ -21,7 +21,7 @@ describe Sprinkle::Installers::Smart do
       @installer = create_smart %w( gcc gdb g++ )
       @installer.packages.should == ['gcc', 'gdb', 'g++']
     end
-    
+
     it 'should accept a list of packages to install' do
       @installer = Sprinkle::Installers::Smart.new(@package, "gcc", "gdb", "g++")
       @installer.packages.should == ['gcc', 'gdb', 'g++']
@@ -44,7 +44,7 @@ describe Sprinkle::Installers::Smart do
     end
 
     it 'should automatically insert pre/post commands for the specified package' do
-      @installer.send(:install_sequence).should == [ 'op1', 
+      @installer.send(:install_sequence).should == [ 'op1',
         'smart install ruby -y 2>&1 | tee -a /var/log/smart-sprinkle', 'op2' ]
     end
 

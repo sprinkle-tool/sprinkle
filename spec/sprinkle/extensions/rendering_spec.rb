@@ -25,7 +25,7 @@ describe Sprinkle::Package::Rendering, 'rendering' do
     t=@package.template("hello <%= opts[:world] %> <%= @wowser %>")
     t.should == "hello world wowser"
   end
-        
+
   it "should be able to render a file from templates" do
     Dir.chdir(@root) do
       t = @package.render("test")
@@ -38,7 +38,7 @@ describe Sprinkle::Package::Rendering, 'rendering' do
     t = @package.render(path)
     t.should == "hello "
   end
-  
+
   it "should accept binding as second argument" do
     path = File.join(@root, "templates/locals.erb")
     t = @package.render(path, :world => "world")

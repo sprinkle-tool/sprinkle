@@ -5,7 +5,7 @@ describe Sprinkle::Actors::SSH do
     before do
       subject.stub(:gateway_defined?).and_return(false)
     end
-    
+
     subject do
       Sprinkle::Actors::SSH.new do
         role :app, "booger.com"
