@@ -4,7 +4,7 @@ describe Sprinkle::Installers::Installer do
   include Sprinkle::Deployment
 
   before do
-    @package = double(Sprinkle::Package, :name => 'package')
+    @package = double(Sprinkle::Package, :name => 'package', :sudo? => false)
     @empty = Proc.new { }
     @sequence = ['op1', 'op2']
     @delivery = double(Sprinkle::Deployment, :process => true, :install => true,
@@ -82,6 +82,24 @@ describe Sprinkle::Installers::Installer do
 
     end
 
+    describe "with sudo from actor level" do
+      before do
+        @installer = Sprinkle::Installers::Installer.new @package
+        @installer.package = double(Sprinkle::Package, :name => 'package', :sudo? => nil)
+        @installer.delivery = double(Sprinkle::Deployment, :process => true, :install => true,
+          :sudo_command => "sudo -p blah", :sudo? => true)
+      end
+
+      it "should know it uses sudo" do
+        @installer.sudo?.should == true
+      end
+
+      it "should offer up the sudo command" do
+        @installer.sudo_cmd.should =~ /sudo /
+      end
+
+    end
+
     describe "with sudo from package level" do
       before do
         @installer.package = double(Sprinkle::Package, :name => 'package', :sudo? => true)
@@ -96,6 +114,26 @@ describe Sprinkle::Installers::Installer do
       end
     end
 
+    describe "with sudo false" do
+      before do
+        @installer = Sprinkle::Installers::Installer.new @package, :sudo => false
+        @installer.package = double(Sprinkle::Package, :name => 'package', :sudo? => true)
+        @installer.delivery = @delivery
+      end
+
+      it "should override package sudo true" do
+        @installer.sudo?.should == false
+        @installer.sudo_cmd.should_not =~ /sudo /
+      end
+
+      it "should override delivery sudo true" do
+        @installer.package = double(Sprinkle::Package, :name => 'package', :sudo? => nil)
+        @installer.delivery = double(Sprinkle::Deployment, :process => true, :install => true,
+          :sudo_command => "sudo ", :sudo? => true)
+      end
+
+    end
+
     describe "with sudo" do
       before do
         @installer = Sprinkle::Installers::Installer.new @package, :sudo => true
@@ -104,7 +142,7 @@ describe Sprinkle::Installers::Installer do
 
       it "should use sudo command from actor" do
         @installer.delivery = double(Sprinkle::Deployment, :process => true, :install => true,
-          :sudo_command => "sudo -p blah")
+          :sudo_command => "sudo -p blah", :sudo? => false)
         @installer.sudo_cmd.should =~ /sudo -p blah /
       end
 

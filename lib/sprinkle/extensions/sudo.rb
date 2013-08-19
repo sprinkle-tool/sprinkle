@@ -6,7 +6,11 @@ module Sprinkle
     end
 
     def sudo?
-      options[:sudo] or package.sudo? or @delivery.try(:sudo?)
+      sudo_stack.detect { |x| x==true or x==false }
+    end
+
+    def sudo_stack
+      [ options[:sudo], package.sudo?, @delivery.try(:sudo?) ]
     end
 
   end
