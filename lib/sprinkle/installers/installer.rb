@@ -2,27 +2,27 @@ module Sprinkle
   # Installers are where the bulk of the work in Sprinkle happens.  Installers are
   # the building blocks of packages.  Typically each unique type of install
   # command has it's own installer class.
-  # 
+  #
   module Installers
     # The base class which all installers must subclass, this class makes
     # sure all installers share some general features, which are outlined
-    # below. 
+    # below.
     #
     # = Pre/Post Installation Hooks
-    # 
+    #
     # With all installation methods you have the ability to specify multiple
     # pre/post installation hooks. This gives you the ability to specify
-    # commands to run before and after an installation takes place. 
+    # commands to run before and after an installation takes place.
     # There are three ways to specify a pre/post hook.
-    
+
     # Note about sudo:
     # When using the Capistrano actor all commands by default are run using
-    # sudo (unless your Capfile includes "set :use_sudo, false").  If you wish 
-    # to use sudo periodically with "set :user_sudo, false" or with an actor 
-    # other than Capistrano then you can just append it to your command. Some 
-    # installers (transfer) also support a :sudo option, so check each 
+    # sudo (unless your Capfile includes "set :use_sudo, false").  If you wish
+    # to use sudo periodically with "set :user_sudo, false" or with an actor
+    # other than Capistrano then you can just append it to your command. Some
+    # installers (transfer) also support a :sudo option, so check each
     # installer for details.
-    # 
+    #
     # First, a single command:
     #
     #   pre :install, 'echo "Hello, World!"'
@@ -49,13 +49,13 @@ module Sprinkle
     # Some installation methods actually grant you more fine grained
     # control of when commands are run rather than a blanket pre :install
     # or post :install. If this is the case, it will be documented on
-    # the installation method's corresponding documentation page. 
+    # the installation method's corresponding documentation page.
     class Installer
       include Sprinkle::Attributes
       include Sprinkle::Sudo
-      
+
       delegate :version, :to => :package
-      
+
       attr_accessor :delivery, :package, :options, :pre, :post #:nodoc:
 
       def initialize(package, options = {}, &block) #:nodoc:
@@ -65,18 +65,18 @@ module Sprinkle
         @delivery = nil
         self.instance_eval(&block) if block
       end
-            
+
       attributes :prefix, :archives, :builds
-      
+
       class << self
         def subclasses
           @subclasses ||= []
         end
-        
+
         def api(&block)
           Sprinkle::Package::Package.add_api(&block)
         end
-        
+
         def verify_api(&block)
           Sprinkle::Verify.class_eval(&block)
         end
@@ -85,7 +85,7 @@ module Sprinkle
           subclasses << base
         end
       end
-            
+
       def escape_shell_arg(str)
         str.gsub("'", "'\\\\''").gsub("\n", '\n')
       end
@@ -93,24 +93,31 @@ module Sprinkle
       def pre(stage, *commands, &block)
         @pre[stage] ||= []
         @pre[stage] += commands
-        @pre[stage] += commands_from_block(block)
+        @pre[stage] << defer(block) if block_given?
+        @pre[stage]
       end
 
       def post(stage, *commands, &block)
         @post[stage] ||= []
         @post[stage] += commands
-        @post[stage] += commands_from_block(block) 
+        @post[stage] << defer(block) if block_given?
+        @post[stage]
       end
-      
+
+      # defer execution of command block until the package is being
+      # processed
+      def defer(block)
+        p = Proc.new { self.commands_from_block(block) }
+      end
+
       def commands_from_block(block)
         return [] unless block
         out = nil
-        diff = @package.with_private_install_queue do
-          out = block.call
-        end
+        diff = @package.with_private_install_queue { out = block.call }
+        diff.each {|x| x.delivery = self.delivery }
         diff.empty? ? out : diff.map {|x| x.install_sequence }
       end
-      
+
       def method_missing(method, *args, &block)
         if package.class.installer_methods.include?(method)
           @package.send(method, *args, &block)
@@ -118,11 +125,11 @@ module Sprinkle
           super(method, *args, &block)
         end
       end
-      
+
       def per_host?
         return false
       end
-      
+
       # Called right before an installer is exected, can be used for logging
       # and announcing what is about to happen
       def announce; end
@@ -144,17 +151,21 @@ module Sprinkle
         # command sequence construction (eg. source based installer).
         def install_sequence
           commands = pre_commands(:install) + [ install_commands ] + post_commands(:install)
-          commands.flatten
+          flatten commands
         end
-        
+
       protected
-      
-        def log(t, level=:info)
+
+        def log(t, level=:info) #:nodoc:
           logger.send(level, t)
         end
 
+        def flatten(commands) #:nodoc:
+          commands.flatten.map {|c| c.is_a?(Proc) ? c.call : c }.flatten
+        end
+
         # A concrete installer (subclass of this virtual class) must override this method
-        # and return the commands it needs to run as either a string or an array. 
+        # and return the commands it needs to run as either a string or an array.
         #
         # <b>Overriding this method is required.</b>
         def install_commands
@@ -171,9 +182,9 @@ module Sprinkle
 
         # Concrete installers (subclasses of this virtual class) can override this method to
         # specify stage-specific (pre-installation, post-installation, etc.) modifications
-        # of commands. 
+        # of commands.
         #
-        # An example usage of overriding this would be to prefix all commands for a 
+        # An example usage of overriding this would be to prefix all commands for a
         # certain stage to change to a certain directory. An example is given below:
         #
         #   def dress(commands, stage)

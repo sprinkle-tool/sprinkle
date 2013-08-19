@@ -6,7 +6,7 @@ module Sprinkle
       @name = name
       @roles = roles
     end
-    
+
     def to_s
       "Policy #{@name} is to be installed on #{@roles.inspect} but no server has such a role."
     end
@@ -17,8 +17,8 @@ module Sprinkle
   # Policies define a set of packages which are required for a certain
   # role (app, database, etc.). All policies defined will be run and all
   # packages required by the policy will be installed. So whereas defining
-  # a Sprinkle::Package merely defines it, defining a Sprinkle::Policy 
-  # actually causes those packages to install. 
+  # a Sprinkle::Package merely defines it, defining a Sprinkle::Policy
+  # actually causes those packages to install.
   #
   # == Example
   #
@@ -28,11 +28,11 @@ module Sprinkle
   #     requires :rails
   #   end
   #
-  # This says that for the blog on the app role, it requires certain 
+  # This says that for the blog on the app role, it requires certain
   # packages. The :roles option is <em>exactly</em> the same as a capistrano
   # or vlad role. A role merely defines what server the commands are run
   # on. This way, a single Sprinkle script can provision an entire group
-  # of servers. 
+  # of servers.
   #
   # To define a role, put in your actor specific configuration file (recipe or
   # script file):
@@ -50,11 +50,11 @@ module Sprinkle
   # multiple packages within the same role without having to wait for
   # that package to install repeatedly.
   class Policy
-    attr_reader :name 
+    attr_reader :name
     # roles for which a policy should be installed [required]
-    attr_reader :roles 
+    attr_reader :roles
 
-    # creates a new policy, 
+    # creates a new policy,
     # although policies are typically not created directly but
     # rather via the Core#policy helper.
     def initialize(name, metadata = {}, &block)
@@ -81,9 +81,9 @@ module Sprinkle
 
     def process(deployment) #:nodoc:
       raise NoMatchingServersError.new(@name, @roles) unless deployment.style.servers_for_role?(@roles)
-      
+
       all = []
-      
+
       logger.info "[#{name}]"
 
       cloud_info "--> Cloud hierarchy for policy #{@name}"
