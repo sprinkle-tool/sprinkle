@@ -117,7 +117,7 @@ module Sprinkle
     end
 
     class Package #:nodoc:
-      attr_accessor :name, :provides, :installers, :verifications
+      attr_accessor :name, :provides, :verifications
       attr_internal :args, :opts
       cattr_reader :installer_methods
       @@installer_methods = []
@@ -141,7 +141,7 @@ module Sprinkle
         @recommends = []
         @optional = []
         @verifications = []
-        @installers = []
+        @install_queues ||= [[]]
         @block = block
         @use_sudo = false
         @version = nil
@@ -226,7 +226,7 @@ module Sprinkle
           end
         end
 
-        @installers.each do |installer|
+        installers.each do |installer|
           installer.defaults(deployment)
           installer.process(roles)
         end
@@ -285,17 +285,19 @@ module Sprinkle
       #
       # returns: the private queue
       def with_private_install_queue()
-        b = @installers
-        @installers = private_queue =[]
+        @install_queues.push []
         yield
-        @installers = b
-        private_queue
+        @install_queues.pop
+      end
+
+      def installers
+        @install_queues.last
       end
 
     protected
 
       def install(i)
-        @installers << i
+        installers << i
         i
       end
 
@@ -330,7 +332,7 @@ module Sprinkle
         end
 
         def meta_package?
-          @installers.blank?
+          installers.blank?
         end
     end
   end
