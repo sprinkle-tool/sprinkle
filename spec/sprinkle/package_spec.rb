@@ -8,7 +8,7 @@ describe Sprinkle::Package do
     @empty = Proc.new { }
     @opts = { }
   end
-  
+
   after do
     Sprinkle::Package::PACKAGES.clear
   end
@@ -290,7 +290,7 @@ CODE
     describe 'with an installer' do
 
       before do
-        @package.installers = [ @installer ]
+        @package.installers << @installer
       end
 
       it 'should configure itself against the deployment context' do
@@ -318,7 +318,7 @@ CODE
     describe 'with verifications' do
       before do
         @pkg = create_package_with_blank_verify(3)
-        @pkg.installers = [ @installer ]
+        @pkg.installers.replace [ @installer ]
         @installer.stub(:defaults)
         @installer.stub(:process)
       end
@@ -380,7 +380,7 @@ CODE
       @roles = [ :app, :db ]
       @installer = double(Sprinkle::Installers::Installer, :defaults => true, :process => true)
       @pkg = create_package_with_blank_verify(3)
-      @pkg.installers = [ @installer ]
+      @pkg.installers.replace [ @installer ]
       @installer.stub(:defaults)
       @installer.stub(:process)
       @logger = double(:debug => true, :debug? => true)
