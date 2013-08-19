@@ -8,7 +8,7 @@ describe Sprinkle::Installers::Installer do
     @empty = Proc.new { }
     @sequence = ['op1', 'op2']
     @delivery = double(Sprinkle::Deployment, :process => true, :install => true,
-      :sudo_command => "sudo")
+      :sudo_command => "sudo", :sudo? => false)
     @installer = create_installer
     @installer.delivery = @delivery
     @roles = []
@@ -81,37 +81,37 @@ describe Sprinkle::Installers::Installer do
       end
 
     end
-    
+
     describe "with sudo from package level" do
       before do
         @installer.package = double(Sprinkle::Package, :name => 'package', :sudo? => true)
       end
-      
+
       it "should know it uses sudo" do
         @installer.sudo?.should == true
       end
-      
+
       it "should offer up the sudo command" do
         @installer.sudo_cmd.should =~ /sudo /
-      end      
+      end
     end
-    
+
     describe "with sudo" do
       before do
         @installer = Sprinkle::Installers::Installer.new @package, :sudo => true
         @installer.delivery = @delivery
       end
-      
+
       it "should use sudo command from actor" do
         @installer.delivery = double(Sprinkle::Deployment, :process => true, :install => true,
           :sudo_command => "sudo -p blah")
-        @installer.sudo_cmd.should =~ /sudo -p blah /  
+        @installer.sudo_cmd.should =~ /sudo -p blah /
       end
-      
+
       it "should know it uses sudo" do
         @installer.sudo?.should == true
       end
-      
+
       it "should offer up the sudo command" do
         @installer.sudo_cmd.should =~ /sudo /
       end
@@ -163,7 +163,7 @@ describe Sprinkle::Installers::Installer do
         end
       end
       describe "blocks as commands" do
-        before(:each) do          
+        before(:each) do
           @package = Package.new("package") do; end
           @installer = create_installer_with_pre_command do
             pre :install do

@@ -88,7 +88,7 @@ module Sprinkle
 
     class Source < Installer
       attr_accessor :source #:nodoc:
-      
+
       api do
         def source(source, options = {}, &block)
           recommends :build_essential # Ubuntu/Debian
@@ -171,15 +171,15 @@ module Sprinkle
         end
 
       protected
-      
+
         def with_log(cmd, stage)
           "#{cmd} > #{@package.name}-#{stage}.log 2>&1"
         end
-      
+
         def in_build_dir(cmd)
           "bash -c 'cd #{build_dir} && #{cmd}'"
         end
-      
+
         def pre_commands(stage) #:nodoc:
           dress @pre[stage] || [], :pre, stage
         end
@@ -187,7 +187,7 @@ module Sprinkle
         def post_commands(stage) #:nodoc:
           dress @post[stage] || [], :post, stage
         end
-      
+
 
         # dress is overriden from the base Sprinkle::Installers::Installer class so that the command changes
         # directory to the build directory first. Also, the result of the command is logged.
@@ -195,7 +195,7 @@ module Sprinkle
           chdir = "cd #{build_dir} && "
           chdir = "" if [:prepare, :download].include?(stage)
           chdir = "" if stage == :extract and pre_or_post == :pre
-          commands.collect { |command| "bash -c '#{chdir}#{command} >> #{@package.name}-#{stage}.log 2>&1'" }
+          flatten(commands).collect { |command| "bash -c '#{chdir}#{command} >> #{@package.name}-#{stage}.log 2>&1'" }
         end
 
       private
