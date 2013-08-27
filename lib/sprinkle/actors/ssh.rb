@@ -4,7 +4,7 @@ require File.dirname(__FILE__) + "/ssh/connection_cache"
 
 module Sprinkle
   module Actors
-    # The SSH actor requires no additional deployment tools other than the 
+    # The SSH actor requires no additional deployment tools other than the
     # Ruby SSH libraries.
     #
     #   deployment do
@@ -33,7 +33,7 @@ module Sprinkle
     # == Working thru a gateway
     #
     # If you're behind a firewall and need to use a SSH gateway that's fine.
-    # 
+    #
     #   deployment do
     #     delivery :ssh do
     #       gateway "work.sshgateway.com"
@@ -41,11 +41,11 @@ module Sprinkle
     #   end
     class SSH < Actor
       attr_accessor :options #:nodoc:
-      
+
       class SSHCommandFailure < StandardError #:nodoc:
         attr_accessor :details
       end
-            
+
       def initialize(options = {}, &block) #:nodoc:
         @options = options.update(:user => 'root', :port => 22)
         @roles = {}
@@ -59,7 +59,7 @@ module Sprinkle
       def roles(roles) #:nodoc:
         @roles = roles
       end
-      
+
       # Determines if there are any servers for the given roles
       def servers_for_role?(roles) #:nodoc:
         roles=Array(roles)
@@ -67,20 +67,20 @@ module Sprinkle
       end
 
       # Define a role and add servers to it
-      #   
+      #
       #   role :app, "app.server.com"
       #   role :db, "db.server.com"
       def role(role, server)
         @roles[role] ||= []
         @roles[role] << server
       end
-      
+
       # Set an optional SSH gateway server - if set all outbound SSH traffic
       # will go thru this gateway
       def gateway(gateway)
         @options[:gateway] = gateway
       end
-      
+
       # Set the SSH user
       def user(user)
         @options[:user] = user
@@ -104,19 +104,19 @@ module Sprinkle
       def use_sudo(value=true)
         @options[:use_sudo] = value
       end
-      
+
       def sudo? #:nodoc:
         @options[:use_sudo]
       end
-      
+
       def sudo_command #:nodoc:
         "sudo"
       end
-      
+
       def teardown #:nodoc:
         connections.shutdown!
       end
-      
+
       def verify(verifier, roles) #:nodoc:
         # issue all the verification steps in a single SSH command
         commands=[verifier.commands.join(" && ")]
@@ -124,7 +124,7 @@ module Sprinkle
       rescue SSHCommandFailure
         false
       end
-      
+
       def install(installer, roles, opts = {}) #:nodoc:
         @installer = installer
         process(installer.package.name, installer.install_sequence, roles)
@@ -135,55 +135,55 @@ module Sprinkle
       end
 
       private
-      
+
         def raise_error(e) #:nodoc:
           raise Sprinkle::Errors::RemoteCommandFailure.new(@installer, e.details, e)
         end
-      
+
         def process(name, commands, roles) #:nodoc:
           execute_on_role(commands, roles)
-        end      
-      
+        end
+
         def execute_on_role(commands, role) #:nodoc:
           hosts = @roles[role]
           Array(hosts).each do |host|
             execute_on_host(commands, host)
           end
         end
-        
+
         def prepare_commands(commands) #:nodoc:
           return commands unless sudo?
-          commands.map do |command| 
+          commands.map do |command|
             next command if command.is_a?(Symbol)
             command.match(/^#{sudo_command}/) ? command : "#{sudo_command} #{command}"
           end
         end
-        
+
         def execute_on_host(commands,host) #:nodoc:
           prepare_commands(commands).each do |cmd|
             case cmd
               when :RECONNECT
                 reconnect host
               when :TRANSFER
-                transfer_to_host(@installer.sourcepath, @installer.destination, host, 
+                transfer_to_host(@installer.sourcepath, @installer.destination, host,
                   :recursive => @installer.options[:recursive])
-              else  
+              else
                 run_command cmd, host
             end
           end
         end
-        
+
         def run_command(cmd,host) #:nodoc:
           @log_recorder= Sprinkle::Utility::LogRecorder.new(cmd)
           session = ssh_session(host)
           logger.debug "[#{session.host}] ssh: #{cmd}"
-          if channel_runner(session, cmd) != 0 
+          if channel_runner(session, cmd) != 0
             fail=SSHCommandFailure.new
             fail.details = @log_recorder.hash.merge(:hosts => host)
             raise fail
           end
         end
-        
+
         def channel_runner(session, command) #:nodoc:
           session.open_channel do |channel|
             channel.on_data do |ch, data|
@@ -217,12 +217,12 @@ module Sprinkle
           session.loop
           @log_recorder.code
         end
-        
+
         def transfer_to_role(source, destination, role, opts={}) #:nodoc:
           hosts = @roles[role]
           Array(hosts).each { |host| transfer_to_host(source, destination, host, opts) }
         end
-        
+
         def transfer_to_host(source, destination, host, opts={}) #:nodoc:
           logger.debug "upload: #{destination}"
           session = ssh_session(host)
@@ -233,21 +233,21 @@ module Sprinkle
             raise TransferFailure.no_permission(@installer,e)
           else
             raise e
-          end          
+          end
         end
-        
+
         def ssh_session(host) #:nodoc:
           connections.start(host, @options[:user], @options.slice(:password, :keys, :port))
-        end       
+        end
 
         def reconnect(host) #:nodoc:
           connections.reconnect host
         end
-        
+
         def connections #:nodoc:
           @connection_cache ||= SSHConnectionCache.new @options.slice(:gateway, :user)
-        end 
-        
+        end
+
         private
         def color(code, text)
           "\033[%sm%s\033[0m"%[code,text]
