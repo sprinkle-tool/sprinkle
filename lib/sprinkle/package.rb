@@ -20,7 +20,7 @@ module Sprinkle
   # 'ruby' being availble. Pretty simple, right?
   #
   # <b>Note:</b> Defining a package does not INSTALL it. To install a
-  # package, you must require it in a Sprinkle::Policy block. 
+  # package, you must require it in a Sprinkle::Policy block.
   #
   # == Pre-Requirements
   #
@@ -53,11 +53,11 @@ module Sprinkle
   #
   # == Verifications
   #
-  # Most of the time its important to know whether the software you're 
+  # Most of the time its important to know whether the software you're
   # attempting to install was installed successfully or not. For this,
   # Sprinkle provides verifications. Verifications are one or more blocks
   # which define rules with which Sprinkle can check if it installed
-  # the package successfully. If these verification blocks fail, then 
+  # the package successfully. If these verification blocks fail, then
   # Sprinkle will gracefully stop the entire process. An example below:
   #
   #   package :rubygems do
@@ -89,9 +89,9 @@ module Sprinkle
   #
   # The :provides option allows you to reference this package either by :sqlite3
   # or by :database. But whereas the package name is unique, multiple packages may
-  # share the same provision. If this is the case, when running Sprinkle, the 
+  # share the same provision. If this is the case, when running Sprinkle, the
   # script will ask you which provision you want to install. At this time, you
-  # can only install one. 
+  # can only install one.
   #
   # == Meta-Packages
   #
@@ -107,7 +107,7 @@ module Sprinkle
   # FIXME: Should probably document recommendations.
   #++
   module Package
-    
+
     PACKAGES = PackageRepository.new
 
     def package(name, metadata = {}, &block)
@@ -121,9 +121,9 @@ module Sprinkle
       attr_internal :args, :opts
       cattr_reader :installer_methods
       @@installer_methods = []
-      
+
       include Rendering
-      
+
       def self.add_api(&block)
         before = self.instance_methods
         self.class_eval(&block)
@@ -148,15 +148,15 @@ module Sprinkle
         # this should probably not be done twice
         self.instance_eval(&block)
       end
-      
+
       def description(s=nil)
         s ? @description = s : @description
       end
-      
+
       def version(s=nil)
         s ? @version = s : @version
       end
-      
+
       def instance(*args)
         p=Package.new(name, @metadata) {}
         p.opts = defaults.merge(args.extract_options!)
@@ -165,11 +165,11 @@ module Sprinkle
         p.instance_eval(&@block)
         p
       end
-      
+
       def sudo?
         @use_sudo
       end
-      
+
       def use_sudo(flag=true)
         @use_sudo = flag
       end
@@ -181,18 +181,18 @@ module Sprinkle
       def args
         @_args ||= []
       end
-      
+
       def opts
         @_opts ||= defaults.clone
       end
-      
+
       class ContextError < StandardError #:nodoc:
       end
-      
+
       def get(x)
         raise ContextError, "Cannot call get inside a package, must be inside an Installer block"
       end
-      
+
       # TODO - remove
       def push_file(file, options ={}, &block)
         ActiveSupport::Deprecation.warn("push_file is depreciated and will be removed in v0.9.  Use the new `file` installer instead.")
@@ -200,25 +200,25 @@ module Sprinkle
         runner "#{"sudo " if sudo?}rm -f #{file}"
         push_text(options[:content], file, options, &block)
       end
-                  
+
       def verify(description = '', &block)
         @verifications << Sprinkle::Verify.new(self, description, &block)
       end
-      
+
       def process(deployment, roles)
         logger.info "  * #{name}"
         return if meta_package?
-        opts.each_with_index do |(k, v), index| 
+        opts.each_with_index do |(k, v), index|
           branch = (index == opts.size - 1) ? "└" : "├"
-          logger.debug "    #{branch}─ #{k}: #{v}" 
+          logger.debug "    #{branch}─ #{k}: #{v}"
         end
-        
+
         # Run a pre-test to see if the software is already installed. If so,
         # we can skip it, unless we have the force option turned on!
         unless @verifications.empty? || Sprinkle::OPTIONS[:force]
           begin
             process_verifications(deployment, roles, true)
-            
+
             logger.info "    --> already installed for roles: #{roles}"
             return
           rescue Sprinkle::VerificationFailed
@@ -230,20 +230,20 @@ module Sprinkle
           installer.defaults(deployment)
           installer.process(roles)
         end
-        
+
         process_verifications(deployment, roles)
         logger.info "    --> INSTALLED for roles: #{roles}"
       end
-      
+
       def process_verifications(deployment, roles, pre = false)
         return if @verifications.blank?
-        
+
         if pre
           logger.debug "--> Checking if #{self.name} is already installed for roles: #{roles}"
         else
           logger.debug "--> Verifying #{self.name} was properly installed for roles: #{roles}"
         end
-        
+
         @verifications.each do |v|
           v.defaults(deployment)
           v.process(roles)
@@ -261,11 +261,11 @@ module Sprinkle
       def optional(*packages)
         add_dependencies packages, :optional
       end
-      
+
       def dependencies
         @dependencies.map {|a,b| a }
       end
-      
+
       def tree(depth = 1, &block)
         packages = []
         packages << tree_for_packages(@recommends, :depth => depth, &block)
@@ -278,11 +278,11 @@ module Sprinkle
       def to_s
         "#{@name} #{@version}".strip
       end
-        
+
       # allow an installer to request a private install queue from the package
       # for example to allow pre and post hooks to have their own installers that
       # do not mess with the packages installer list
-      # 
+      #
       # returns: the private queue
       def with_private_install_queue()
         b = @installers
@@ -291,16 +291,16 @@ module Sprinkle
         @installers = b
         private_queue
       end
-      
+
     protected
-      
+
       def install(i)
         @installers << i
         i
       end
-      
+
     private
-      
+
       def add_dependencies(packages, kind)
         opts = packages.extract_options!
         depends = instance_variable_get("@#{kind}")
@@ -309,13 +309,13 @@ module Sprinkle
         end
         depends.map {|a,b| a }
       end
-      
+
       def tree_for_packages(packages, opts={}, &block)
         depth = opts[:depth]
         tree = []
         packages.each do |dep, config|
           package = PACKAGES.find_all(dep, config)
-          raise "Package definition not found for key: #{dep}" if package.empty? and opts[:required]
+          raise MissingPackageError.new(dep) if package.empty? and opts[:required]
           next if package.empty? # skip missing recommended packages as they're allowed to not exist
           package = Chooser.select_package(dep, package) #if package.size>1
           package = package.instance(config)
@@ -324,7 +324,7 @@ module Sprinkle
         end
         tree
       end
-      
+
         def cloud_info(message)
           logger.info(message) if Sprinkle::OPTIONS[:cloud] or logger.debug?
         end
