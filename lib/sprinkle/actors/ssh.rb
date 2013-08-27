@@ -119,7 +119,7 @@ module Sprinkle
       
       def verify(verifier, roles) #:nodoc:
         # issue all the verification steps in a single SSH command
-        commands=[verifier.commands.join(" && ")]
+        commands=[prepare_commands(verifier.commands).join(" && ")]
         process(verifier.package.name, commands, roles)
       rescue SSHCommandFailure
         false
