@@ -47,7 +47,7 @@ module Sprinkle
       end
 
       def initialize(options = {}, &block) #:nodoc:
-        @options = options.update(:user => 'root', :port => 22)
+        @options = options.update(:user => 'root', :port => 22, :use_threads => false)
         @roles = {}
         self.instance_eval(&block) if block
         raise "You must define at least a single role." if @roles.empty?
@@ -100,6 +100,12 @@ module Sprinkle
         @options[:keys] = keys
       end
 
+      # Enables threading when executing against multiple hosts
+      # Severely improves speed, but also mangles output and makes debugging hard
+      def use_threads(value = true)
+        @options[:use_threads] = value
+      end
+
       # Set this to true to prepend 'sudo' to every command.
       def use_sudo(value=true)
         @options[:use_sudo] = value
@@ -146,8 +152,19 @@ module Sprinkle
 
         def execute_on_role(commands, role) #:nodoc:
           hosts = @roles[role]
-          Array(hosts).each do |host|
-            execute_on_host(commands, host)
+          if @options[:use_threads] && Array(hosts).count > 1
+            logger.debug blue("Executing commands on #{role} in parallel. Output may be mangled.")
+            threads = []
+            Array(hosts).each do |host|
+              threads << Thread.new(host) do |host|
+                execute_on_host(commands, host)
+              end
+            end
+            threads.each {|t| t.join}
+          else
+            Array(hosts).each do |host|
+              execute_on_host(commands, host)
+            end
           end
         end
 
@@ -220,7 +237,20 @@ module Sprinkle
 
         def transfer_to_role(source, destination, role, opts={}) #:nodoc:
           hosts = @roles[role]
-          Array(hosts).each { |host| transfer_to_host(source, destination, host, opts) }
+          if @options[:use_threads] && Array(hosts).count > 1
+            logger.debug blue("Transfering files to #{role} in parallel. Output may be mangled.")
+            threads = []
+            Array(hosts).each do |host|
+              threads << Thread.new(host) do |host|
+                transfer_to_host(source, destination, host, opts)
+              end
+            end
+            threads.each {|t| t.join}
+          else
+            Array(hosts).each do |host|
+              transfer_to_host(source, destination, host, opts)
+            end
+          end
         end
 
         def transfer_to_host(source, destination, host, opts={}) #:nodoc:
