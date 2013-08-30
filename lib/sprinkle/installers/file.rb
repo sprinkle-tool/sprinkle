@@ -87,10 +87,14 @@ module Sprinkle
       end
 
       def setup_source
-        @file=Tempfile.new(@package.name.to_s)
-        @file.print(@contents)
+        @file = Tempfile.new(@package.name.to_s)
+        @file.print @contents
         @file.close
         @sourcepath = @file.path
+      end
+
+      def post_process
+        @file.unlink
       end
 
     end

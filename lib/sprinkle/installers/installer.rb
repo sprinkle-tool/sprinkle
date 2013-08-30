@@ -130,6 +130,10 @@ module Sprinkle
         return false
       end
 
+      # Called right after processing, can be used for local cleanup such
+      # as removing any temporary files created on the local system, etc
+      def post_process; end
+
       # Called right before an installer is exected, can be used for logging
       # and announcing what is about to happen
       def announce; end
@@ -144,6 +148,7 @@ module Sprinkle
           logger.debug "    --> Running #{self.class.name} for roles: #{roles}"
           @delivery.install(self, roles, :per_host => per_host?)
         end
+        post_process
       end
 
         # More complicated installers that have different stages, and require pre/post commands

@@ -33,6 +33,17 @@ describe Sprinkle::Installers::FileInstaller do
 
   describe 'during installation' do
 
+    context "post process hooks" do
+
+      it "should remove its temporary file" do
+        @tmp = double(:print => true, :close => true, :path => "/file")
+        Tempfile.stub(:new).and_return(@tmp)
+        @installer = create_file_installer(@destination, :contents => @contents)
+        @tmp.should_receive(:unlink)
+      end
+
+    end
+
     context "setting mode and owner" do
       before do
         @installer = create_file_installer @destination, :content => @contents do
