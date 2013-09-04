@@ -17,6 +17,8 @@ def require_all(*args) # :nodoc:
     Dir[File.dirname(__FILE__) + "/sprinkle/#{f}"].each { |e| require e } }
 end
 
+$LOAD_PATH << File.dirname(__FILE__)
+
 require     'sprinkle/version'
 
 require_all "extensions/*.rb"
