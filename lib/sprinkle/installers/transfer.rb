@@ -160,9 +160,9 @@ module Sprinkle
         if tarball?
           # tar files locally and scp to a temp location
           # then untar after transfer
-          tar_options = @exclude.map {|glob| "--exclude \"#{glob}\"" }.join(' ')
-          @tempfile = Dir::Tmpname.make_tmpname(['/tmp/sprinkle-', '.tar.gz'], nil)
-          local_command = "cd '#{@source}' ; COPYFILE_DISABLE=true #{local_tar_bin} -zcf '#{@tempfile}' #{tar_options} ."
+          tar_options = @exclude.map {|glob| "--exclude \"#{glob}\" " }.join('')
+          @tempfile = make_tmpname
+          local_command = "cd '#{@source}' ; #{local_tar_bin} -zcf '#{@tempfile}' #{tar_options}."
           logger.debug "    --> Compressing #{@source} locally"
           raise "Unable to tar #{@source}" unless system(local_command)
           @sourcepath = @tempfile
@@ -181,14 +181,22 @@ module Sprinkle
 
       protected
         def local_tar_bin
-          @local_tar_bin ||= (`uname` =~ /Darwin/ ? "/usr/bin/gnutar" : "tar")
+          @local_tar_bin ||= (`uname` =~ /Darwin/ ? "COPYFILE_DISABLE=true /usr/bin/gnutar" : "tar")
         end
 
         def post_process
           if @tempfile
             logger.debug "    --> Deleting local temp file"
-            File.delete @tempfile
+            delete_file @tempfile
           end
+        end
+
+        def make_tmpname
+          Dir::Tmpname.make_tmpname(['/tmp/sprinkle-', '.tar.gz'], nil)
+        end
+
+        def delete_file(path)
+          File.delete path
         end
 
     end

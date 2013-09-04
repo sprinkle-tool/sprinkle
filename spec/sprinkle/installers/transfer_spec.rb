@@ -162,6 +162,41 @@ describe Sprinkle::Installers::Transfer do
       transfer = @installer.install_sequence.detect {|x| x.is_a? Sprinkle::Commands::Transfer }
       transfer.recursive?.should eq false
     end
+  end
+
+  describe "if the :tarball option is set" do
+    it "should tar locally, then transfer and extract, finally deleting local tempfile" do
+      @installer = create_transfer @source, @destination, :tarball => true do
+        self.stub(:local_tar_bin) { "tar" }
+        self.stub(:make_tmpname) { "/tmp/foo.tar.gz" }
+        self.should_receive(:system) do |command|
+          command.should == "cd 'source' ; tar -zcf '/tmp/foo.tar.gz' ."
+          true
+        end
+        self.should_receive(:delete_file) do |path|
+          path.should == "/tmp/foo.tar.gz"
+        end
+      end
+      @installer.process @roles
+      install_sequence = @installer.install_sequence
+      install_sequence.should include("tar -zxf '/tmp/foo.tar.gz' -C 'destination'")
+      install_sequence.should include("rm '/tmp/foo.tar.gz'")
+    end
+
+    describe "and the :exclude option is provided" do
+      it "should pass --exclude option to local tar command" do
+        @installer = create_transfer @source, @destination, :tarball => {:exclude => %w(.git log/*)} do
+          self.stub(:local_tar_bin) { "tar" }
+          self.stub(:make_tmpname) { "/tmp/foo.tar.gz" }
+          self.should_receive(:system) do |command|
+            command.should == "cd 'source' ; tar -zcf '/tmp/foo.tar.gz' --exclude \".git\" --exclude \"log/*\" ."
+            true
+          end
+        end
+      end
+    end
 
   end
+
+
 end
