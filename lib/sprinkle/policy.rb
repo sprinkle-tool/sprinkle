@@ -12,6 +12,16 @@ module Sprinkle
     end
   end
 
+  class MissingPackageError < StandardError #:nodoc:
+    def initialize(name)
+      @name = name
+    end
+
+    def to_s
+      "Package definition not found for key: #{@name}"
+    end
+  end
+
   # = Policies
   #
   # Policies define a set of packages which are required for a certain
@@ -93,7 +103,7 @@ module Sprinkle
 
         opts = args.clone.extract_options!
         package = Sprinkle::Package::PACKAGES.find_all(p, opts)
-        raise "Package definition not found for key: #{p}" unless package
+        raise MissingPackageError.new(p) unless package.any?
         package = Sprinkle::Package::Chooser.select_package(p, package) if package.is_a? Array # handle virtual package selection
         # get an instance of the package and pass our config options
         package = package.instance(*args)

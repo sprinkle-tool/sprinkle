@@ -317,7 +317,7 @@ module Sprinkle
         tree = []
         packages.each do |dep, config|
           package = PACKAGES.find_all(dep, config)
-          raise "Package definition not found for key: #{dep}" if package.empty? and opts[:required]
+          raise MissingPackageError.new(dep) if package.empty? and opts[:required]
           next if package.empty? # skip missing recommended packages as they're allowed to not exist
           package = Chooser.select_package(dep, package) #if package.size>1
           package = package.instance(config)
