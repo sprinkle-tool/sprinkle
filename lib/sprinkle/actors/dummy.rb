@@ -4,6 +4,8 @@ require 'pp'
 module Sprinkle
   module Actors
     class Dummy < Actor #:nodoc:
+      
+      attr_accessor :per_host
 
       def initialize(&block) #:nodoc:
         # @config.set(:_sprinkle_actor, self)
@@ -23,6 +25,7 @@ module Sprinkle
       end
       
       def install(installer, roles, opts={})
+        @installer = installer
         if self.per_host=opts.delete(:per_host)
           servers_per_role(roles).each do |server|
             installer.reconfigure_for(server)
@@ -45,10 +48,20 @@ module Sprinkle
       def servers_per_role(role)
         @roles[role]
       end
+      
+      def print_command(cmd)
+        if cmd==:TRANSFER
+            puts "#{cmd.inspect}: src: #{@installer.sourcepath} dst: #{@installer.destination}"
+        else
+          puts cmd.inspect
+        end
+      end
 
       def process(name, commands, roles, opts = {}) #:nodoc:
         # puts "PROCESS: #{name} on #{roles}"
-        pp commands
+        commands.each do |cmd|
+          print_command(cmd)
+        end
         # return false if suppress_and_return_failures
         true
       end
