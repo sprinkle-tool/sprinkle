@@ -47,6 +47,7 @@ module Sprinkle
         @source = source
         @destination = destination
         @orig_destination = destination
+        options.reverse_merge! :recursive => true
         super parent, options, &block
         @binding = options[:binding]
         if sudo? # perform the transfer in two steps if we're using sudo
@@ -59,8 +60,35 @@ module Sprinkle
         owner(options[:owner]) if options[:owner]
         mode(options[:mode]) if options[:mode]
 
-        options[:render]=true if source_is_template?
-        options[:recursive]=false if options[:render]
+        self.options[:render]=true if source_is_template?
+        self.options[:recursive]=false if options[:render]
+        
+        setup_rendering
+      end
+      
+      def setup_rendering
+        if options[:render]
+          ActiveSupport::Deprecation.warn("transfer :render is depreciated, please use the `file` installer now.")
+          ActiveSupport::Deprecation.warn("transfer :render will be removed from Sprinkle v0.8")
+          if options[:locals]
+            context = {}
+            options[:locals].each_pair do |k,v|
+              if v.respond_to?(:call)
+                context[k] = v.call
+              else
+                context[k] = v
+              end
+            end
+          else
+            context = @binding
+          end
+
+          tempfile = render_template_file(@source, context, @package.name)
+          @sourcepath = tempfile.path
+          @options[:recursive] = false
+        else
+          @sourcepath = @source
+        end
       end
       
       def owner(owner)
@@ -74,7 +102,8 @@ module Sprinkle
       end
 
       def install_commands
-        :TRANSFER
+        Commands::Transfer.new(sourcepath, destination, 
+          :recursive => options[:recursive])
       end
 
       def render_template(template, context, prefix)
@@ -98,37 +127,8 @@ module Sprinkle
         @source.split("\n").size>1
       end
 
-      def process(roles) #:nodoc:
-        logger.debug "transfer: #{@source} -> #{@destination} for roles: #{roles}\n"
-
-        return if Sprinkle::OPTIONS[:testing]
-
-        if options[:render]
-          ActiveSupport::Deprecation.warn("transfer :render is depreciated, please use the `file` installer now.")
-          ActiveSupport::Deprecation.warn("transfer :render will be removed from Sprinkle v0.8")
-          if options[:locals]
-            context = {}
-            options[:locals].each_pair do |k,v|
-              if v.respond_to?(:call)
-                context[k] = v.call
-              else
-                context[k] = v
-              end
-            end
-          else
-            context = @binding
-          end
-
-          tempfile = render_template_file(@source, context, @package.name)
-          @sourcepath = tempfile.path
-          @options[:recursive] = false
-        else
-          @sourcepath = @source
-        end
-
-        logger.debug "    --> Transferring #{sourcepath} to #{@orig_destination} for roles: #{roles}"
-        @delivery.install(self, roles, :recursive => @options[:recursive])
-      end
+      # logger.debug "transfer: #{@source} -> #{@destination} for roles: #{roles}\n"
+      # logger.debug "    --> Transferring #{sourcepath} to #{@orig_destination} for roles: #{roles}"
     end
   end
 end

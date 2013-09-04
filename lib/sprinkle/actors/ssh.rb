@@ -162,11 +162,11 @@ module Sprinkle
         def execute_on_host(commands,host) #:nodoc:
           prepare_commands(commands).each do |cmd|
             case cmd
-              when :RECONNECT
+              when cmd.is_a?(Commands::Reconnect) then
                 reconnect host
-              when :TRANSFER
-                transfer_to_host(@installer.sourcepath, @installer.destination, host, 
-                  :recursive => @installer.options[:recursive])
+              when cmd.is_a?(Commands::Transfer) then
+                transfer_to_host(cmd.source, cmd.destination, host, 
+                  :recursive => cmd.recursive?)
               else  
                 run_command cmd, host
             end

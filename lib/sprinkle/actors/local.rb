@@ -53,11 +53,11 @@ module Sprinkle
       def process(name, commands, roles, opts = {}) #:nodoc:
         @log_recorder = Sprinkle::Utility::LogRecorder.new
         commands.each do |command|
-          if command == :RECONNECT
+          if command.is_a?(Commands::Reconnect)
             res = 0
-          elsif command == :TRANSFER
-            res = transfer(@installer.sourcepath, @installer.destination, roles,
-              :recursive => @installer.options[:recursive])
+          elsif command.is_a?(Commands::Transfer)
+            res = transfer(command.source, command.destination, roles,
+              :recursive => command.recursive?)
           else
             res = run_command command
           end

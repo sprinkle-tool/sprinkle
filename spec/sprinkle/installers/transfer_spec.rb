@@ -17,6 +17,12 @@ describe Sprinkle::Installers::Transfer do
       source do; prefix '/usr/bin'; end
     end
   end
+  
+  def simplify(seq)
+    seq.map do |cmd|
+      cmd.is_a?(Sprinkle::Commands::Transfer) ? :TRANSFER : cmd
+    end
+  end
 
   def create_transfer(source, dest, options={}, &block)
     i = Sprinkle::Installers::Transfer.new(@package, source, dest, options, &block)
@@ -28,6 +34,17 @@ describe Sprinkle::Installers::Transfer do
     it 'should accept a source and destination to install' do
       @installer.source.should eq @source
       @installer.destination.should eq @destination
+    end
+    
+    it 'should create a transfer command with destination and source' do
+      transfer = @installer.install_sequence.detect {|x| x.is_a? Sprinkle::Commands::Transfer }
+      transfer.source.should eq @source
+      transfer.destination.should eq @destination
+    end
+    
+    it 'should default to recursive true' do
+      transfer = @installer.install_sequence.detect {|x| x.is_a? Sprinkle::Commands::Transfer }
+      transfer.recursive?.should eq true
     end
   end
 
@@ -58,12 +75,12 @@ describe Sprinkle::Installers::Transfer do
           pre :install, 'op1'
           post :install, 'op2'
         end
-        @installer_commands = @installer.install_sequence
+        @installer_commands = simplify @installer.install_sequence
         @delivery = @installer.delivery
       end
 
       it "should call the pre and post install commands around the file transfer" do
-        @installer_commands.should eq ["op1",:TRANSFER, "op2"]
+        @installer_commands.should eq ["op1", :TRANSFER, "op2"]
       end
 
       # it "should call transfer with recursive defaulted to nil" do
@@ -80,7 +97,7 @@ describe Sprinkle::Installers::Transfer do
           pre :install, 'op1'
           post :install, 'op2'
         end
-        @installer_commands = @installer.install_sequence
+        @installer_commands = simplify @installer.install_sequence
         @delivery = @installer.delivery
       end
 
@@ -96,7 +113,7 @@ describe Sprinkle::Installers::Transfer do
           pre :install, 'op1', 'op1-1'
           post :install, 'op2', 'op2-1'
         end
-        @installer_commands = @installer.install_sequence
+        @installer_commands = simplify @installer.install_sequence
         @delivery = @installer.delivery
       end
 
@@ -114,19 +131,19 @@ describe Sprinkle::Installers::Transfer do
   describe "if the :render flag is true" do
     before do
       allow(::ActiveSupport::Deprecation).to receive(:warn)
-      @installer = create_transfer @source, @destination, :render => true
-      @delivery = @installer.delivery
-      @delivery.stub(:render_template_file)
       @tempfile = Tempfile.new("foo")
+      Sprinkle::Installers::Transfer.any_instance.
+        should_receive(:render_template_file).
+        with(@source, anything, @package.name).
+        and_return(@tempfile)
+      @installer = create_transfer @source, @destination, :render => true
     end
 
     it "should render the source file as a template to a tempfile" do
-      @installer.should_receive(:render_template_file).with(@source, anything, @package.name).and_return(@tempfile)
       @delivery.stub(:transfer)
     end
 
     it "should call transfer with recursive set to false" do
-      @installer.should_receive(:render_template_file).with(@source, anything, @package.name).and_return(@tempfile)
       @installer.options[:recursive].should eq false
     end
 
@@ -140,13 +157,10 @@ describe Sprinkle::Installers::Transfer do
       @installer = create_transfer @source, @destination, :recursive => false
     end
 
-    it "should call transfer with recursive set to false" do
-      @installer.delivery
-      @installer.options[:recursive].should eq false
+    it "should created transfer command with recursive set to false" do
+      transfer = @installer.install_sequence.detect {|x| x.is_a? Sprinkle::Commands::Transfer }
+      transfer.recursive?.should eq false
     end
 
-    after do
-      @installer.process @roles
-    end
   end
 end
