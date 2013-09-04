@@ -103,7 +103,7 @@ module Sprinkle
 
       multi_attributes :enable, :disable, :with, :without, :option,
         :custom_install
-      attributes :configure_command, :build_command, :install_command, :custom_archive
+      attributes :configure_command, :build_command, :install_command, :custom_archive, :custom_dir
 
       def install_sequence #:nodoc:
         prepare + download + extract + configure + build + install
