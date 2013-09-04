@@ -7,7 +7,6 @@ describe Sprinkle::Installers::FileInstaller do
     @package = double(Sprinkle::Package, :name => 'package', :sudo? => false)
     @empty = Proc.new { }
     @delivery = double(Sprinkle::Deployment, :install => true)
-    @source = 'source'
     @destination = 'destination'
     @contents = "hi"
     @installer = create_file_installer(@destination, :contents => @contents)
@@ -15,6 +14,12 @@ describe Sprinkle::Installers::FileInstaller do
     @deployment = deployment do
       delivery :capistrano
       source do; prefix '/usr/bin'; end
+    end
+  end
+  
+  def simplify(seq)
+    seq.map do |cmd|
+      cmd.is_a?(Sprinkle::Commands::Transfer) ? :TRANSFER : cmd
     end
   end
 
@@ -25,9 +30,25 @@ describe Sprinkle::Installers::FileInstaller do
   end
 
   describe 'when created' do
+    before do
+      @source = "/tmp/file"
+      Tempfile.any_instance.stub(:path).and_return(@source)
+      @installer = create_file_installer(@destination, :contents => @contents)
+      @transfer = @installer.install_sequence.detect {|x| x.is_a? Sprinkle::Commands::Transfer }
+    end
+    
     it 'should accept a source and destination to install' do
       @installer.contents.should eq @contents
       @installer.destination.should eq @destination
+    end
+    
+    it 'should create a transfer command' do
+      @transfer.source.should eq @source
+      @transfer.destination.should eq @destination
+    end
+    
+    it 'should not be using recursive' do
+      @transfer.recursive?.should eq false
     end
   end
 
@@ -70,7 +91,7 @@ describe Sprinkle::Installers::FileInstaller do
           mode "744"
           owner "root"
         end
-        @installer_commands = @installer.install_sequence
+        @installer_commands = simplify @installer.install_sequence
       end
 
       it "should run commands in correct order" do
@@ -89,7 +110,7 @@ describe Sprinkle::Installers::FileInstaller do
           :mode => "744", :owner => "root" do
           @options[:sudo]= true
         end
-        @installer_commands = @installer.install_sequence
+        @installer_commands = simplify @installer.install_sequence
       end
 
       it "should run commands in correct order" do
@@ -110,7 +131,7 @@ describe Sprinkle::Installers::FileInstaller do
           pre :install, 'op1'
           post :install, 'op2'
         end
-        @installer_commands = @installer.install_sequence
+        @installer_commands = simplify @installer.install_sequence
         @delivery = @installer.delivery
       end
 
@@ -127,7 +148,7 @@ describe Sprinkle::Installers::FileInstaller do
           pre :install, 'op1'
           post :install, 'op2'
         end
-        @installer_commands = @installer.install_sequence
+        @installer_commands = simplify @installer.install_sequence
         @delivery = @installer.delivery
       end
 
@@ -143,7 +164,7 @@ describe Sprinkle::Installers::FileInstaller do
           pre :install, 'op1', 'op1-1'
           post :install, 'op2', 'op2-1'
         end
-        @installer_commands = @installer.install_sequence
+        @installer_commands = simplify @installer.install_sequence
         @delivery = @installer.delivery
       end
 

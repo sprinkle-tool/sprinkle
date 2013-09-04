@@ -100,11 +100,10 @@ module Sprinkle
         define_task(name, roles) do
           via = fetch(:run_method, :run)
           commands.each do |command|
-            if command == :TRANSFER
-              opts.reverse_merge!(:recursive => true)
-              upload inst.sourcepath, inst.destination, :via => :scp, 
-                :recursive => opts[:recursive]
-            elsif command == :RECONNECT
+            if command.is_a? Commands::Transfer
+              upload command.source, command.destination, :via => :scp, 
+                :recursive => command.recursive?
+            elsif command.is_a? Commands::Reconnect
               teardown_connections_to(sessions.keys)
             else
               # this reset the log

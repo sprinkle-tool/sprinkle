@@ -60,7 +60,7 @@ module Sprinkle
       end
 
       def install_commands #:nodoc:
-        :TRANSFER
+        Commands::Transfer.new(sourcepath, destination)
       end
 
       # calls chown own to set the file ownership
