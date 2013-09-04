@@ -202,6 +202,19 @@ describe Sprinkle::Installers::Source do
       end
 
     end
+    describe 'with a custom dir definition' do
+      before do
+        @installer.options[:custom_dir] = 'super-foo'
+      end
+
+      it 'should install the source from the custom archive' do
+        @installer.send(:extract_commands).first.should =~ /super-foo/
+        @installer.send(:configure_commands).first.should =~ /super-foo/
+        @installer.send(:build_commands).first.should =~ /super-foo/
+        @installer.send(:install_commands).first.should =~ /super-foo/
+      end
+
+    end
 
     describe 'with default configure, build, and install commands' do
 
