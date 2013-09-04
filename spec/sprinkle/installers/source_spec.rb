@@ -208,7 +208,6 @@ describe Sprinkle::Installers::Source do
       end
 
       it 'should install the source from the custom archive' do
-        @installer.send(:extract_commands).first.should =~ /super-foo/
         @installer.send(:configure_commands).first.should =~ /super-foo/
         @installer.send(:build_commands).first.should =~ /super-foo/
         @installer.send(:install_commands).first.should =~ /super-foo/
