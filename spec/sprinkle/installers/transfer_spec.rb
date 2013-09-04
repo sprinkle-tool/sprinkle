@@ -7,7 +7,7 @@ describe Sprinkle::Installers::Transfer do
   before do
     @package = double(Sprinkle::Package, :name => 'package', :sudo? => false)
     @empty = Proc.new { }
-    @delivery = double(Sprinkle::Deployment, :install => true)
+    @delivery = double(Sprinkle::Deployment, :install => true, :sudo_command => "sudo", :sudo? => false)
     @source = 'source'
     @destination = 'destination'
     @installer = create_transfer(@source, @destination)
@@ -17,7 +17,7 @@ describe Sprinkle::Installers::Transfer do
       source do; prefix '/usr/bin'; end
     end
   end
-  
+
   def simplify(seq)
     seq.map do |cmd|
       cmd.is_a?(Sprinkle::Commands::Transfer) ? :TRANSFER : cmd
@@ -35,13 +35,13 @@ describe Sprinkle::Installers::Transfer do
       @installer.source.should eq @source
       @installer.destination.should eq @destination
     end
-    
+
     it 'should create a transfer command with destination and source' do
       transfer = @installer.install_sequence.detect {|x| x.is_a? Sprinkle::Commands::Transfer }
       transfer.source.should eq @source
       transfer.destination.should eq @destination
     end
-    
+
     it 'should default to recursive true' do
       transfer = @installer.install_sequence.detect {|x| x.is_a? Sprinkle::Commands::Transfer }
       transfer.recursive?.should eq true
@@ -51,22 +51,23 @@ describe Sprinkle::Installers::Transfer do
   describe 'during installation' do
 
     context "setting mode and owner" do
-      before do 
+      before do
         @installer = create_transfer @source, @destination do
           mode "744"
           owner "root"
         end
+        @installer.process @roles
         @installer_commands = @installer.install_sequence
       end
-      
+
       it "should include command to set owner" do
-        @installer_commands.should include("chmod 744 #{@destination}")
+        @installer_commands.should include("chmod -R 744 #{@destination}")
       end
-      
+
       it "should include command to set mode" do
-        @installer_commands.should include("chown root #{@destination}")
+        @installer_commands.should include("chown -R root #{@destination}")
       end
-      
+
     end
 
     context 'single pre/post commands' do
@@ -89,21 +90,21 @@ describe Sprinkle::Installers::Transfer do
       # end
 
     end
-    
+
     context 'pre/post with sudo' do
       before do
-        @installer = create_transfer @source, @destination do
-          @options[:sudo]= true
+        @delivery = double(Sprinkle::Deployment, :install => true, :sudo_command => "sudo")
+        @installer = create_transfer @source, @destination, :sudo => true do
           pre :install, 'op1'
           post :install, 'op2'
         end
+        @installer.process @roles
         @installer_commands = simplify @installer.install_sequence
         @delivery = @installer.delivery
       end
 
       it "should call the pre and post install commands around the file transfer" do
-        @installer_commands.should eq ["op1",:TRANSFER, 
-          "sudo mv /tmp/sprinkle_destination destination", "op2"]
+        @installer_commands.should eq ["op1", :TRANSFER, "sudo mv /tmp/sprinkle_destination destination", "op2"]
       end
     end
 
