@@ -63,29 +63,32 @@ module Sprinkle
       end
 
       def initialize(parent, source, destination, options = {}, &block) #:nodoc:
+        options.reverse_merge! :recursive => true
+        
         @source = source # Original source
         @sourcepath = source # What the actor will transfer (may be the same as @source)
         @final_destination = destination # Final destination
         @destination = destination # Where the actor will place the file (May be same as @final_destination)
-        options.reverse_merge! :recursive => true
+        
         owner(options[:owner]) if options[:owner]
         mode(options[:mode]) if options[:mode]
-        @tarball = ! options[:tarball].nil?
-        @exclude = options[:tarball].is_a?(Hash) ? (options[:tarball][:exclude] || []) : []
+        tarball(options[:tarball]) if options[:tarball]
+        
         super parent, options, &block
+        
         if DEPRECATED
           @binding = options[:binding]
-          self.options[:render] = true if source_is_template?
-          self.options[:recursive] = false if options[:render]
+          options[:render] = true if source_is_template?
+          options[:recursive] = false if options[:render]
+          setup_rendering if options[:render]
         end
-        setup_preprocessing
-        @initialize_completed = true
+        setup_tarball if tarball?
+        setup_sudo if sudo?
       end
 
       def tarball(options = {})
-        raise "Can't set option `tarball` outside init block" if @initialize_completed
         @tarball = true
-        @exclude = options[:exclude] if options[:exclude]
+        @exclude = options===true ? [] : options[:exclude]
       end
 
       def owner(owner)
@@ -100,6 +103,11 @@ module Sprinkle
 
       def tarball?
         @tarball
+      end
+
+      def install_commands
+        Commands::Transfer.new(sourcepath, destination,
+          :recursive => options[:recursive])
       end
 
       if DEPRECATED
@@ -120,22 +128,10 @@ module Sprinkle
         def source_is_template?
           @source.split("\n").size > 1
         end
-      end
-
-      def install_commands
-        Commands::Transfer.new(sourcepath, destination,
-          :recursive => options[:recursive])
-      end
-
-      def setup_preprocessing
-        @tempfile = nil
-
-        if @options[:render]
+        
+        def setup_rendering
           ActiveSupport::Deprecation.warn("transfer :render is depreciated, please use the `file` installer now.")
           ActiveSupport::Deprecation.warn("transfer :render will be removed from Sprinkle v0.8")
-        end
-
-        if DEPRECATED
           if @options[:render]
             raise "Incompatible combination of options :render and :tarball" if tarball?
             if @options[:locals]
@@ -156,27 +152,29 @@ module Sprinkle
             @options[:recursive] = false
           end
         end
-
-        if tarball?
-          # tar files locally and scp to a temp location
-          # then untar after transfer
-          tar_options = @exclude.map {|glob| "--exclude \"#{glob}\" " }.join('')
-          @tempfile = make_tmpname
-          local_command = "cd '#{@source}' ; #{local_tar_bin} -zcf '#{@tempfile}' #{tar_options}."
-          logger.debug "    --> Compressing #{@source} locally"
-          raise "Unable to tar #{@source}" unless system(local_command)
-          @sourcepath = @tempfile
-          @destination = "/tmp/#{File.basename(@tempfile)}"
-          post(:install).unshift [
-            "#{sudo_cmd if sudo?}tar -zxf '#{@destination}' -C '#{@final_destination}'",
-            "#{sudo_cmd if sudo?}rm '#{@destination}'"
-          ]
-        elsif sudo? # perform the transfer in two steps if we're using sudo
-          @destination = "/tmp/sprinkle_#{File.basename(@destination)}"
-          # make sure we push the move ahead of any other post install tasks
-          # a user may have requested
-          post(:install).unshift "#{sudo_cmd}mv #{@destination} #{@final_destination}"
-        end
+      end
+        
+      def setup_tarball
+        # tar files locally and scp to a temp location
+        # then untar after transfer
+        tar_options = @exclude.map {|glob| "--exclude \"#{glob}\" " }.join('')
+        @tempfile = make_tmpname
+        local_command = "cd '#{@source}' ; #{local_tar_bin} -zcf '#{@tempfile}' #{tar_options}."
+        logger.debug "    --> Compressing #{@source} locally"
+        raise "Unable to tar #{@source}" unless system(local_command)
+        @sourcepath = @tempfile
+        @destination = "/tmp/#{File.basename(@tempfile)}"
+        post(:install).unshift [
+          "#{sudo_cmd}tar -zxf '#{@destination}' -C '#{@final_destination}'",
+          "#{sudo_cmd}rm '#{@destination}'"
+        ]
+      end
+      
+      def setup_sudo
+        @destination = "/tmp/sprinkle_#{File.basename(@destination)}"
+        # make sure we push the move ahead of any other post install tasks
+        # a user may have requested
+        post(:install).unshift "#{sudo_cmd}mv #{@destination} #{@final_destination}"
       end
 
       protected
@@ -185,18 +183,13 @@ module Sprinkle
         end
 
         def post_process
-          if @tempfile
-            logger.debug "    --> Deleting local temp file"
-            delete_file @tempfile
-          end
+          return unless @tempfile
+          logger.debug "    --> Deleting local temp file"
+          File.delete @tempfile
         end
 
         def make_tmpname
           Dir::Tmpname.make_tmpname(['/tmp/sprinkle-', '.tar.gz'], nil)
-        end
-
-        def delete_file(path)
-          File.delete path
         end
 
     end

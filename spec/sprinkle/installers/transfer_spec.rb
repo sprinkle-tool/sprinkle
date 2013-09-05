@@ -173,7 +173,7 @@ describe Sprinkle::Installers::Transfer do
           command.should == "cd 'source' ; tar -zcf '/tmp/foo.tar.gz' ."
           true
         end
-        self.should_receive(:delete_file) do |path|
+        File.should_receive(:delete) do |path|
           path.should == "/tmp/foo.tar.gz"
         end
       end
