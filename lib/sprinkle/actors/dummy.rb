@@ -50,11 +50,7 @@ module Sprinkle
       end
       
       def print_command(cmd)
-        if cmd==:TRANSFER
-            puts "#{cmd.inspect}: src: #{@installer.sourcepath} dst: #{@installer.destination}"
-        else
-          puts cmd.inspect
-        end
+        puts cmd.inspect
       end
 
       def process(name, commands, roles, opts = {}) #:nodoc:

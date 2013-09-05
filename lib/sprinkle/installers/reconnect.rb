@@ -21,7 +21,7 @@ module Sprinkle
       # :RECONNECT is a symbol that the actors understand to mean to drop
       # and reestablish any SSH conncetions they have open
       def install_commands #:nodoc:
-        :RECONNECT
+        Commands::Reconnect.new()
       end
 
     end
