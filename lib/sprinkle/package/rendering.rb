@@ -41,20 +41,20 @@ module Sprinkle::Package
       # if we are given an absolute path, return just that path
       return [File.dirname(n)] if n.starts_with? "/"
       
-      dir = Dir.pwd
+      pwd = Dir.pwd
       package_dir = @template_search_path
 
+      p = []
       # if ./ is used assume the path is relative to the package
-      if n.starts_with? "./"
-        raise "must call template_search_path to use local references" unless @template_search_path
-        return [File.expand_path(package_dir), 
-          File.expand_path(File.join(package_dir,"templates"))] 
+      if package_dir
+        p << File.expand_path(File.join(package_dir,"templates"))
+        p << File.expand_path(package_dir)
+      else
+        # otherwise search template folders relate to cwd
+        p << File.expand_path(File.join(pwd,"templates"))
+        p << File.expand_path(pwd)
       end
 
-      p = []
-      # otherwise search template folders
-      p << File.expand_path(File.join(dir,"templates"))
-      p << File.expand_path(dir)
       p.uniq
     end
 

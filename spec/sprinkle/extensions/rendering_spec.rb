@@ -15,18 +15,14 @@ describe Sprinkle::Package::Rendering, 'rendering' do
       dirs.should eq ["/test"]
     end
     
-    it "should not handle relative paths if template_search_path was not called" do
-      expect do 
-        dirs = @package.send :search_paths, "./test/file"
-      end.to raise_error
-    end
-    
     it "./ is local to where we tell it to be" do
+      Dir.stub(:pwd).and_return("/path/is/")
       @package.template_search_path "/my/super/package/"
       dirs = @package.send :search_paths, "./test/file"
-      # should raise
       dirs.should include("/my/super/package")
       dirs.should include("/my/super/package/templates")
+      dirs.should_not include("/path/is")
+      dirs.should_not include("/path/is/templates")
     end    
     
     it "should search pwd when amgiguous" do
@@ -34,6 +30,7 @@ describe Sprinkle::Package::Rendering, 'rendering' do
       dirs = @package.send :search_paths, "test/file"
       dirs.should include("/path/is")
       dirs.should include("/path/is/templates")
+      dirs.size.should eq 2
     end
     
   end
