@@ -106,21 +106,25 @@ module Sprinkle
 
       # defer execution of command block until the package is being
       # processed
-      def defer(block)
-        p = Proc.new { self.commands_from_block(block) }
+      def defer(pb=nil, &block)
+        p = Proc.new { self.commands_from_block(pb || block) }
       end
 
       def commands_from_block(block)
         return [] unless block
         out = nil
         diff = @package.with_private_install_queue { out = block.call }
+        # diff = @package.with_private_install_queue { out = @package.instance_eval &block }
         diff.each {|x| x.delivery = self.delivery }
         diff.empty? ? out : diff.map {|x| x.install_sequence }
       end
 
       def method_missing(method, *args, &block)
         if package.class.installer_methods.include?(method)
-          @package.send(method, *args, &block)
+          inst = @package.send(method, *args, &block)
+          # TODO: fix up this quick and dirty inheritance
+          inst.options.reverse_merge! options.slice(:source, :builds, :archives)
+          inst
         else
           super(method, *args, &block)
         end
@@ -166,7 +170,16 @@ module Sprinkle
         end
 
         def flatten(commands) #:nodoc:
-          commands.flatten.map {|c| c.is_a?(Proc) ? c.call : c }.flatten
+          commands.flatten.map  do |c| 
+            case c
+              when Proc then
+                c.call
+              when Installer then
+                c.install_sequence
+              else
+                c
+              end
+          end.flatten
         end
 
         # A concrete installer (subclass of this virtual class) must override this method

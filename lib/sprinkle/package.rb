@@ -128,12 +128,19 @@ module Sprinkle
         before = self.instance_methods
         self.class_eval(&block)
         added = self.instance_methods - before
+        # added.each do |m|
+        #   alias_method "original_#{m}", m
+        #   define_method m do |*args, &block| 
+        #     send "original_#{m}", *args, &block
+        #   end
+        # end
         @@installer_methods += added.map(&:to_sym)
       end
 
       def initialize(name, metadata = {}, &block)
         raise 'No package name supplied' unless name
-
+        
+        @allow_installs = true
         @name = name
         @metadata = metadata
         @provides = metadata[:provides]
@@ -206,6 +213,8 @@ module Sprinkle
       end
 
       def process(deployment, roles)
+        @allow_installs = false
+        
         logger.info "  * #{name}"
         return if meta_package?
         opts.each_with_index do |(k, v), index|
@@ -286,7 +295,10 @@ module Sprinkle
       # returns: the private queue
       def with_private_install_queue()
         @install_queues.push []
-        yield
+        preserve_allow_install_state do
+          @allow_installs = true
+          yield
+        end
         @install_queues.pop
       end
 
@@ -296,9 +308,20 @@ module Sprinkle
 
     protected
 
-      def install(i)
-        installers << i
-        i
+      def install(i=nil, &block)
+        installer = nil
+        preserve_allow_install_state do
+          @allow_installs = false
+          installer = i || block.call
+        end
+        installers << installer if @allow_installs
+        installer
+      end
+      
+      def preserve_allow_install_state &block
+        old_allow_installs = @allow_installs
+        yield
+        @allow_installs = old_allow_installs
       end
 
     private

@@ -35,8 +35,10 @@ describe Sprinkle::Installers::Source do
   end
 
   def create_source(source, version = nil, &block)
-    @package = double(Sprinkle::Package, :name => 'package', :version => version,
-    :installer_methods => [])
+    # @package = double(Sprinkle::Package, :name => 'package', :version => version,
+    # :installer_methods => [])
+    # @package.class.stub(:installer_methods).and_return [:fetch]
+    @package = Package.new("test") {}
 
     Sprinkle::Installers::Source.new(@package, source, &block)
   end

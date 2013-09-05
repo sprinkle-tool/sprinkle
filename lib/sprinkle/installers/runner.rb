@@ -28,12 +28,12 @@ module Sprinkle
       api do
         def runner(*cmds, &block)
           options = cmds.extract_options!
-          install Runner.new(self, cmds, options, &block)
+          install { Runner.new(self, cmds, options, &block) }
         end
 
         # runs 'echo noop' on the remote host
         def noop
-          install Runner.new(self, "echo noop")
+          install { Runner.new(self, "echo noop") }
         end
       end
 

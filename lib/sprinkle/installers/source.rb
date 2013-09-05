@@ -92,7 +92,7 @@ module Sprinkle
       api do
         def source(source, options = {}, &block)
           recommends :build_essential # Ubuntu/Debian
-          install Source.new(self, source, options, &block)
+          install { Source.new(self, source, options, &block) }
         end
       end
 
@@ -106,17 +106,18 @@ module Sprinkle
       attributes :configure_command, :build_command, :install_command, :custom_archive, :custom_dir
 
       def install_sequence #:nodoc:
-        prepare + download + extract + configure + build + install
+        flatten prepare + download + extract + configure + build + install
       end
 
       protected
 
         %w( prepare download extract configure build install ).each do |stage|
           define_method stage do
-            pre_commands(stage.to_sym) + self.send("#{stage}_commands") + post_commands(stage.to_sym)
+            x=pre_commands(stage.to_sym) + [self.send("#{stage}_commands")] + post_commands(stage.to_sym)
+            x.flatten
           end
         end
-
+        
         def prepare_commands #:nodoc:
           raise 'No installation area defined' unless @options[:prefix]
           raise 'No build area defined' unless @options[:builds]
@@ -126,13 +127,17 @@ module Sprinkle
             "mkdir -p #{@options[:builds]}",
             "mkdir -p #{@options[:archives]}" ]
         end
-
+        
         def download_commands #:nodoc:
-          [ "wget -cq -O '#{@options[:archives]}/#{archive_name}' #{@source}" ]
+          fetch(@source, :archive_name => archive_name).
+            download_commands
+          # [ "wget -cq -O '#{@options[:archives]}/#{archive_name}' #{@source}" ]
         end
 
         def extract_commands #:nodoc:
-          [ "bash -c 'cd #{@options[:builds]} && #{extract_command} #{@options[:archives]}/#{archive_name}'" ]
+          [fetch(@source, :archive_name => archive_name).
+            extract_commands]
+          # [ "bash -c 'cd #{@options[:builds]} && #{extract_command} #{@options[:archives]}/#{archive_name}'" ]
         end
 
         def configure_commands #:nodoc:
