@@ -32,8 +32,23 @@ module Sprinkle
     #     @nginx_port = 8080
     #     file '/etc/nginx.conf',
     #       :contents => render("nginx.conf")
-    #       # ./templates/nginx.conf.erb or
-    #       # ./templates/nginx.conf should contain the erb template
+    #       # where [cwd] is the current working dir you're running sprinkle from
+    #       # [cwd]/templates/nginx.conf.erb or
+    #       # [cwd]/templates/nginx.conf should contain the erb template
+    #   end
+    #
+    # You can also tell the package where to look for templates, so that if you have
+    # a complex package hierarchy such as:
+    #
+    #   .../packages/p/postfix.rb
+    #   .../packages/p/postfix/templates/main.cf.erb
+    #
+    #   package :postfix do
+    #     template_search_path File.dirname(__FILE__)
+    #     file '/etc/postfix/main.cf', :contents => render("main.cf")
+    #     # searches for:
+    #     #   ../packages/p/main.cf[.erb]
+    #     #   ../packages/p/templates/main.cf[.erb]
     #   end
     class FileInstaller < Installer
       attr_reader :sourcepath, :destination, :contents #:nodoc:

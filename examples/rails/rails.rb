@@ -56,8 +56,11 @@ end
 deployment do
 
   # mechanism for deployment
-  delivery :capistrano do
-    recipes 'deploy'
+  # delivery :capistrano do
+  #   recipes 'deploy'
+  # end
+  delivery :dummy do
+    role :app, "test"
   end
 
   # source based package installer defaults
