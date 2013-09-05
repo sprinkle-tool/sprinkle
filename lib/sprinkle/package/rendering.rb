@@ -3,6 +3,7 @@ require 'erubis'
 require 'digest/md5'
 
 module Sprinkle::Package
+  # For help on rendering, see the Sprinkle::Installers::FileInstaller.
   module Rendering
     extend ActiveSupport::Concern
 
@@ -10,6 +11,7 @@ module Sprinkle::Package
       self.send :include, Helpers
     end
 
+    # render src as ERB
     def template(src, context=binding)
       eruby = Erubis::Eruby.new(src)
       eruby.result(context)
@@ -17,6 +19,7 @@ module Sprinkle::Package
       raise Sprinkle::Errors::TemplateError.new(e, src, context)
     end
 
+    # read in filename and render it as ERB
     def render(filename, context=binding)
       contents=File.read(expand_filename(filename))
       template(contents, context)
@@ -31,13 +34,14 @@ module Sprinkle::Package
       end
     end
     
+    # sets the path a package should use to search for templates
     def template_search_path(path)
       @template_search_path = path
     end
 
     private
 
-    def search_paths(n)
+    def search_paths(n) #:nodoc:
       # if we are given an absolute path, return just that path
       return [File.dirname(n)] if n.starts_with? "/"
       
