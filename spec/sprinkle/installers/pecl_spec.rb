@@ -2,7 +2,8 @@ require File.expand_path("../../spec_helper", File.dirname(__FILE__))
 
 describe Sprinkle::Installers::Pecl do
   before do
-    @package = double(Sprinkle::Package, :name => 'spec', :class => double(Sprinkle::Package, :installer_methods => []))
+    # @package = double(Sprinkle::Package, :name => 'spec', :class => double(Sprinkle::Package, :installer_methods => []))
+    @package = Package.new("test") {}
   end
 
   describe 'providing just package name' do

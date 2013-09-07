@@ -52,22 +52,23 @@ module Sprinkle
         @package_name = package_name
         @package_version = options[:version]
         @ini_file = options[:ini_file]
-        if @ini_file
-          if @ini_file.is_a?(String)
-            text = @ini_file
-          elsif @ini_file.is_a?(Hash) && @ini_file[:content]
-            text = @ini_file[:content]
-          else
-            text = "extension=#{@package_name}.so"
-          end
-          if @ini_file.is_a?(Hash) && @ini_file[:path]
-            path = @ini_file[:path]
-          else
-            path = "/etc/php5/conf.d/#{@package_name}.ini"
-          end
-          use_sudo = @ini_file.is_a?(Hash) && !@ini_file[:sudo].nil? ? @ini_file[:sudo] : true
-          post(:install) << file(path, :content => text, :sudo => use_sudo)
+        setup_ini if @ini_file
+      end
+      
+      def setup_ini
+        @ini_file = to_ini_file_hash(@ini_file)
+        text = @ini_file[:content] || "extension=#{@package_name}.so"
+        path = @ini_file[:path] || "/etc/php5/conf.d/#{@package_name}.ini"
+        use_sudo = @ini_file[:sudo]===false ? false : true
+        post(:install) do
+          file(path, :content => text, :sudo => use_sudo)
         end
+      end
+      
+      def to_ini_file_hash(s)
+        return {:content => s} if s.is_a? String
+        return {} if s===true
+        s
       end
 
       protected
