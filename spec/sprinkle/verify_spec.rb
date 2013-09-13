@@ -55,6 +55,9 @@ describe Sprinkle::Verify do
         # Check for a certain RPM package
         has_rpm 'ntp'
         
+        runner "some random command"
+        runs_without_error "some other random command"
+        
         belongs_to_user "/etc/", "me"
         belongs_to_user "/etc/", 2
         belongs_to_group "/etc/", "root"
@@ -119,6 +122,14 @@ describe Sprinkle::Verify do
     
     it 'should use to check for user in group' do
       @verification.commands.should include("id -nG alf | xargs -n1 echo | grep alien")
+    end
+    
+    it 'should have the command from runner' do
+      @verification.commands.should include('some random command')
+    end
+    
+    it 'should have the command from runs_without_error' do
+      @verification.commands.should include('some other random command')
     end
     
     it 'should use id to check for user' do

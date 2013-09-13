@@ -16,3 +16,5 @@ end
 class Object
   include Sprinkle::TestLogger
 end
+
+ActiveSupport::Deprecation.silenced = true

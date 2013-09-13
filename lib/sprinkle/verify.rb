@@ -91,6 +91,17 @@ module Sprinkle
       self.instance_eval(&block)
     end
     
+    def runner(*cmds)
+      ActiveSupport::Deprecation.warn 
+        "runner inside verify is depreciated and will removed in the future\n" +
+        "use runs_without_error instead."
+      runs_without_error(*cmds)
+    end
+    
+    def runs_without_error(*cmds)
+      @commands += cmds
+    end
+    
     def process(roles, pre = false) #:nodoc:
       description = @description.empty? ? " (#{@package.name})" : @description
       
