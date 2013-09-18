@@ -154,7 +154,7 @@ module Sprinkle
         def prepare_commands(commands) #:nodoc:
           return commands unless sudo?
           commands.map do |command| 
-            next command if command.is_a?(Symbol)
+            next command if command.is_a?(Symbol) || command.is_a?(Sprinkle::Commands::Command)
             command.match(/^#{sudo_command}/) ? command : "#{sudo_command} #{command}"
           end
         end
