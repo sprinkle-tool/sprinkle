@@ -154,17 +154,18 @@ module Sprinkle
         def prepare_commands(commands) #:nodoc:
           return commands unless sudo?
           commands.map do |command| 
-            next command if command.is_a?(Symbol)
+            next command if command.is_a?(Symbol) || command.is_a?(Sprinkle::Commands::Command)
             command.match(/^#{sudo_command}/) ? command : "#{sudo_command} #{command}"
           end
         end
         
         def execute_on_host(commands,host) #:nodoc:
+          
           prepare_commands(commands).each do |cmd|
             case cmd
-              when cmd.is_a?(Commands::Reconnect) then
+              when Commands::Reconnect then
                 reconnect host
-              when cmd.is_a?(Commands::Transfer) then
+              when Commands::Transfer then
                 transfer_to_host(cmd.source, cmd.destination, host, 
                   :recursive => cmd.recursive?)
               else  
@@ -230,7 +231,7 @@ module Sprinkle
           scp.upload! source, destination, :recursive => opts[:recursive], :chunk_size => 32.kilobytes
         rescue RuntimeError => e
           if e.message =~ /Permission denied/
-            raise TransferFailure.no_permission(@installer,e)
+            raise Sprinkle::Errors::TransferFailure.no_permission(@installer,e)
           else
             raise e
           end          
