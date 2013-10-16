@@ -34,7 +34,7 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency(%q<open4>, [">= 1.1.0"])
   s.add_runtime_dependency(%q<activesupport>, [">= 2.0.2"])
   s.add_runtime_dependency(%q<highline>, [">= 1.4.0"])
-  s.add_runtime_dependency(%q<capistrano>, [">= 2.5.5"])
+  s.add_runtime_dependency(%q<capistrano>, ["~> 2.5.5"])
 
 end
 
