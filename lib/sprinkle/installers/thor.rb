@@ -18,7 +18,7 @@ module Sprinkle
     #   package :spec do
     #     thor 'spec', :file => "/var/setup/Thorfile"
     #   end
-    class Thor < Rake
+    class Thor < Sprinkle::Installers::Rake
       
       api do
         def thor(task, options = {}, &block)
