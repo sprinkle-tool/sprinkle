@@ -86,6 +86,17 @@ describe Sprinkle::Installers::Gem do
 
     end
     
+    describe "with sudo" do
+      before do
+        @installer = create_gem @gem, nil, :sudo => true
+      end
+      
+      it 'should call sudo' do
+        @installer.send(:install_commands).should == "sudo gem install #{@gem} --no-rdoc --no-ri"
+      end
+      
+    end
+    
     describe 'with build flags' do
       
       before do

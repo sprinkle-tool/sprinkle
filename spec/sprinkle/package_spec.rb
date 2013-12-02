@@ -397,7 +397,7 @@ CODE
     it 'should request _each_ verification to process' do
       @pkg.verifications.each do |v|
         v.stub(:defaults)
-        v.should_receive(:process).with(@roles).once
+        v.should_receive(:process).with(@roles, false).once
       end
     end
 
