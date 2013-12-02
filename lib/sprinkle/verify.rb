@@ -109,7 +109,10 @@ module Sprinkle
         logger.debug "#{@package.name}#{description} verification sequence: #{@commands.join('; ')} for roles: #{roles}\n"
       end
       
-      unless Sprinkle::OPTIONS[:testing]
+      if Sprinkle::OPTIONS[:testing]
+        # always fail when testing to force an install
+        raise Sprinkle::VerificationFailed.new(@package, description) if pre
+      else
         logger.debug "#{" " * @options[:padding]}--> Verifying #{description}..."
         
         unless @delivery.verify(self, roles)

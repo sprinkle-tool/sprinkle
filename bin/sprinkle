@@ -46,19 +46,19 @@ Options are:
 BANNER
   opts.separator ""
   opts.on("-s", "--script=PATH", String,
-          "Path to a sprinkle script to run") { |v| OPTIONS[:path] = v }
+          "path to a sprinkle script to run") { |v| OPTIONS[:path] = v }
   opts.on("--only [ROLE]", String,
-          "Only run sprinkle policies for the specified role") { |v| OPTIONS[:only_role] = v }
+          "only run sprinkle policies for given role") { |v| OPTIONS[:only_role] = v }
   opts.on("-t", "--test",
-          "Process but don't perform any actions") { |v| OPTIONS[:testing] = v }
-  opts.on("-v", "--verbose",
-          "Verbose output") { |v| OPTIONS[:verbose] = v }
+          "process but don't perform any actions","(this does not connect to any servers)") { |v| OPTIONS[:testing] = v }
   opts.on("-c", "--cloud",
-          "Show powder cloud, ie. package hierarchy and installation order") { |v| OPTIONS[:cloud] = v }
+          "show powder cloud, package hierarchy","and installation order") { |v| OPTIONS[:cloud] = v }
   opts.on("-f", "--force",
-          "Force installation of all packages even if it is detected that it has been previously installed") { |v| OPTIONS[:force] = v }
+          "force installation of all packages","by skipping pre-verify checks.") { |v| OPTIONS[:force] = v }
+  opts.on("-v", "--verbose",
+          "verbose output") { |v| OPTIONS[:verbose] = v }
   opts.on("-h", "--help",
-          "Show this help message.") { puts opts; exit }
+          "show this help message") { puts opts; exit }
   opts.parse!(ARGV)
 
   if MANDATORY_OPTIONS && MANDATORY_OPTIONS.find { |option| OPTIONS[option.to_sym].nil? }

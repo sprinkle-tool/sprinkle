@@ -246,7 +246,7 @@ module Sprinkle
 
         @verifications.each do |v|
           v.defaults(deployment)
-          v.process(roles)
+          v.process(roles, pre)
         end
       end
 
