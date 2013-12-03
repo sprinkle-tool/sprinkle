@@ -52,6 +52,31 @@ module Sprinkle
   # The capistrano and vlad syntax is the same for that. If you're using a
   # custom actor, you may have to do it differently.
   #
+  # == Requiring a package more than once with different options
+  #
+  # This works exactly as you might expect:
+  #
+  #   policy :bootstrap, :roles => :app do
+  #     require :user_settings, :for => "john"
+  #     require :user_settings, :for => "suzy"
+  #     require :user_settings, :for => "dorothy"
+  #   end
+  #
+  # Multiple requires for a package with no options will be 
+  # collapsed; that package will be installed once.
+  #
+  #   policy :apache, :roles => :app do
+  #     require :devtools
+  #     ...
+  #   end
+  #   policy :git, :roles => :app do
+  #     require :devtools
+  #     ...
+  #   end
+  # 
+  # In this example devtools will only be installed once, prior to
+  # apache and git.
+  #
   # == Multiple Policies
   #
   # You may specify as many policies as you'd like. If the packages you're
@@ -92,38 +117,45 @@ module Sprinkle
     def process(deployment) #:nodoc:
       raise NoMatchingServersError.new(@name, @roles) unless deployment.style.servers_for_role?(@roles)
 
-      all = []
-
       logger.info "[#{name}]"
 
-      cloud_info "--> Cloud hierarchy for policy #{@name}"
-
-      @packages.each do |p, args|
-        cloud_info "  * requires package #{p}"
-
-        opts = args.clone.extract_options!
-        package = Sprinkle::Package::PACKAGES.find_all(p, opts)
-        raise MissingPackageError.new(p) unless package.any?
-        package = Sprinkle::Package::Chooser.select_package(p, package) if package.is_a? Array # handle virtual package selection
-        # get an instance of the package and pass our config options
-        package = package.instance(*args)
-
-        tree = package.tree do |parent, child, depth|
-          indent = "\t" * depth; cloud_info "#{indent}Package #{parent.name} requires #{child.name}"
-        end
-
-        all << tree
-      end
-
-      normalize(all).each do |package|
+      package_install_tree.each do |package|
         package.process(deployment, @roles)
       end
     end
+    
+    def package_install_tree
+      @install_tree ||= normalize(tree)
+    end
 
     private
+    
+      def tree()
+        all = []
+        
+        cloud_info "--> Cloud hierarchy for policy #{@name}"
+        
+        @packages.each do |p, args|
+          cloud_info "  * requires package #{p}"
+
+          opts = args.clone.extract_options!
+          package = Sprinkle::Package::PACKAGES.find_all(p, opts)
+          raise MissingPackageError.new(p) unless package.any?
+          package = Sprinkle::Package::Chooser.select_package(p, package) if package.is_a? Array # handle virtual package selection
+          # get an instance of the package and pass our config options
+          package = package.instance(*args)
+          tree = package.tree do |parent, child, depth|
+            indent = "\t" * depth; cloud_info "#{indent}Package #{parent.name} requires #{child.name}"
+          end
+
+          all << tree
+        end
+        all
+        
+      end
 
       def normalize(all, &block)
-        all = all.flatten.uniq {|x| [x.name, x.version] }
+        all = all.flatten.uniq {|x| [x.name, x.version, x.opts] }
         cloud_info "--> Normalized installation order for all packages: #{all.collect(&:name).join(', ')}\n"
         all
       end

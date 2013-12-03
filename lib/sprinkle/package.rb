@@ -204,14 +204,10 @@ module Sprinkle
       def verify(description = '', &block)
         @verifications << Sprinkle::Verify.new(self, description, &block)
       end
-
+      
       def process(deployment, roles)
-        logger.info "  * #{name}"
+        output_name
         return if meta_package?
-        opts.each_with_index do |(k, v), index|
-          branch = (index == opts.size - 1) ? "└" : "├"
-          logger.debug "    #{branch}─ #{k}: #{v}"
-        end
 
         # Run a pre-test to see if the software is already installed. If so,
         # we can skip it, unless we have the force option turned on!
@@ -302,6 +298,18 @@ module Sprinkle
       end
 
     private
+    
+      def output_name
+        logger.info "  * #{name} #{output_arguments}" 
+        opts.each_with_index do |(k, v), index|
+          branch = (index == opts.size - 1) ? "└" : "├"
+          logger.debug "    #{branch}─ #{k}: #{v}"
+        end
+      end
+    
+      def output_arguments
+        (opts.empty? or Sprinkle::OPTIONS[:verbose]) ? "" :  opts.inspect.gsub(/^\{(.*)\}$/, "\\1" )
+      end
 
       def add_dependencies(packages, kind)
         opts = packages.extract_options!

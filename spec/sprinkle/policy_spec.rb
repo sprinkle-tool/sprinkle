@@ -51,6 +51,35 @@ describe Sprinkle::Policy do
     end
 
   end
+  
+  describe 'with the same package multiple times' do
+    include Sprinkle::Package
+    
+    before do
+      @deployment = double(Sprinkle::Deployment)
+      actor = double(:servers_for_role? => true)
+      @deployment.stub(:style).and_return(actor)
+      Sprinkle::Package::PACKAGES.clear # reset full package list before each spec is run
+      
+      @user = package :user do; end
+      
+      @policy = policy :test, :roles => :app do
+        requires :user, :name => "josh"
+        requires :user, :name => "bill"
+      end
+    end
+    
+    it "should call process on both users" do
+      (all=@policy.package_install_tree).size.should == 2
+      all.each do |p|
+        p.should_receive(:process).and_return
+      end
+    end
+    
+    after do
+      @policy.process(@deployment)
+    end
+  end
 
   describe 'with packages' do
     include Sprinkle::Package
