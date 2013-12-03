@@ -20,7 +20,7 @@ module Sprinkle
       
       verify_api do
         def has_group(group)
-          @commands << "id -g #{group}"
+          @commands << "egrep -i \"^#{group}:\" /etc/group"
         end
       end
       
