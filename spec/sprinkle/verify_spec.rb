@@ -136,8 +136,8 @@ describe Sprinkle::Verify do
       @verification.commands.should include('id bob')
     end
     
-    it 'should use id to check for group' do
-      @verification.commands.should include('id -g bobgroup')
+    it 'should use egrep to check a group exists' do
+      @verification.commands.should include('egrep -i "^bobgroup:" /etc/group')
     end
 
     it 'should do a "test -L" to check something is a symbolic link' do
