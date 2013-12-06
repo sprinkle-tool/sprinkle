@@ -14,7 +14,7 @@ module Sprinkle
     # pre/post installation hooks. This gives you the ability to specify
     # commands to run before and after an installation takes place.
     # There are three ways to specify a pre/post hook.
-
+    #
     # Note about sudo:
     # When using the Capistrano actor all commands by default are run using
     # sudo (unless your Capfile includes "set :use_sudo, false").  If you wish
