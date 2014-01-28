@@ -6,12 +6,12 @@ describe Sprinkle::Policy do
   before do
     @name = 'a policy'
   end
-  
+
   describe 'with a role with no matching servers' do
     before do
       @policy = policy @name, :roles => :app do; end
     end
-    
+
     it "should raise an error" do
       @deployment = double(:style => Sprinkle::Actors::Dummy.new {})
       lambda { @policy.process(@deployment) }.should raise_error(Sprinkle::NoMatchingServersError)

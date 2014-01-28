@@ -48,5 +48,5 @@ end
 # Define a logging target and understand packages, policies and deployment DSL
 #++
 class Object
-  include Sprinkle::Package, Sprinkle::Core, Sprinkle::Logger
+  include Sprinkle::Namespace, Sprinkle::Package, Sprinkle::Core, Sprinkle::Logger
 end
