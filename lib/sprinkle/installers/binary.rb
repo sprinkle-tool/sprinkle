@@ -13,13 +13,13 @@ module Sprinkle
     # This example will download archive.tar.gz to /home/user/sources and then
     # extract it into /home/user/local.
     class Binary < Installer
-      
+
       api do
         def binary(source, options = {}, &block)
           install Binary.new(self, source, options, &block)
         end
       end
-      
+
       def initialize(parent, binary_archive, options = {}, &block) #:nodoc:
         @binary_archive = binary_archive
         super parent, options, &block
@@ -35,7 +35,7 @@ module Sprinkle
 
       def install_commands #:nodoc:
         commands = [ "bash -c 'wget -cq --directory-prefix=#{@options[:archives]} #{@binary_archive}'" ]
-        commands << "bash -c \"cd #{@options[:prefix]} && #{extract_command} '#{@options[:archives]}/#{archive_name}'\""
+        commands << "bash -c \"cd #{@options[:prefix]} && #{sudo_cmd} #{extract_command} '#{@options[:archives]}/#{archive_name}'\""
       end
 
       def archive_name #:nodoc:
