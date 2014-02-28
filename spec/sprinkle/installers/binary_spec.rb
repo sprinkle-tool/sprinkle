@@ -3,7 +3,7 @@ require File.expand_path("../../spec_helper", File.dirname(__FILE__))
 describe Sprinkle::Installers::Binary do
   include Sprinkle::Deployment
 
-  def create_context(source = 'http://www.example.com/archive.tar.gz')
+  def create_context(source = 'http://www.example.com/archive.tar.gz', sudo = false)
     deployment = deployment do
       delivery :capistrano
       binary source do
@@ -12,7 +12,7 @@ describe Sprinkle::Installers::Binary do
       end
     end
 
-    installer = create_binary source do
+    installer = create_binary source, sudo do
       prefix   '/prefix/directory'
       archives '/archives/directory'
     end
@@ -22,8 +22,8 @@ describe Sprinkle::Installers::Binary do
     [source, deployment, installer]
   end
 
-  def create_binary(binary, version = nil, &block)
-    @package = double(Sprinkle::Package, :name => 'package', :version => version)
+  def create_binary(binary, sudo, version = nil, &block)
+    @package ||= double(Sprinkle::Package, :name => 'package', :version => version, :sudo? => sudo)
     Sprinkle::Installers::Binary.new(@package, binary, &block)
   end
 
@@ -56,6 +56,16 @@ describe Sprinkle::Installers::Binary do
 
     it "should return a command to extract the right file in the right directory" do
       @installer.send(:install_commands)[1].should =~ / '\/archives\/directory\/archive.tar.gz'/
+    end
+  end
+
+  describe "binary#install_commands", "with sudo support" do
+    before do
+      @binary, @deployment, @installer = create_context 'http://www.example.com/archive.tar.gz', true
+    end
+
+    it "should sudo the command when required" do
+      @installer.send(:install_commands)[1].should =~ /sudo/
     end
   end
 
