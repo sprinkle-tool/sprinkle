@@ -101,7 +101,7 @@ describe Sprinkle::Policy do
       @d.stub(:instance).and_return(@d)
 
       @policy = policy :test, :roles => :app do; requires :a; end
-      $terminal.stub(:choose).and_return(:c) # stub out highline asking questions
+      $terminal.stub(:choose).and_return(@c) # stub out highline asking questions
     end
 
     describe 'when applying' do
@@ -152,7 +152,7 @@ describe Sprinkle::Policy do
 
       it 'should ask the user for the concrete package implementation to use for a virtual one when more than one possible choice exists' do
         @policy = policy :virtual, :roles => :app do; requires :abc; end
-        $terminal.should_receive(:choose).and_return(:c)
+        $terminal.should_receive(:choose).and_return(@c)
         @c.should_receive(:process)
       end
 
