@@ -7,13 +7,12 @@ module Sprinkle::Package
       else
         package = choose do |menu|
           menu.prompt = "Multiple choices exist for virtual package #{name}"
-          menu.choices( *packages.collect(&:to_s) )
+          packages.each do |pkg|
+            menu.choice(pkg.to_s) { pkg; }
+          end
         end
-        package = Sprinkle::Package::PACKAGES.first(package)
       end
-
       cloud_info "Selecting #{package.to_s} for virtual package #{name}"
-
       package
     end
 
