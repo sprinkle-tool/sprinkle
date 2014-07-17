@@ -143,7 +143,7 @@ module Sprinkle
         @verifications = []
         @install_queues ||= [[]]
         @block = block
-        @use_sudo = false
+        @use_sudo = nil
         @version = nil
         # this should probably not be done twice
         self.instance_eval(&block)
@@ -167,7 +167,7 @@ module Sprinkle
       end
 
       def sudo?
-        @use_sudo
+        !!@use_sudo
       end
 
       def use_sudo(flag=true)

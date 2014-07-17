@@ -30,7 +30,7 @@ describe Sprinkle::Actors::Local do
     
     before do
       @verifier = Sprinkle::Verify::new(@package) {}
-      @verifier.commands += ["test","test"]
+      @verifier.commands.concat ["test","test"]
       @roles    = %w( app )
       @name     = 'name'
     end

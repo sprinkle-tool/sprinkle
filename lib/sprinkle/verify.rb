@@ -62,7 +62,7 @@ module Sprinkle
     include Sprinkle::Attributes
     include Sprinkle::Package::Rendering::Helpers
     include Sprinkle::Sudo
-    attr_accessor :package, :description, :commands, :options #:nodoc:
+    attr_accessor :package, :description, :options #:nodoc:
     
     delegate :opts, :to => :package
     delegate :args, :to => :package
@@ -87,8 +87,19 @@ module Sprinkle
       @options ||= {}
       @options[:padding] = 4
       @delivery = nil
-      
-      self.instance_eval(&block)
+      @block = block
+    end
+    
+    def commands
+      prepare
+      @commands
+    end
+    
+    def prepare
+      return if @prepared
+      @commands = []
+      self.instance_eval(&@block)
+      @prepared = true
     end
     
     def runner(*cmds)

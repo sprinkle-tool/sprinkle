@@ -65,7 +65,7 @@ describe Sprinkle::Verify do
       end
     end
     @verification = @package.verifications[0]
-    @delivery = double(Sprinkle::Deployment, :process => true, :sudo_command => "sudo")
+    @delivery = double(Sprinkle::Deployment, :process => true, :sudo_command => "sudo", :sudo? => false)
     @verification.delivery = @delivery
   end
   
