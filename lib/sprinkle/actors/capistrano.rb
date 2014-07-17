@@ -25,6 +25,8 @@ module Sprinkle
         @config = ::Capistrano::Configuration.new
         @config.logger.level = Sprinkle::OPTIONS[:verbose] ? ::Capistrano::Logger::INFO : ::Capistrano::Logger::IMPORTANT
         @config.set(:password) { ::Capistrano::CLI.password_prompt }
+        # default sudo to false, we must turn it on
+        @config.set(:run_method) { @config.fetch(:use_sudo, false) ? :sudo : :run }
         
         @config.set(:_sprinkle_actor, self)
         
@@ -40,7 +42,7 @@ module Sprinkle
       end
       
       def sudo? #:nodoc:
-        @config.fetch(:run_method, :run) == :sudo
+        @config.fetch(:run_method) == :sudo
       end
       
       def sudo_command #:nodoc:
@@ -98,7 +100,7 @@ module Sprinkle
         @log_recorder = log_recorder = Sprinkle::Utility::LogRecorder.new
         commands = commands.map {|x| rewrite_command(x)}
         define_task(name, roles) do
-          via = fetch(:run_method, :run)
+          via = fetch(:run_method)
           commands.each do |command|
             if command.is_a? Commands::Transfer
               upload command.source, command.destination, :via => :scp, 
@@ -123,7 +125,7 @@ module Sprinkle
         # rip out any double sudos from the beginning of the command
         def rewrite_command(cmd)
           return cmd if cmd.is_a?(Symbol)
-          via = @config.fetch(:run_method, :run)
+          via = @config.fetch(:run_method)
           if via == :sudo and cmd =~ /^#{sudo_command}/
             cmd.gsub(/^#{sudo_command}\s?/,"")
           else
