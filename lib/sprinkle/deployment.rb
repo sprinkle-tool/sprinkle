@@ -73,12 +73,19 @@ module Sprinkle
       end
 
       def active_policies #:nodoc:
+        policies = POLICIES
+
+        if policy=Sprinkle::OPTIONS[:only_policy]
+          policy=policy.to_sym
+          policies=policies.select {|x| x.name == policy }
+        end
+
         if role=Sprinkle::OPTIONS[:only_role]
           role=role.to_sym
-          POLICIES.select {|x| [x.roles].flatten.include?(role) }
-        else
-          POLICIES
+          policies=policies.select {|x| [x.roles].flatten.include?(role) }
         end
+
+        policies
       end
 
       def process #:nodoc:

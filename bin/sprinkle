@@ -49,6 +49,8 @@ BANNER
           "path to a sprinkle script to run") { |v| OPTIONS[:path] = v }
   opts.on("--only [ROLE]", String,
           "only run sprinkle policies for given role") { |v| OPTIONS[:only_role] = v }
+  opts.on("--policy [POLICY]", String,
+          "only run specified sprinkle policy") { |v| OPTIONS[:only_policy] = v }
   opts.on("-t", "--test",
           "process but don't perform any actions","(this does not connect to any servers)") { |v| OPTIONS[:testing] = v }
   opts.on("-c", "--cloud",
@@ -71,6 +73,13 @@ def only_role(options)
   return if role.blank?
   Sprinkle::OPTIONS[:only_role] = role
   puts "Only running policies for :#{role}"
+end
+
+def only_policy(options)
+  policy=OPTIONS[:only_policy]
+  return if policy.blank?
+  Sprinkle::OPTIONS[:only_policy] = policy
+  puts "Only running policy :#{policy}"
 end
 
 def force_mode(options)
@@ -104,5 +113,6 @@ powder_cloud(OPTIONS)
 log_level(OPTIONS)
 verbosity(OPTIONS)
 only_role(OPTIONS)
+only_policy(OPTIONS)
 
 Sprinkle::Script.sprinkle File.read(powder), powder
