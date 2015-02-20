@@ -181,3 +181,65 @@ describe Sprinkle::Policy, 'with missing packages' do
   end
 
 end
+
+describe Sprinkle::Policy, 'with filters specified' do
+  include Sprinkle::Deployment
+
+  def create_deployment
+    deployment do
+      delivery :capistrano
+    end
+  end
+
+  before do
+    Sprinkle::OPTIONS[:only_role] = nil
+    Sprinkle::OPTIONS[:only_policy] = nil
+    Sprinkle::POLICIES.clear
+
+    @policy1 = policy :test1, :roles => :app1 do; end
+    @policy2 = policy :test2, :roles => :app2 do; end
+    @policy3 = policy :test3, :roles => [:app1, :app3] do; end
+    @deployment = create_deployment
+  end
+
+  describe 'with --only option' do
+    it 'should select policies for a given role' do
+      Sprinkle::OPTIONS[:only_role] = 'app1'
+      @policy1.should_receive(:process).with(@deployment)
+      @policy2.should_not_receive(:process).with(@deployment)
+      @policy3.should_receive(:process).with(@deployment)
+    end
+  end
+
+  describe 'with --policy option' do
+    it 'should select a single given policy' do
+      Sprinkle::OPTIONS[:only_policy] = 'test2'
+      @policy1.should_not_receive(:process).with(@deployment)
+      @policy2.should_receive(:process).with(@deployment)
+      @policy3.should_not_receive(:process).with(@deployment)
+    end
+  end
+
+  describe 'with both --only and --policy options' do
+    it 'should select a given policy if its roles also contains a given role' do
+      Sprinkle::OPTIONS[:only_role] = 'app3'
+      Sprinkle::OPTIONS[:only_policy] = 'test3'
+      @policy1.should_not_receive(:process).with(@deployment)
+      @policy2.should_not_receive(:process).with(@deployment)
+      @policy3.should_receive(:process).with(@deployment)
+    end
+
+    it 'should skip given policy if its roles does not contain a given role' do
+      Sprinkle::OPTIONS[:only_role] = 'app2'
+      Sprinkle::OPTIONS[:only_policy] = 'test3'
+      @policy1.should_not_receive(:process).with(@deployment)
+      @policy2.should_not_receive(:process).with(@deployment)
+      @policy3.should_not_receive(:process).with(@deployment)
+    end
+  end
+
+  after do
+    @deployment.process
+  end
+
+end
