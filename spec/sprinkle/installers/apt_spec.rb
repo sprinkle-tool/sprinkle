@@ -5,7 +5,7 @@ describe Sprinkle::Installers::Apt do
   before do
     @package = create_pkg "name", :use_sudo => false
   end
-  
+
   def create_pkg(name="name", opts={})
     @package = Sprinkle::Package::Package.new(name) {}
     @package.use_sudo opts[:use_sudo]
@@ -34,7 +34,7 @@ describe Sprinkle::Installers::Apt do
     end
 
   end
-  
+
 
   describe 'during installation' do
 
@@ -45,14 +45,14 @@ describe Sprinkle::Installers::Apt do
       end
       @install_commands = @installer.send :install_commands
     end
-    
+
     it 'should use sudo if package specifies' do
       @package = create_pkg "name", :use_sudo => true
       @installer = create_apt 'ruby'
       @install_commands = @installer.send :install_commands
       @install_commands.should =~ /sudo env/
     end
-    
+
     it 'should use sudo if installer specifies' do
       @package = create_pkg "name", :use_sudo => false
       @installer = create_apt 'ruby', :sudo => true
@@ -78,7 +78,7 @@ describe Sprinkle::Installers::Apt do
     end
 
   end
-  
+
   describe 'during dependencies only installation' do
 
     before do
@@ -89,7 +89,19 @@ describe Sprinkle::Installers::Apt do
     it 'should invoke the apt installer with build-dep command for all specified packages' do
       @install_commands.should =~ /apt-get --force-yes -qyu build-dep ruby/
     end
-    
+
   end
 
+  describe 'during installation from a Ubuntu PPA' do
+
+    before do
+      # We use the (outdated) ppa name in launchpad help:
+      # https://help.launchpad.net/Packaging/PPA/InstallingSoftware
+      @installer = create_apt('gwibber') { ppa 'gwibber-daily/ppa'}
+      @install_commands = @installer.send :install_commands
+    end
+
+    it 'should add the PPA repository before invoking apt-get' do
+      @install_commands.should =~ /add-apt-repository ppa:/
+    end
 end
