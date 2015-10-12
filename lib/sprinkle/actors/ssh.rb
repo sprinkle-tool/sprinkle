@@ -100,6 +100,10 @@ module Sprinkle
         @options[:keys] = keys
       end
 
+      def forward_agent(forward_agent)
+        @options[:forward_agent] = forward_agent
+      end
+
       # Set this to true to prepend 'sudo' to every command.
       def use_sudo(value=true)
         @options[:use_sudo] = value
@@ -238,7 +242,7 @@ module Sprinkle
         end
         
         def ssh_session(host) #:nodoc:
-          connections.start(host, @options[:user], @options.slice(:password, :keys, :port))
+          connections.start(host, @options[:user], @options.slice(:password, :keys, :port, :forward_agent))
         end       
 
         def reconnect(host) #:nodoc:
