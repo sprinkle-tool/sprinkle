@@ -1,11 +1,19 @@
+
 module Sprinkle
   module Installers
     # The gem package installer installs Ruby gems.
     #
-    # The installer has a single optional configuration: source.
+    # The installer has a optional configuration: source.
     # By changing source you can specify a given ruby gems
     # repository from which to install.
-    # 
+    #
+    # Besides `source`, this installer also supports these options:
+    #
+    # - `repository`: install directory
+    # - `http_proxy`
+    # - `build_docs`: by default, no `rdoc` and `ri`
+    # - `build_flags`: additional build flags
+    #
     # == Example Usage
     #
     # First, a simple installation of the magic_beans gem:
