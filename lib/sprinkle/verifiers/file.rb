@@ -46,7 +46,7 @@ module Sprinkle
       end
 
       def file_contains(path, text)
-        @commands << "egrep '#{text}' #{path}"
+        @commands << "grep '#{text}' #{path}"
       end
 
       # TODO: remove 0.9
