@@ -23,7 +23,7 @@ module Sprinkle
 
       verify_api do
         def has_npm(package)
-          @commands << "npm --global list | fgrep \"#{package}@\""
+          @commands << "npm --global list | grep -F \"#{package}@\""
         end
       end
 
