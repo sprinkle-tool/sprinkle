@@ -31,7 +31,7 @@ module Sprinkle
 
 
         def install_commands #:nodoc:
-          cmd = "#{sudo_cmd}wget -O #{path} #{url} && #{sudo_cmd} chmod 755 #{path}"
+          cmd = "#{sudo_cmd}wget -c -O #{path} #{url} && #{sudo_cmd} chmod 755 #{path}"
         end
 
     end
