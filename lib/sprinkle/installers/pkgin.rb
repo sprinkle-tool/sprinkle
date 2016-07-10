@@ -32,7 +32,7 @@ module Sprinkle
     protected
 
       def install_commands #:nodoc:
-        "sudo /opt/pkg/bin/pkgin -y install #{@package_name}"
+        "#{sudo_cmd} /opt/pkg/bin/pkgin -y install #{@package_name}"
       end
     end
   end
