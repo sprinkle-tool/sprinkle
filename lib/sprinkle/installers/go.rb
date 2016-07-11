@@ -26,6 +26,12 @@ module Sprinkle
       # :call-seq: go(*packages)
       auto_api :go
 
+      verify_api do
+        def has_go(package)
+          @commands << " go list '...' | grep  -F '#{package}'"
+        end
+      end
+
       protected
 
         def install_commands #:nodoc:
