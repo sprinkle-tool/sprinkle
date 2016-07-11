@@ -9,7 +9,7 @@ module Sprinkle
     #     wget 'http://example.com/magic_beans.sh', '/usr/local/bin/magic_beans'
     #   end
     #
-    # After downloading, we chomd 755 to magic_beans.
+    # After downloading, we chmod 755 to magic_beans.
     class Wget < Installer
 
       api do
@@ -23,7 +23,7 @@ module Sprinkle
       def initialize(parent, url, path, options = {}, &block) #:nodoc:
         super parent, options, &block
         @url = url
-	@path = path
+        @path = path
       end
 
 
