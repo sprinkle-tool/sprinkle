@@ -47,9 +47,9 @@ module Sprinkle
     #     source 'http://magicbeansland.com/latest-1.1.1.tar.gz' do
     #       prefix    '/usr/local'
     #
-    #       pre :prepare, 'echo "Here we go folks."'
-    #       post :extract, 'echo "I believe..."'
-    #       pre :build, 'echo "Cross your fingers!"'
+    #       pre :prepare { 'echo "Here we go folks."' }
+    #       post :extract { 'echo "I believe..."' }
+    #       pre :build { 'echo "Cross your fingers!"' }
     #     end
     #   end
     #
