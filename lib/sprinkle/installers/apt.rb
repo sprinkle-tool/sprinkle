@@ -53,29 +53,20 @@ module Sprinkle
 
       protected
 
-        def ppa_repository_exist?(ppa) #:nodoc:
-          ppa_user, ppa_name = ppa.split('/')
-          sources_glob = ['/etc/apt/sources.list', '/etc/apt/sources.list.d/*.list']
-          ppa_pattern = /^deb http:\/\/ppa.launchpad.net\/#{ppa}/
-          Dir.glob(sources_glob).any? do |f|
-            open(f).any? do |line|
-              line =~ ppa_pattern
-            end
-          end
-        end
 
         def install_commands #:nodoc:
           command = @options[:dependencies_only] ? 'build-dep' : 'install'
           noninteractive = "#{sudo_cmd}env DEBCONF_TERSE='yes' DEBIAN_PRIORITY='critical' DEBIAN_FRONTEND=noninteractive"
           if @options[:ppa]
             ppa = @options[:ppa]
-	    unless ppa_repository_exist?(ppa)
-              add_ppa = "#{sudo_cmd}add-apt-repository ppa:#{ppa}"
-              apt_update = "#{noninteractive} apt-get update"
-              ppa_cmd = "#{add_ppa} && #{apt_update} &&"
-            end
+            sources_lists = '/etc/apt/sources.list /etc/apt/sources.list.d/*.list'
+            ppa_pattern = "^deb http://ppa\.launchpad\.net/#{ppa}"
+            is_ppa_exist = "grep -F -q '#{ppa_pattern}' #{sources_lists}"
+            add_ppa = "#{sudo_cmd}add-apt-repository ppa:#{ppa}"
+            apt_update = "#{noninteractive} apt-get update"
+            ppa_cmd = "(#{is_ppa_exist} && #{add_ppa} && #{apt_update})"
           end
-          "#{ppa_cmd} #{noninteractive} apt-get --force-yes -qyu #{command} #{@packages.join(' ')}"
+          "#{ppa_cmd}; #{noninteractive} apt-get --force-yes -qyu #{command} #{@packages.join(' ')}"
         end
 
 
