@@ -11,20 +11,20 @@ module Sprinkle
     #     description "Beans beans they're good for your heart..."
     #     pip 'magic_beans'
     #   end
+    #
+    # You may also specify multiple packages as an array:
+    #
+    #   package :magic_beans do
+    #     pip %w(magic_beans magic_sauce)
+    #   end
+    #
     class Pip < Installer
 
-      api do
-        def pip(name, options = {}, &block)
-          install Pip.new(self, name, options, &block)
-        end
-      end
-
-      attr_accessor :pip #:nodoc:
-
-      def initialize(parent, pip, options = {}, &block) #:nodoc:
-        super parent, options, &block
-        @pip = pip
-      end
+      ##
+      # installs the pip packages passed
+      # :method: pip
+      # :call-seq: pip(*packages)
+      auto_api
 
       verify_api do
         def has_pip(package)
@@ -34,9 +34,8 @@ module Sprinkle
 
       protected
 
-
         def install_commands #:nodoc:
-          cmd = "#{sudo_cmd}pip install #{pip}"
+          cmd = "#{sudo_cmd}pip install #{@packages.join(' ')}"
         end
 
     end
