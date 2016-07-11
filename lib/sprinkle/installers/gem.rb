@@ -50,7 +50,7 @@ module Sprinkle
         @gem = gem
       end
 
-      attributes :source, :repository, :http_proxy, :build_docs :build_flags, :version
+      attributes :source, :repository, :http_proxy, :build_docs, :build_flags, :version
 
       protected
 
