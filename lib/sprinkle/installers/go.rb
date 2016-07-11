@@ -11,27 +11,25 @@ module Sprinkle
     #     description "Beans beans they're good for your heart..."
     #     go 'magic_beans'
     #   end
-    class Go < Installer
+    #
+    # You may also specify multiple packages as an array:
+    #
+    #   package :magic_beans do
+    #     go %w(magic_beans magic_sauce)
+    #   end
+    #
+    class Go < PackageInstaller
 
-      api do
-        def go(name, options = {}, &block)
-          install Go.new(self, name, options, &block)
-        end
-      end
-
-      attr_accessor :go #:nodoc:
-
-      def initialize(parent, go, options = {}, &block) #:nodoc:
-        super parent, options, &block
-        @go = go
-      end
-
+      ##
+      # installs the Go packages passed
+      # :method: go
+      # :call-seq: go(*packages)
+      auto_api :go
 
       protected
 
-
         def install_commands #:nodoc:
-          cmd = "#{sudo_cmd}go get #{go}"
+          cmd = "#{sudo_cmd}go get #{@packages.join(' ')}"
         end
 
     end
