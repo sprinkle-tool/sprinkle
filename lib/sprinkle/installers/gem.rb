@@ -1,11 +1,19 @@
+
 module Sprinkle
   module Installers
     # The gem package installer installs Ruby gems.
     #
-    # The installer has a single optional configuration: source.
+    # The installer has a optional configuration: source.
     # By changing source you can specify a given ruby gems
     # repository from which to install.
-    # 
+    #
+    # Besides `source`, this installer also supports these options:
+    #
+    # - `repository`: install directory
+    # - `http_proxy`
+    # - `build_docs`: by default, no `rdoc` and `ri`
+    # - `build_flags`: additional build flags
+    #
     # == Example Usage
     #
     # First, a simple installation of the magic_beans gem:
@@ -24,25 +32,25 @@ module Sprinkle
     #   end
     #
     # As you can see, setting options is as simple as creating a
-    # block and calling the option as a method with the value as 
+    # block and calling the option as a method with the value as
     # its parameter.
     class Gem < Installer
-      
+
       api do
         def gem(name, options = {}, &block)
           recommends :rubygems
           install Gem.new(self, name, options, &block)
         end
       end
-      
+
       attr_accessor :gem #:nodoc:
 
       def initialize(parent, gem, options = {}, &block) #:nodoc:
         super parent, options, &block
         @gem = gem
       end
-      
-      attributes :source, :repository, :http_proxy, :build_flags, :version
+
+      attributes :source, :repository, :http_proxy, :build_docs, :build_flags, :version
 
       protected
 
@@ -58,7 +66,7 @@ module Sprinkle
           cmd << " -- #{build_flags}" if option?(:build_flags)
           cmd
         end
-        
+
     end
   end
 end
