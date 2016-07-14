@@ -26,7 +26,7 @@ module Sprinkle
 
       verify_api do
         def has_pkgin(package)
-          @commands << "pkgin list | egrep '^#{@package_name}-'"
+          @commands << "pkgin list | grep -E '^#{@package_name}-'"
         end
       end
 
