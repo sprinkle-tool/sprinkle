@@ -31,6 +31,14 @@ module Sprinkle
     #     end
     #   end
     #
+    # There is an additional `gem2` installer:
+    #
+    #   package :magic_beans do
+    #     gem2 'magic_beans'
+    #   end
+    #
+    # This is a shortcut for `gem` using `gem2.0` as value of `gem_command`.
+    #
     # As you can see, setting options is as simple as creating a
     # block and calling the option as a method with the value as
     # its parameter.
@@ -40,6 +48,9 @@ module Sprinkle
         def gem(name, options = {}, &block)
           recommends :rubygems
           install Gem.new(self, name, options, &block)
+        end
+        def gem2(name, options = {}, &block)
+          gem(name, options.merge(:gem_command => 'gem2.0'), &block)
         end
       end
 
