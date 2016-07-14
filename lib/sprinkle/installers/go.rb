@@ -28,7 +28,7 @@ module Sprinkle
 
       verify_api do
         def has_go(package)
-          @commands << " go list '...' | grep  -F '#{package}'"
+          @commands << " go list '...' | grep  -E '^#{package}$'"
         end
       end
 
