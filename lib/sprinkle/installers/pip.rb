@@ -28,7 +28,15 @@ module Sprinkle
 
       verify_api do
         def has_pip(package)
-          @commands << "pip show #{package} | fgrep Name"
+          # `pip show INSTLLED` outputs something like:
+          #
+          #      ---
+          #      Name: bean
+          #      ...
+          #
+          # And `pip show UNINSTALLED` outputs nothing (exit code is still 0).
+          # Thus we only need to match `-` once.
+          @commands << "pip show #{package} | grep -F -m 1 '-'"
         end
       end
 
