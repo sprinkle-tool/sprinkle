@@ -16,14 +16,25 @@ module Sprinkle
       # install deb packages from an external URL
       # :call-seq:
       #   deb(*package_urls)
-      auto_api :deb
+      api do
+        def deb(url, options = {}, &block)
+          install Deb.new(self, url, options, &block)
+        end
+      end
+
+      attr_accessor :url #:nodoc:
+
+      def initialize(parent, url, options = {}, &block) #:nodoc:
+        super parent, options, &block
+        @url = url
+      end
 
       protected
 
         def install_commands #:nodoc:
           [
-            "wget -cq --directory-prefix=/tmp #{@packages.join(' ')}",
-            "dpkg -i #{@packages.collect{|p| "/tmp/#{package_name(p)}"}.join(" ")}"
+            "wget -cq --directory-prefix=/tmp #{@url}",
+            "#{sudo_cmd}dpkg -i /tmp/#{package_name(@url)}"
           ]
         end
 
