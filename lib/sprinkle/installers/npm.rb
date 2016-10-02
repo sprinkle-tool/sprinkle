@@ -16,8 +16,8 @@ module Sprinkle
       attr_accessor :package_name
 
       api do
-        def npm(package, &block)
-          install Npm.new(self, package, &block)
+        def npm(package, options={}, &block)
+          install Npm.new(self, package, options, &block)
         end
       end
 
@@ -27,15 +27,15 @@ module Sprinkle
         end
       end
 
-      def initialize(parent, package_name, &block) #:nodoc:
-        super parent, &block
+      def initialize(parent, package_name, options={}, &block) #:nodoc:
+        super parent, options, &block
         @package_name = package_name
       end
 
     protected
 
       def install_commands #:nodoc:
-        "npm install --global #{@package_name}"
+        "#{sudo_cmd}npm install --global #{@package_name}"
       end
 
     end
