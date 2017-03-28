@@ -1,23 +1,15 @@
-# Sprinkle
+# Sprinkle [![Build Status](https://travis-ci.org/sprinkle-tool/sprinkle.png?branch=master)](https://travis-ci.org/sprinkle-tool/sprinkle) [![Code Climate](https://codeclimate.com/github/sprinkle-tool/sprinkle.png)](https://codeclimate.com/github/sprinkle-tool/sprinkle/)
 
 Sprinkle is a software provisioning tool you can use to build remote servers with, after the base operating
 system has been installed. For example, to install a Rails or Merb stack on a brand new slice directly after
 its been created.
 
-[![Build Status](https://travis-ci.org/sprinkle-tool/sprinkle.png?branch=master)](https://travis-ci.org/sprinkle-tool/sprinkle) [![Code Climate](https://codeclimate.com/github/sprinkle-tool/sprinkle.png)](https://codeclimate.com/github/sprinkle-tool/sprinkle/)
+Sprinkle is a work in progress and I'm excited to hear if anyone finds it useful - please feel free to
+comment, ask any questions, or send in any ideas, patches, bugs. All most welcome.
 
-  * `#sprinkle` channel on the Freenode IRC Network
-  * <http://redartisan.com/2008/5/27/sprinkle-intro>
-  * <http://github.com/sprinkle-tool/sprinkle>
-  * <http://github.com/benschwarz/passenger-stack>
-  * <http://github.com/trevorturk/sprinkle-packages>
-  * <http://www.vimeo.com/2888665>
-  * <http://maxim.github.com/sprinkle-cheatsheet>
-  * <http://github.com/mingalar/sprinkle-packages>
-  * <http://github.com/stuartellis/spritz>
-  * <http://engineering.gomiso.com/2011/08/26/forget-chef-or-puppet-automate-with-sprinkle/>
+Marcus Crafter - <crafterm@redartisan.com>
 
-### Packages
+## Packages
 
 Properties of packages such as their name, type, dependencies, etc, and what packages apply to what machines
 is described via a domain specific language that Sprinkle executes (in fact one of the aims of Sprinkle is to
@@ -39,7 +31,8 @@ end
 ```
 
 This defines a package called `ruby`, that uses the source based installer to build Ruby 1.8.6 from source,
-installing the package `ruby_dependencies` beforehand. The package verifies it was installed correctly by verifying the file `/usr/bin/ruby` exists after installation. If this verification fails, the sprinkle script will gracefully stop.
+installing the package `ruby_dependencies` beforehand. The package verifies it was installed correctly by verifying
+the file `/usr/bin/ruby` exists after installation. If this verification fails, the sprinkle script will gracefully stop.
 
 Reasonable defaults are set by sprinkle, such as the install prefix, download area, etc, but can be customized
 globally or per package (see below for an example).
@@ -54,7 +47,50 @@ of changing installer types as software is updated upstream.
 Sprinkle also supports dependencies between packages, allowing you specify pre-requisites that need to be
 installed in order.
 
-### Policies
+**Note** When running commands that require `sudo`, you must use an installer which supports the `:sudo => true` option
+and your deployment strategy must be capable of receiving input from your console.
+
+### Installers
+
+There are many installers available for packages see [`lib/sprinkle/installers`](lib/sprinkle/installers) for a full list.
+However a few that you will find useful include `runner`, to run arbitrary commands, `source` to install packages from source
+and there are installers for most package management systems e.g. Rubygems (`gem :rails`), aptitude (`apt :mysql`)
+
+### Hooks
+
+Sometimes you need to run commands before or after various points in a packages installation process, `pre` and `post`
+hooks enable you to configure this behaviour. Hooks either take a simple shell command e.g.:
+
+```Ruby
+  pre :install, "mkdir /path/to/file"
+```
+
+Or a block in which you can run various installer commands.
+
+```Ruby
+  pre :install do
+    runner "apt-get update", :sudo => true
+  end
+```
+
+### Verifiers
+
+Verifiers are used to check if an installation was successful (or has already been applied), installers will often provide
+custom verify commands to aid this process. e.g:
+
+```Ruby
+package :user_setup, :provides => :deployment_user do
+  description "Meta package to setup users"
+
+  add_user "deploy", :flags => "--ingroup sudo"
+
+  verify do
+    has_user "deploy", :in_group => "sudo"
+  end
+end
+```
+
+## Policies
 
 Packages can be grouped into polices to define several packages that should be installed together.  An example:
 
@@ -72,19 +108,32 @@ rails (version 3.2), appserver, database and webserver.
 
 The appserver, database and webserver packages can also be virtual, prompting the user for selection if multiple choices for the virtual package exist.
 
+## Deployment
+
 Sprinkle is architected to be extendable in many ways, one of those areas is in its deployment of commands to
 remote hosts. Currently Sprinkle supports the use of Capistrano, Vlad, or a direct net/ssh connection to
 issue commands on remote hosts via ssh, but could also be extended to use any other command transport mechanism
 desired. Sprinkle can also be configured to simply issue installation commands to provision the local system.
 
-Sprinkle is a work in progress and I'm excited to hear if anyone finds it useful - please feel free to
-comment, ask any questions, or send in any ideas, patches, bugs. All most welcome.
+**Note** When using Capistrano and `sudo`, it is likely you will need the `default_run_options[:pty] = true` option
+set in order to authorise `sudo` attempts.
 
-Marcus Crafter - <crafterm@redartisan.com>
+## Additional Resources
+
+  * `#sprinkle` channel on the Freenode IRC Network
+  * <http://redartisan.com/2008/5/27/sprinkle-intro>
+  * <http://github.com/sprinkle-tool/sprinkle>
+  * <http://github.com/benschwarz/passenger-stack>
+  * <http://github.com/trevorturk/sprinkle-packages>
+  * <http://www.vimeo.com/2888665>
+  * <http://maxim.github.com/sprinkle-cheatsheet>
+  * <http://github.com/mingalar/sprinkle-packages>
+  * <http://github.com/stuartellis/spritz>
+  * <http://engineering.gomiso.com/2011/08/26/forget-chef-or-puppet-automate-with-sprinkle/>
 
 ----
 
-## APPENDIX 
+## APPENDIX
 
 ### A full example deployment
 
