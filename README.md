@@ -17,6 +17,14 @@ its been created.
   * <http://github.com/stuartellis/spritz>
   * <http://engineering.gomiso.com/2011/08/26/forget-chef-or-puppet-automate-with-sprinkle/>
 
+### Installation
+
+Install:
+
+```
+$ gem install sprinkle
+```
+
 ### Packages
 
 Properties of packages such as their name, type, dependencies, etc, and what packages apply to what machines
