@@ -23,7 +23,7 @@ module Sprinkle
         def install_commands #:nodoc:
           [
             "wget -cq --directory-prefix=/tmp #{@packages.join(' ')}",
-            "dpkg -i #{@packages.collect{|p| "/tmp/#{package_name(p)}"}.join(" ")}"
+            "#{sudo_cmd}dpkg -i #{@packages.collect{|p| "/tmp/#{package_name(p)}"}.join(" ")}"
           ]
         end
 
