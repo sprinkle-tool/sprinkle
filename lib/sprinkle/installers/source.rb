@@ -53,6 +53,10 @@ module Sprinkle
     #     end
     #   end
     #
+    # Be careful! Hooks will get logged via appending '>> LOG_FILE 2&>1'.
+    # Thus if you use '>> FILE' in hooks, the output won't go to the FILE
+    # you specified. You can use '| tee -a FILE' instead.
+    #
     # Fourth, specifying a custom archive name because the downloaded file name
     # differs from the source URL:
     #
@@ -158,7 +162,7 @@ module Sprinkle
 
         def install_commands #:nodoc:
           return custom_install_commands if custom_install?
-          [ in_build_dir(with_log("#{install_command || "make install"}",:install)) ]
+          [ in_build_dir(with_log("#{install_command || "#{sudo_cmd}make install"}",:install)) ]
         end
 
         def custom_install? #:nodoc:
@@ -189,7 +193,7 @@ module Sprinkle
         end
 
 
-        # dress is overriden from the base Sprinkle::Installers::Installer class so that the command changes
+        # dress is overridden from the base Sprinkle::Installers::Installer class so that the command changes
         # directory to the build directory first. Also, the result of the command is logged.
         def dress(commands, pre_or_post, stage)
           chdir = "cd #{build_dir} && "
